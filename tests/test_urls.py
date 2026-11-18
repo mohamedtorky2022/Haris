@@ -1,4 +1,4 @@
-from haseen.urls import analyze_url, extract_urls
+from haris.urls import analyze_url, extract_urls
 
 
 def test_extracts_http_www_and_bare_domains():

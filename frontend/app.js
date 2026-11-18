@@ -1,15 +1,15 @@
-/* Haseen web chat. Plain JavaScript, no build step, no third-party code.
+/* Haris web chat. Plain JavaScript, no build step, no third-party code.
    Nothing is saved in the browser: the conversation lives only in this page. */
 (() => {
   "use strict";
 
   const UI = {
     ar: {
-      name: "حصين",
+      name: "حارس",
       status: "مساعد ذكي · ليس جهة رسمية",
       placeholder: "الصق الرسالة المشبوهة هنا...",
       inputLabel: "اكتب رسالتك",
-      welcome: "مرحباً، أنا «حصين». أساعدك على كشف الاحتيال الإلكتروني، وأرشدك إن وقعت ضحية له.\n\nلا أحفظ رسائلك، وأخفي بياناتك الشخصية قبل تحليلها.",
+      welcome: "مرحباً، أنا «حارس». أساعدك على كشف الاحتيال الإلكتروني، وأرشدك إن وقعت ضحية له.\n\nلا أحفظ رسائلك، وأخفي بياناتك الشخصية قبل تحليلها.",
       menu: "كيف أساعدك؟",
       check: "افحص رسالة أو رابط",
       help: "تعرضت لاحتيال، ماذا أفعل؟",
@@ -48,11 +48,11 @@
       tooMany: "طلبات كثيرة. انتظر دقيقة ثم حاول.",
     },
     en: {
-      name: "Haseen",
+      name: "Haris",
       status: "AI assistant · not an official body",
       placeholder: "Paste the suspicious message here...",
       inputLabel: "Type your message",
-      welcome: "Hi, I'm Haseen. I help you spot online scams, and guide you if you have been a victim.\n\nI don't store your messages, and I hide your personal details before analysing them.",
+      welcome: "Hi, I'm Haris. I help you spot online scams, and guide you if you have been a victim.\n\nI don't store your messages, and I hide your personal details before analysing them.",
       menu: "How can I help?",
       check: "Check a message or link",
       help: "I've been scammed, what now?",
@@ -91,11 +91,11 @@
       tooMany: "Too many requests. Please wait a minute.",
     },
     ur: {
-      name: "حصین",
+      name: "حارس",
       status: "اے آئی معاون · سرکاری ادارہ نہیں",
       placeholder: "مشکوک پیغام یہاں پیسٹ کریں...",
       inputLabel: "اپنا پیغام لکھیں",
-      welcome: "السلام علیکم، میں حصین ہوں۔ میں آن لائن فراڈ پہچاننے میں مدد کرتا ہوں، اور اگر آپ کے ساتھ فراڈ ہو جائے تو رہنمائی کرتا ہوں۔\n\nمیں آپ کے پیغامات محفوظ نہیں کرتا۔",
+      welcome: "السلام علیکم، میں حارس ہوں۔ میں آن لائن فراڈ پہچاننے میں مدد کرتا ہوں، اور اگر آپ کے ساتھ فراڈ ہو جائے تو رہنمائی کرتا ہوں۔\n\nمیں آپ کے پیغامات محفوظ نہیں کرتا۔",
       menu: "میں کیسے مدد کروں؟",
       check: "پیغام یا لنک چیک کریں",
       help: "میرے ساتھ فراڈ ہوا، اب کیا کروں؟",
@@ -378,7 +378,7 @@
   function printReport(htmlDoc) {
     const url = URL.createObjectURL(new Blob([htmlDoc], { type: "text/html;charset=utf-8" }));
     const w = window.open(url, "_blank", "noopener");
-    if (!w) download(htmlDoc, "text/html", "haseen-report.html");
+    if (!w) download(htmlDoc, "text/html", "haris-report.html");
     setTimeout(() => URL.revokeObjectURL(url), 60000);
   }
 

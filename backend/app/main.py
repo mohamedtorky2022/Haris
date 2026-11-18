@@ -1,4 +1,4 @@
-"""Haseen HTTP API (FastAPI) and the web chat front end.
+"""Haris HTTP API (FastAPI) and the web chat front end.
 
 Run from the backend folder:  uvicorn app.main:app --reload
 """
@@ -16,19 +16,19 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from haseen import __version__, llm
-from haseen.detector import analyze
-from haseen.playbooks import get_playbook, list_playbooks
-from haseen.report import build_report
-from haseen.text import pick_language
+from haris import __version__, llm
+from haris.detector import analyze
+from haris.playbooks import get_playbook, list_playbooks
+from haris.report import build_report
+from haris.text import pick_language
 
 Lang = Literal["ar", "en", "ur"]
 FRONTEND_DIR = Path(__file__).resolve().parents[2] / "frontend"
-RATE_LIMIT = int(os.getenv("HASEEN_RATE_LIMIT", "30"))  # requests per minute per client
+RATE_LIMIT = int(os.getenv("HARIS_RATE_LIMIT", "30"))  # requests per minute per client
 MAX_TEXT = 5000
 
 app = FastAPI(
-    title="Haseen API",
+    title="Haris API",
     version=__version__,
     description="Scam checking, victim guidance and incident reports. Nothing users send is stored.",
 )

@@ -3,9 +3,9 @@ from pathlib import Path
 
 import pytest
 
-from haseen import llm
-from haseen.detector import analyze
-from haseen.text import detect_language, normalize
+from haris import llm
+from haris.detector import analyze
+from haris.text import detect_language, normalize
 
 SAMPLES = json.loads((Path(__file__).resolve().parents[1] / "data" / "samples" / "messages.json").read_text(encoding="utf-8"))
 

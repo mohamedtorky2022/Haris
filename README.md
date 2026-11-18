@@ -1,8 +1,8 @@
-# Haseen (حصين) — an AI assistant against cybercrime
+# Haris (حارس) — an AI assistant against cybercrime
 
-> **حصين** مساعد ذكي يحمي كل من يعيش في الإمارات من الاحتيال والجرائم الإلكترونية، بلغته: يفحص الرسائل والروابط المشبوهة، ويرشد الضحية خطوة بخطوة، ويجهّز ملف بلاغ منظماً للشرطة. لا يحفظ رسائل المستخدمين، ويخفي بياناتهم الشخصية قبل أي تحليل.
+> **حارس** مساعد ذكي يحمي كل من يعيش في الإمارات من الاحتيال والجرائم الإلكترونية، بلغته: يفحص الرسائل والروابط المشبوهة، ويرشد الضحية خطوة بخطوة، ويجهّز ملف بلاغ منظماً للشرطة. لا يحفظ رسائل المستخدمين، ويخفي بياناتهم الشخصية قبل أي تحليل.
 
-Haseen is a chat assistant that helps anyone in the UAE spot online scams, act fast when they have been scammed, and hand the police a complete report. It speaks Arabic, English and Urdu, and stores nothing users send.
+Haris is a chat assistant that helps anyone in the UAE spot online scams, act fast when they have been scammed, and hand the police a complete report. It speaks Arabic, English and Urdu, and stores nothing users send.
 
 This repository is the hackathon MVP: a FastAPI backend and a WhatsApp-style web chat.
 
@@ -20,15 +20,15 @@ Language makes all three worse: a large part of the population reads neither Ara
 
 ## 2. The solution
 
-Haseen covers the three moments of a cybercrime:
+Haris covers the three moments of a cybercrime:
 
-| Moment | What Haseen does |
+| Moment | What Haris does |
 | --- | --- |
-| **Before** — a suspicious message arrives | Paste any message, link or offer. Haseen rates the risk (low / medium / high), names the scam type, explains **why** in plain words, and says what to do. |
+| **Before** — a suspicious message arrives | Paste any message, link or offer. Haris rates the risk (low / medium / high), names the scam type, explains **why** in plain words, and says what to do. |
 | **After** — "I've been scammed" | A step-by-step emergency plan for the situation (money sent, account hacked, extortion, ID shared, suspicious message only), with the official reporting channels. |
-| **Reporting** | A guided conversation builds a structured police report (timeline, amount, scammer identifiers, evidence, steps taken). Haseen pulls phone numbers, e-mails, IBANs and links out of the victim's description automatically. The report downloads as HTML or text, ready to print. |
+| **Reporting** | A guided conversation builds a structured police report (timeline, amount, scammer identifiers, evidence, steps taken). Haris pulls phone numbers, e-mails, IBANs and links out of the victim's description automatically. The report downloads as HTML or text, ready to print. |
 
-Haseen always presents itself as an assistant, **not** an official body, and never tells a user a message is "safe": the lowest rating is "no clear warning signs".
+Haris always presents itself as an assistant, **not** an official body, and never tells a user a message is "safe": the lowest rating is "no clear warning signs".
 
 ### Who it serves
 
@@ -43,7 +43,7 @@ The same engine serves every group; the scam patterns and advice cover parcel an
  FastAPI app ── rate limit, security headers, input limits, no logging of content
         │
         ▼
- haseen core (pure Python, no dependencies)
+ haris core (pure Python, no dependencies)
    ├─ text.py       normalise Arabic spelling and digits, detect language
    ├─ redact.py     remove card numbers (Luhn-checked), Emirates ID, IBAN, phones, e-mails
    ├─ rules.py      ~20 weighted scam signals in 3 languages, with "unless" exceptions
@@ -61,7 +61,7 @@ Full detail, including model choices and the privacy design, is in [`docs/TECHNI
 Requirements: Python 3.9 or newer (macOS ships 3.9 with the Xcode tools).
 
 ```bash
-git clone <this repo> haseen && cd haseen
+git clone <this repo> haris && cd haris
 python -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
@@ -80,7 +80,7 @@ cd backend
 uvicorn app.main:app --reload --env-file ../.env
 ```
 
-Without a key, Haseen runs entirely on its rules engine and works offline.
+Without a key, Haris runs entirely on its rules engine and works offline.
 
 ### Tests and evaluation
 
@@ -126,7 +126,7 @@ On the 34 labelled samples in `data/samples/messages.json` (22 scams, 12 legitim
 - **The community radar.** Spotting a new campaign when many people report the same text or link needs anonymised storage and a data-sharing agreement with the partner authority. We left it out rather than store data without that agreement.
 - **Live link reputation.** Links are judged offline from their structure. Google Safe Browsing or a police blocklist would add a live check.
 - **Voice line for older people,** the family app for children and teenagers, and more languages (Hindi, Malayalam, Tagalog, Bengali).
-- **Direct submission to the police.** Haseen prepares the report; the user still files it. Direct submission needs an integration agreement.
+- **Direct submission to the police.** Haris prepares the report; the user still files it. Direct submission needs an integration agreement.
 
 ### What we would do differently with more time
 
@@ -141,7 +141,7 @@ On the 34 labelled samples in `data/samples/messages.json` (22 scams, 12 legitim
 - Personal data is redacted before any AI call; link query strings are dropped.
 - The model prompt treats the message strictly as data, so instructions hidden inside a scam message are ignored.
 - Rate limiting, input size limits, strict security headers, and all server text rendered with `textContent` (no HTML injection).
-- Haseen is defensive only: it never visits, scans or contacts the links or numbers it analyses.
+- Haris is defensive only: it never visits, scans or contacts the links or numbers it analyses.
 - Test data is synthetic. No real victim's data is in this repository.
 
 Details: [`docs/TECHNICAL.md`](docs/TECHNICAL.md#privacy-design).
@@ -149,22 +149,22 @@ Details: [`docs/TECHNICAL.md`](docs/TECHNICAL.md#privacy-design).
 ## 7. Project structure
 
 ```
-haseen/
+haris/
 ├── README.md
 ├── requirements.txt            runtime: FastAPI, Uvicorn, Pydantic
 ├── requirements-dev.txt        tests: pytest, httpx
 ├── .env.example                optional AI settings (no real keys)
 ├── backend/
 │   ├── app/main.py             FastAPI routes, middleware, static front end
-│   └── haseen/                 the core engine (pure Python)
+│   └── haris/                 the core engine (pure Python)
 ├── frontend/                   index.html, styles.css, app.js
 ├── data/samples/messages.json  labelled synthetic test messages
 ├── scripts/evaluate.py         accuracy on the samples
 ├── tests/                      unit and API tests
 └── docs/
     ├── TECHNICAL.md            architecture, model choices, privacy design
-    ├── Haseen-presentation.pptx     presentation (English)
-    └── Haseen-presentation-ar.pptx  presentation (Arabic)
+    ├── Haris-presentation.pptx     presentation (English)
+    └── Haris-presentation-ar.pptx  presentation (Arabic)
 ```
 
 ## 8. Third-party software and ownership

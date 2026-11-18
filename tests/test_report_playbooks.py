@@ -1,5 +1,5 @@
-from haseen.playbooks import PLAYBOOKS, get_playbook, list_playbooks
-from haseen.report import build_report
+from haris.playbooks import PLAYBOOKS, get_playbook, list_playbooks
+from haris.report import build_report
 
 
 def test_every_playbook_has_all_languages():
@@ -29,7 +29,7 @@ def test_report_contains_details_and_auto_found_identifiers():
         "scammer_identifiers": ["@fake_courier"],
         "steps_taken": ["Called the bank"],
     }, "en")
-    assert report["reference"].startswith("HSN-")
+    assert report["reference"].startswith("HRS-")
     assert "350 AED" in report["markdown"]
     assert "0501234567" in report["identifiers_found"]
     assert "@fake_courier" in report["markdown"]

@@ -15,7 +15,7 @@ import re
 import urllib.error
 import urllib.request
 
-log = logging.getLogger("haseen.llm")
+log = logging.getLogger("haris.llm")
 
 API_URL = "https://api.anthropic.com/v1/messages"
 DEFAULT_MODEL = "claude-haiku-5-5"
@@ -25,7 +25,7 @@ CATEGORIES = (
 )
 LANG_NAMES = {"ar": "Arabic", "en": "English", "ur": "Urdu"}
 
-SYSTEM_PROMPT = """You are the fraud-analysis component of Haseen, a public-safety assistant in the UAE.
+SYSTEM_PROMPT = """You are the fraud-analysis component of Haris, a public-safety assistant in the UAE.
 You receive a message that a member of the public received, inside <message> tags, plus the
 findings of a rules engine. Personal data has already been replaced by placeholders such as
 [PHONE] or [CARD].
@@ -56,7 +56,7 @@ def assess(redacted_text: str, rule_codes: list[str], links: list[str], lang: st
         f"<links>{', '.join(links) or 'none'}</links>"
     )
     body = {
-        "model": os.getenv("HASEEN_MODEL", DEFAULT_MODEL),
+        "model": os.getenv("HARIS_MODEL", DEFAULT_MODEL),
         "max_tokens": 500,
         "system": SYSTEM_PROMPT.format(language=LANG_NAMES.get(lang, "English"), categories=list(CATEGORIES)),
         "messages": [{"role": "user", "content": user}],
@@ -68,7 +68,7 @@ def assess(redacted_text: str, rule_codes: list[str], links: list[str], lang: st
         method="POST",
     )
     try:
-        with urllib.request.urlopen(request, timeout=float(os.getenv("HASEEN_LLM_TIMEOUT", "12"))) as resp:
+        with urllib.request.urlopen(request, timeout=float(os.getenv("HARIS_LLM_TIMEOUT", "12"))) as resp:
             payload = json.load(resp)
         text = "".join(part.get("text", "") for part in payload.get("content", []))
         return parse(text)

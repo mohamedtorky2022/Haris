@@ -33,9 +33,9 @@ LABELS = {
     "where": {"ar": "أين تقدّم هذا البلاغ", "en": "Where to file this report", "ur": "یہ رپورٹ کہاں جمع کریں"},
     "none": {"ar": "لا يوجد", "en": "None", "ur": "کوئی نہیں"},
     "disclaimer": {
-        "ar": "أُعدّ هذا الملف بمساعدة «حصين» لتسهيل البلاغ. «حصين» ليس جهة رسمية، والبلاغ لا يُعد مقدَّماً إلا عند تسليمه للشرطة.",
-        "en": "Prepared with Haseen to make reporting easier. Haseen is not an official body: the report is only filed once you submit it to the police.",
-        "ur": "یہ فائل حصین کی مدد سے تیار کی گئی۔ حصین سرکاری ادارہ نہیں ہے: رپورٹ پولیس کو جمع کرانے پر ہی درج ہوتی ہے۔",
+        "ar": "أُعدّ هذا الملف بمساعدة «حارس» لتسهيل البلاغ. «حارس» ليس جهة رسمية، والبلاغ لا يُعد مقدَّماً إلا عند تسليمه للشرطة.",
+        "en": "Prepared with Haris to make reporting easier. Haris is not an official body: the report is only filed once you submit it to the police.",
+        "ur": "یہ فائل حارس کی مدد سے تیار کی گئی۔ حارس سرکاری ادارہ نہیں ہے: رپورٹ پولیس کو جمع کرانے پر ہی درج ہوتی ہے۔",
     },
 }
 
@@ -53,7 +53,7 @@ def _clean_list(values) -> list[str]:
 def build_report(data: dict, lang: str) -> dict:
     L = {k: v[lang] for k, v in LABELS.items()}
     now = datetime.now(timezone.utc)
-    reference = f"HSN-{now:%Y%m%d}-{secrets.token_hex(3).upper()}"
+    reference = f"HRS-{now:%Y%m%d}-{secrets.token_hex(3).upper()}"
 
     incident = data.get("incident_type", "suspicious_only")
     incident_title = PLAYBOOKS.get(incident, PLAYBOOKS["suspicious_only"])["title"][lang]

@@ -1,4 +1,4 @@
-from haseen.redact import find_identifiers, luhn_valid, redact
+from haris.redact import find_identifiers, luhn_valid, redact
 
 
 def test_card_number_with_valid_luhn_is_redacted():

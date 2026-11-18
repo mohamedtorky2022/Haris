@@ -37,7 +37,7 @@ def test_playbooks_and_report():
     assert client.get("/api/playbooks/unknown").status_code == 404
     r = client.post("/api/report", json={"lang": "en", "incident_type": "extortion", "description": "threats"})
     assert r.status_code == 200
-    assert r.json()["reference"].startswith("HSN-")
+    assert r.json()["reference"].startswith("HRS-")
 
 
 def test_security_headers_and_frontend():

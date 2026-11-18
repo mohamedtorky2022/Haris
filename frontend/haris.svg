@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Haris">
+  <title>Haris</title>
+  <!-- background -->
+  <circle cx="100" cy="100" r="100" fill="#E7F2EF"/>
+  <clipPath id="c"><circle cx="100" cy="100" r="100"/></clipPath>
+  <g clip-path="url(#c)">
+    <!-- kandura (body) -->
+    <path d="M30 200 C34 160 60 140 100 140 C140 140 166 160 170 200 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="2"/>
+    <!-- collar and tassel -->
+    <path d="M92 142 L100 156 L108 142" fill="none" stroke="#C9D3D0" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M100 156 L100 186" stroke="#C9D3D0" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="100" cy="188" r="3" fill="#C9D3D0"/>
+    <!-- ghutra (head scarf), back layer falling to the shoulders -->
+    <path d="M52 92 C50 60 70 38 100 38 C130 38 150 60 148 92 L156 150 C140 160 128 150 124 140 L76 140 C72 150 60 160 44 150 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="2"/>
+    <!-- face -->
+    <ellipse cx="100" cy="98" rx="30" ry="35" fill="#D9A47A"/>
+    <!-- ears hidden by ghutra; ghutra edge framing the face -->
+    <path d="M66 84 C66 60 82 52 100 52 C118 52 134 60 134 84 C128 72 116 66 100 66 C84 66 72 72 66 84 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="1.5"/>
+    <!-- agal (black cord) -->
+    <ellipse cx="100" cy="62" rx="37" ry="8" fill="none" stroke="#1F2933" stroke-width="6"/>
+    <ellipse cx="100" cy="55" rx="34" ry="6.5" fill="none" stroke="#1F2933" stroke-width="5"/>
+    <!-- eyebrows -->
+    <path d="M80 85 Q87 80 94 84" fill="none" stroke="#3B2A20" stroke-width="3" stroke-linecap="round"/>
+    <path d="M106 84 Q113 80 120 85" fill="none" stroke="#3B2A20" stroke-width="3" stroke-linecap="round"/>
+    <!-- eyes -->
+    <ellipse cx="88" cy="94" rx="4" ry="5" fill="#1F2933"/>
+    <ellipse cx="112" cy="94" rx="4" ry="5" fill="#1F2933"/>
+    <circle cx="89.5" cy="92.3" r="1.4" fill="#FFFFFF"/>
+    <circle cx="113.5" cy="92.3" r="1.4" fill="#FFFFFF"/>
+    <!-- cheeks -->
+    <ellipse cx="80" cy="106" rx="5" ry="3" fill="#E58E73" opacity=".45"/>
+    <ellipse cx="120" cy="106" rx="5" ry="3" fill="#E58E73" opacity=".45"/>
+    <!-- beard and moustache -->
+    <path d="M71 104 C72 126 86 136 100 136 C114 136 128 126 129 104 C124 118 114 124 100 124 C86 124 76 118 71 104 Z" fill="#3B2A20"/>
+    <path d="M88 112 Q100 106 112 112 Q100 110 88 112 Z" fill="#3B2A20" stroke="#3B2A20" stroke-width="3" stroke-linejoin="round"/>
+    <!-- smile -->
+    <path d="M91 117 Q100 124 109 117" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- shield held in front -->
+    <g transform="translate(118 132) rotate(8)">
+      <path d="M26 0 L50 9 L50 30 C50 46 39 57 26 62 C13 57 2 46 2 30 L2 9 Z" fill="#0B6E5F" stroke="#FFFFFF" stroke-width="3"/>
+      <path d="M15 31 L23 39 L38 22" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <!-- hand holding the shield -->
+    <ellipse cx="116" cy="158" rx="8" ry="7" fill="#D9A47A" stroke="#C48A60" stroke-width="1"/>
+  </g>
+</svg>

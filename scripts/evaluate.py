@@ -2,7 +2,7 @@
 
     python scripts/evaluate.py
 
-A scam counts as caught when Haseen rates it medium or high. A legitimate
+A scam counts as caught when Haris rates it medium or high. A legitimate
 message counts as a false alarm when it is rated medium or high.
 """
 
@@ -15,7 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
 
-from haseen.detector import analyze  # noqa: E402
+from haris.detector import analyze  # noqa: E402
 
 
 def main() -> int:
