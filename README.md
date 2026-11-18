@@ -163,7 +163,8 @@ haseen/
 ├── tests/                      unit and API tests
 └── docs/
     ├── TECHNICAL.md            architecture, model choices, privacy design
-    └── Haseen-presentation.pptx
+    ├── Haseen-presentation.pptx     presentation (English)
+    └── Haseen-presentation-ar.pptx  presentation (Arabic)
 ```
 
 ## 8. Third-party software and ownership
