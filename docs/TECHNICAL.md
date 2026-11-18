@@ -15,6 +15,8 @@ flowchart LR
     X -->|redacted text only| C[(Claude API<br/>optional)]
     API --> I[intake.py<br/>story + screenshots → report fields]
     I -->|redacted story + screenshots| C
+    API --> PO[polish.py<br/>fix misheard dictation]
+    PO -->|numbers replaced by tokens| C
     API --> P[playbooks.py<br/>emergency plans + contacts]
     API --> RP[report.py<br/>police report, in memory]
 ```
@@ -106,6 +108,16 @@ The report is built from the victim's own account rather than a fixed questionna
 4. The response lists the fields still missing for that incident type (money lost needs when, amount, payment method and steps taken). The chat asks only those, each with ready-made answers.
 5. A summary card shows every field with an Edit button per line; "Add details or images" sends more story to the same endpoint.
 
+### Dictation and correction: `POST /api/polish`
+
+Speech is turned into text by the browser's own speech service (Web Speech API). We cannot train that service, so accuracy is improved around it:
+
+1. **Dialect.** The first time the microphone is used in a language, the user picks a dialect or accent, and the service is started with that locale: Arabic `ar-AE` (Emirati/Gulf), `ar-SA`, `ar-EG`, `ar-JO` (Levantine), `ar-IQ`, `ar-MA`; English `en-US`, `en-GB`, `en-IN`, `en-PH`; Urdu `ur-PK`, `ur-IN`. The choice is remembered in the browser (localStorage) and can be changed from the chat.
+2. **Glossary.** When dictation stops, `polish.apply_glossary` fixes common mishearings of the names and terms that matter in fraud reports: Aramex, WhatsApp, Telegram, Instagram, OTP, CVV, SMS, IBAN, USDT, Bitcoin, Binance, PayPal, iTunes, Google Play, Emirates ID. Arabic letters that dictation confuses (ا/أ/إ/آ, ي/ى, ه/ة) are matched as one, and split words ("واتس اب") are joined.
+3. **AI pass (optional).** With a key, Claude gets the text, the language and the dialect name, and fixes words that clearly do not fit the context, without rephrasing, summarising or adding anything.
+4. **Numbers are protected.** Before the AI sees the text, every number, link, e-mail and word containing a digit is replaced by a token (`[#1]`, `[#2]` …) and kept on the server. The answer is rejected unless every token comes back exactly once and no digit was added. Phone numbers, amounts and card details therefore never reach the model and can never be changed by it.
+5. **The user decides.** `polish.word_changes` lists the changed words (punctuation-only changes are ignored). The chat shows them as "old → new" with *Use the corrected text*, *Keep my text* and *Change dialect*.
+
 ## 3. Model choices
 
 ### Why a rules engine as the core
@@ -155,6 +167,8 @@ A fine-tuned model needs a large, labelled set of real UAE scam and legitimate m
 | Report answers | Server memory during the request, then back to the user's browser | Until the response is sent; the file stays on the user's device |
 | Screenshots | Resized in the browser; sent to Claude only if the AI is on; embedded in the report file in the browser | Not stored on the server |
 | Dictated speech | The browser's own speech service (Google in Chrome, Apple in Safari); Haris receives only the text | Under the browser vendor's terms |
+| Dictated text sent for correction | Server memory; to Claude only if the AI is on, with numbers, links and e-mails replaced by tokens | Until the response is sent |
+| Dialect choice | The user's browser (localStorage) | Until the user clears site data |
 | Conversation in the browser | The page's memory only | Until the tab is closed or the language is switched |
 
 ### What redaction removes
@@ -197,12 +211,15 @@ The design follows the data-minimisation and purpose-limitation principles of UA
 
 - **Add a scam pattern:** add a `Signal` in `rules.py` and its reason sentence in all three languages in `i18n.py`, then add sample messages to `data/samples/messages.json` and run `pytest` and `scripts/evaluate.py`.
 - **Add a language:** add the language code to `SUPPORTED_LANGS`, phrases to the signals, and text to `i18n.py`, `playbooks.py`, `report.py` and the `UI` table in `app.js`.
+- **Fix a new mishearing:** add the spoken variants and the written form to `GLOSSARY` in `polish.py`, with a test in `tests/test_polish.py`.
+- **Train speech recognition for the pilot:** move transcription to a server-side service such as Azure Speech with Custom Speech, hosted in a UAE region. Train it on the glossary terms (plain-text data) and on anonymised recordings with transcripts from the partner authority. `/api/polish` stays as the safety net.
 - **Add a channel (for example WhatsApp):** a webhook receives the message, calls `detector.analyze(text)`, and formats `risk_label`, `summary`, `reasons` and `advice` as a reply. No change to the core is needed.
 
 ## 7. Known limitations
 
 - Rules only catch wording someone wrote down; new scams need the AI layer or a new rule.
-- Images and voice notes are not analysed yet.
+- Screenshots are read only when the AI is on; voice notes sent as audio files are not analysed yet.
+- Dictation accuracy depends on the browser's speech service; Haris can fix misheard words but not words the service didn't hear at all.
 - Link analysis is offline and structural; it has no live reputation data.
 - The Urdu and dialect wording has not yet been reviewed by native speakers.
 - Official contact details come from public police announcements and must be confirmed by the partner authority before launch.

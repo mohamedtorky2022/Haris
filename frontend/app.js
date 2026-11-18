@@ -59,7 +59,15 @@
       attached: "الأدلة المرفقة",
       attach: "إرفاق لقطة شاشة",
       mic: "تحدّث بدل الكتابة",
-      micNote: "التحويل من صوت إلى نص يتم عبر خدمة الإملاء في متصفحك. راجع النص قبل إرساله.",
+      micNote: "خدمة الإملاء في متصفحك تحوّل كلامك إلى نص، ثم يراجعه حارس ويقترح تصحيح الكلمات التي ربما سُمعت خطأً. راجع النص قبل إرساله.",
+      dialectQ: "بأي لهجة ستتكلم؟ اختيار لهجتك يجعل الإملاء يفهمك بدقة أكبر.",
+      dialectSet: "اللهجة: {name}. يمكنك تغييرها في أي وقت.",
+      changeDialect: "تغيير اللهجة",
+      polished: "راجعت النص، وهذه كلمات ربما سُمعت خطأً:",
+      polishNote: "الأرقام وأرقام الهواتف والروابط لا تتغيّر أبداً.",
+      useFixed: "استخدم النص المصحّح",
+      keepMine: "أبقِ نصّي كما هو",
+      fixedUsed: "تم. النص المصحّح في خانة الكتابة، راجعه ثم أرسله.",
       micError: "تعذّر تشغيل الميكروفون. تأكد من السماح للمتصفح باستخدامه، أو اكتب بدلاً منه.",
       maxImages: "يمكن إرفاق 3 صور كحد أقصى في كل مرة.",
       removeImage: "إزالة الصورة",
@@ -142,7 +150,15 @@
       attached: "Attached evidence",
       attach: "Attach a screenshot",
       mic: "Speak instead of typing",
-      micNote: "Speech is turned into text by your browser's dictation service. Check the text before you send it.",
+      micNote: "Your browser's dictation turns your speech into text. Haris then checks it and suggests fixes for words that were probably misheard. Check the text before you send it.",
+      dialectQ: "Which accent will you speak in? Choosing it helps dictation understand you better.",
+      dialectSet: "Accent: {name}. You can change it any time.",
+      changeDialect: "Change accent",
+      polished: "I checked the text. These words were probably misheard:",
+      polishNote: "Numbers, phone numbers and links are never changed.",
+      useFixed: "Use the corrected text",
+      keepMine: "Keep my text",
+      fixedUsed: "Done. The corrected text is in the message box: check it, then send.",
       micError: "Couldn't start the microphone. Allow the browser to use it, or type instead.",
       maxImages: "You can attach up to 3 images at a time.",
       removeImage: "Remove image",
@@ -225,7 +241,15 @@
       attached: "منسلک ثبوت",
       attach: "اسکرین شاٹ لگائیں",
       mic: "لکھنے کے بجائے بولیں",
-      micNote: "آواز کو متن میں آپ کے براؤزر کی ڈکٹیشن سروس بدلتی ہے۔ بھیجنے سے پہلے متن دیکھ لیں۔",
+      micNote: "آپ کے براؤزر کی ڈکٹیشن آواز کو متن میں بدلتی ہے، پھر حارس اسے دیکھ کر غلط سنے گئے الفاظ کی درستی تجویز کرتا ہے۔ بھیجنے سے پہلے متن دیکھ لیں۔",
+      dialectQ: "آپ کس لہجے میں بولیں گے؟ لہجہ چننے سے ڈکٹیشن آپ کو بہتر سمجھتی ہے۔",
+      dialectSet: "لہجہ: {name}۔ آپ اسے کبھی بھی بدل سکتے ہیں۔",
+      changeDialect: "لہجہ بدلیں",
+      polished: "میں نے متن دیکھا، یہ الفاظ شاید غلط سنے گئے:",
+      polishNote: "نمبر، فون نمبر اور لنکس کبھی نہیں بدلے جاتے۔",
+      useFixed: "درست متن استعمال کریں",
+      keepMine: "میرا متن رکھیں",
+      fixedUsed: "ہو گیا۔ درست متن لکھنے کی جگہ میں ہے، دیکھ کر بھیج دیں۔",
       micError: "مائیک شروع نہیں ہو سکا۔ براؤزر کو اجازت دیں یا لکھ دیں۔",
       maxImages: "ایک وقت میں زیادہ سے زیادہ 3 تصاویر لگائی جا سکتی ہیں۔",
       removeImage: "تصویر ہٹائیں",
@@ -593,7 +617,7 @@
   // ---- Input ----
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    stopDictation();
+    stopDictation(false);
     const text = input.value.trim();
     const images = pending.slice();
     if (!text && !images.length) return;
@@ -651,38 +675,125 @@
   function clearPending() { pending = []; renderPending(); }
 
   // ---- Dictation (the browser's own speech service; hidden where unsupported) ----
+  // The user picks their dialect once (remembered in this browser), and after each
+  // dictation /api/polish suggests fixes for misheard words. Numbers are never changed.
   const micBtn = document.getElementById("mic");
   const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const SPEECH_LANG = { ar: "ar-AE", en: "en-US", ur: "ur-PK" };
+  const DIALECTS = {
+    ar: [["ar-AE", "إماراتية / خليجية"], ["ar-SA", "سعودية"], ["ar-EG", "مصرية"], ["ar-JO", "شامية"], ["ar-IQ", "عراقية"], ["ar-MA", "مغاربية"]],
+    en: [["en-US", "American"], ["en-GB", "British"], ["en-IN", "Indian"], ["en-PH", "Filipino"]],
+    ur: [["ur-PK", "پاکستانی اردو"], ["ur-IN", "ہندوستانی اردو"]],
+  };
+  const store = {
+    get(key) { try { return localStorage.getItem(key); } catch { return null; } },
+    set(key, value) { try { localStorage.setItem(key, value); } catch { /* private mode: keep for this visit only */ } },
+  };
+  const chosenDialect = {};
   let recognizer = null;
+  let heard = false;
   let micNoteShown = false;
   micBtn.hidden = !Speech;
 
-  micBtn.addEventListener("click", () => (recognizer ? stopDictation() : startDictation()));
+  function dialect() {
+    const saved = chosenDialect[lang] || store.get(`haris.dialect.${lang}`);
+    return DIALECTS[lang].some(([code]) => code === saved) ? saved : null;
+  }
+
+  micBtn.addEventListener("click", () => {
+    if (recognizer) return stopDictation(true);
+    if (!dialect()) return askDialect(startDictation);
+    startDictation();
+  });
+
+  function askDialect(then) {
+    const choices = el("div", { class: "actions" });
+    const node = bubble([el("p", { text: tr("dialectQ") }), choices]);
+    for (const [code, name] of DIALECTS[lang]) {
+      const b = el("button", { type: "button", text: name, "aria-pressed": String(code === dialect()) });
+      b.addEventListener("click", () => {
+        chosenDialect[lang] = code;
+        store.set(`haris.dialect.${lang}`, code);
+        node.replaceChildren(el("p", { text: tr("dialectSet", { name }) }));
+        if (then) then();
+      });
+      choices.append(b);
+    }
+  }
 
   function startDictation() {
     if (!Speech) return;
-    if (!micNoteShown) { bubble(tr("micNote")); micNoteShown = true; }
+    if (!micNoteShown) {
+      const change = el("button", { type: "button", text: tr("changeDialect") });
+      change.addEventListener("click", () => { stopDictation(false); change.remove(); askDialect(null); });
+      bubble([el("p", { text: tr("micNote") }), el("div", { class: "actions" }, [change])]);
+      micNoteShown = true;
+    }
     const base = input.value ? `${input.value} ` : "";
+    heard = false;
     recognizer = new Speech();
-    recognizer.lang = SPEECH_LANG[lang];
+    recognizer.lang = dialect() || DIALECTS[lang][0][0];
     recognizer.continuous = true;
     recognizer.interimResults = true;
     recognizer.onresult = (e) => {
       input.value = base + [...e.results].map((r) => r[0].transcript).join(" ");
+      heard = true;
       autosize();
     };
-    recognizer.onerror = () => { bubble(tr("micError")); stopDictation(); };
-    recognizer.onend = () => stopDictation();
+    recognizer.onerror = (e) => {
+      if (e.error !== "no-speech" && e.error !== "aborted") bubble(tr("micError"));
+      stopDictation(heard);
+    };
+    recognizer.onend = () => stopDictation(true);
     recognizer.start();
     micBtn.classList.add("recording");
     micBtn.setAttribute("aria-pressed", "true");
   }
 
-  function stopDictation() {
+  // polishAfter: false when the text is being sent right away or the language changes.
+  function stopDictation(polishAfter = false) {
+    const wasOn = Boolean(recognizer);
     if (recognizer) { const r = recognizer; recognizer = null; try { r.stop(); } catch { /* already stopped */ } }
     micBtn.classList.remove("recording");
     micBtn.setAttribute("aria-pressed", "false");
+    if (wasOn && polishAfter && heard && input.value.trim().length >= 6) polishDictation();
+    heard = false;
+  }
+
+  async function polishDictation() {
+    const original = input.value;
+    let r = null;
+    try {
+      const res = await fetch("/api/polish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: original, lang, dialect: dialect() }),
+      });
+      if (res.ok) r = await res.json();
+    } catch { /* offline: keep the text as it is */ }
+    if (!r || !r.changes.length || r.text.trim() === original.trim()) return;
+    const arrow = lang === "en" ? "→" : "←";
+    const actions = el("div", { class: "actions" });
+    const node = bubble([
+      el("p", { text: tr("polished") }),
+      list(r.changes.map((c) => `${c.from || "—"} ${arrow} ${c.to || "—"}`)),
+      el("p", { class: "note", text: tr("polishNote") }),
+      actions,
+    ]);
+    const done = (message) => { actions.remove(); if (message) node.append(el("p", { class: "note", text: message })); };
+    const button = (label, onClick) => {
+      const b = el("button", { type: "button", text: label });
+      b.addEventListener("click", onClick);
+      actions.append(b);
+    };
+    button(tr("useFixed"), () => {
+      // Words dictated or typed after the check are kept.
+      input.value = input.value.startsWith(original) ? r.text + input.value.slice(original.length) : r.text;
+      autosize();
+      input.focus();
+      done(tr("fixedUsed"));
+    });
+    button(tr("keepMine"), () => { done(""); input.focus(); });
+    button(tr("changeDialect"), () => { done(""); askDialect(null); });
   }
 
   input.addEventListener("keydown", (event) => {
@@ -713,7 +824,7 @@
 
   document.querySelectorAll(".langs button").forEach((b) => b.addEventListener("click", () => {
     if (b.dataset.lang === lang) return;
-    stopDictation();
+    stopDictation(false);
     applyLanguage(b.dataset.lang);
     chat.replaceChildren();
     showTools(false);

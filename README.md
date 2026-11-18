@@ -28,7 +28,7 @@ Haris covers the three moments of a cybercrime:
 | --- | --- |
 | **Before** — a suspicious message arrives | Paste any message, link or offer. Haris rates the risk (low / medium / high), names the scam type, explains **why** in plain words, and says what to do. |
 | **After** — "I've been scammed" | A step-by-step emergency plan for the situation (money sent, account hacked, extortion, ID shared, suspicious message only), with the official reporting channels. |
-| **Reporting** | The victim tells the story their own way: typed, spoken (the microphone button uses the browser's dictation) or as screenshots of the chat or the debit alert. Haris pulls out the amount, time, payment method, steps already taken and the scammer's numbers, links and IBANs, asks only about what is still missing with ready-made answers, then shows a summary card where any line can be edited. The report opens in a new tab, downloads as a web page with the screenshots inside, or prints and saves as PDF. |
+| **Reporting** | The victim tells the story their own way: typed, spoken or as screenshots of the chat or the debit alert. For speech, the user picks their dialect once (Emirati/Gulf, Saudi, Egyptian, Levantine, Iraqi, Maghrebi; English and Urdu accents too), and after each dictation Haris suggests fixes for misheard words such as «ارا ماكس» → «أرامكس». The user approves the fix, and numbers are never changed. Haris pulls out the amount, time, payment method, steps already taken and the scammer's numbers, links and IBANs, asks only about what is still missing with ready-made answers, then shows a summary card where any line can be edited. The report opens in a new tab, downloads as a web page with the screenshots inside, or prints and saves as PDF. |
 
 Haris always presents itself as an assistant, **not** an official body, and never tells a user a message is "safe": the lowest rating is "no clear warning signs".
 
@@ -40,7 +40,7 @@ The same engine serves every group; the scam patterns and advice cover parcel an
 
 ```
  Browser (web chat, AR / EN / UR)
-        │  POST /api/check, GET /api/playbooks, POST /api/report
+        │  /api/check, /api/playbooks, /api/extract, /api/polish, /api/report
         ▼
  FastAPI app ── rate limit, security headers, input limits, no logging of content
         │
@@ -53,6 +53,7 @@ The same engine serves every group; the scam patterns and advice cover parcel an
    ├─ detector.py   combines the above into a score, risk level and category
    ├─ llm.py        optional Claude second opinion on the REDACTED text
    ├─ intake.py     turns a free story and screenshots into report fields
+   ├─ polish.py     fixes misheard words in dictated text (glossary + optional AI), never digits
    ├─ playbooks.py  emergency plans + official contacts
    └─ report.py     builds the police report in memory
 ```
@@ -103,6 +104,7 @@ On the 34 labelled samples in `data/samples/messages.json` (22 scams, 12 legitim
 | `GET` | `/api/playbooks?lang=` | list of emergency situations |
 | `GET` | `/api/playbooks/{id}?lang=` | steps + official contacts for one situation |
 | `POST` | `/api/extract` | `{"text": "...", "images": ["data:image/jpeg;base64,..."], "lang": "ar"}` → report fields found, and the fields still missing |
+| `POST` | `/api/polish` | `{"text": "...", "lang": "ar", "dialect": "ar-EG"}` → corrected text and the list of changed words (numbers never change) |
 | `POST` | `/api/report` | build a police report (HTML + Markdown), nothing stored |
 | `GET` | `/api/health` | status, and whether the AI second opinion is on |
 
@@ -122,6 +124,11 @@ On the 34 labelled samples in `data/samples/messages.json` (22 scams, 12 legitim
 
 **Stateless by design.** There is no database. Reports are built in memory and returned to the browser. This removes the biggest privacy risk, at the cost of features that need memory (see below).
 
+**Fix dictation instead of training a speech model.** Transcription is done by the browser's own speech service, which we cannot train. We improve it in two cheap steps: the user's dialect is passed to the service, and a correction pass (a glossary of fraud terms, plus Claude when enabled) fixes misheard words.
+- *Why:* it works today in every modern browser, costs nothing without the AI, and keeps audio off our servers.
+- *Trade-off:* it can't fix what the service didn't hear at all. A trainable server-side model (Azure Custom Speech, which supports ar-AE, ar-EG, ar-SA and more; Urdu only as ur-IN) is the plan for the police pilot, hosted in a UAE region and trained on anonymised data from the partner.
+- *Safety:* numbers, links and e-mails are swapped for tokens before the AI sees the text and put back after; an answer that loses, repeats or adds a digit is thrown away. The user always sees the changes and chooses.
+
 **Plain JavaScript front end.** No framework and no build step, so judges can run it with one command, and the strict Content-Security-Policy (`script-src 'self'`) stays simple.
 
 ### What we left out
@@ -129,6 +136,7 @@ On the 34 labelled samples in `data/samples/messages.json` (22 scams, 12 legitim
 - **Reading screenshots without the AI.** With no API key, screenshots are attached to the report as evidence but not read. On-device text recognition would let the rules read them too.
 - **The community radar.** Spotting a new campaign when many people report the same text or link needs anonymised storage and a data-sharing agreement with the partner authority. We left it out rather than store data without that agreement.
 - **Live link reputation.** Links are judged offline from their structure. Google Safe Browsing or a police blocklist would add a live check.
+- **Training our own speech model.** Dictation accuracy depends on the browser's service. A trainable model (Azure Custom Speech or an open-source model hosted in the UAE) needs recordings with transcripts from the partner, so it is planned for the pilot.
 - **Voice line for older people,** the family app for children and teenagers, and more languages (Hindi, Malayalam, Tagalog, Bengali).
 - **Direct submission to the police.** Haris prepares the report; the user still files it. Direct submission needs an integration agreement.
 

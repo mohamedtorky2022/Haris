@@ -53,3 +53,10 @@ def test_extract_endpoint():
     assert body["fields"]["amount"] == "120"
     assert body["missing"] == ["steps_taken"]
     assert client.post("/api/extract", json={"images": ["x"] * 4}).status_code == 422
+
+
+def test_polish_endpoint():
+    r = client.post("/api/polish", json={"lang": "en", "text": "they wanted the o t p 4471", "dialect": "en-IN"})
+    assert r.status_code == 200
+    assert r.json()["text"] == "they wanted the OTP 4471"
+    assert client.post("/api/polish", json={"text": "x", "dialect": "bad value"}).status_code == 422

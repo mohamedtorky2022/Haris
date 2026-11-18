@@ -20,6 +20,7 @@ from haris import __version__, llm
 from haris.detector import analyze
 from haris.intake import MAX_IMAGES, extract
 from haris.playbooks import get_playbook, list_playbooks
+from haris.polish import polish
 from haris.report import build_report
 from haris.text import pick_language
 
@@ -47,6 +48,12 @@ class ExtractRequest(BaseModel):
     text: str = Field("", max_length=MAX_TEXT, description="The victim's story, typed or dictated")
     images: List[ImageDataUrl] = Field(default_factory=list, max_length=MAX_IMAGES, description="Screenshots as data: URLs")
     incident_type: Optional[Incident] = None
+
+
+class PolishRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=MAX_TEXT, description="Dictated text to fix")
+    lang: Lang = "ar"
+    dialect: Optional[str] = Field(None, pattern=r"^[a-z]{2}-[A-Z]{2}$", description="Dictation locale, e.g. ar-EG")
 
 
 class ReportRequest(BaseModel):
@@ -123,6 +130,12 @@ def playbook(playbook_id: str, lang: Optional[Lang] = None):
 def extract_fields(body: ExtractRequest):
     """Pull report fields out of a story and screenshots. Nothing is stored."""
     return extract(body.text, body.images, body.lang, body.incident_type)
+
+
+@app.post("/api/polish")
+def polish_text(body: PolishRequest):
+    """Fix misheard words in dictated text. Numbers are never changed; nothing is stored."""
+    return polish(body.text, body.lang, body.dialect)
 
 
 @app.post("/api/report")
