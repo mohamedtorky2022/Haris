@@ -156,7 +156,7 @@ So the rules engine gives the verdict, and the language model is used for what r
 
 ### Why not a fine-tuned classifier now
 
-A fine-tuned model needs a large, labelled set of real UAE scam and legitimate messages in four languages, which a hackathon team does not have and should not collect without an agreement with the authority. The rules engine plus the AI second opinion gives working protection today; the signals and the AI's reasons can label real data later to train a classifier.
+A fine-tuned model needs a large, labelled set of real UAE scam and legitimate messages in four languages, which a hackathon project does not have and should not collect without an agreement with the authority. The rules engine plus the AI second opinion gives working protection today; the signals and the AI's reasons can label real data later to train a classifier.
 
 ### Campaign radar: `POST /api/radar/report`
 

@@ -119,7 +119,7 @@ pytest                                 # from the repo root
 python scripts/evaluate.py             # accuracy on the labelled sample messages
 ```
 
-On the 59 labelled samples in `data/samples/messages.json` (37 scams, 22 legitimate messages, in 4 languages), the rules engine alone catches **37 of 37 scams** with **0 of 22 false alarms**. These samples were written by the team while building the rules, so they show the rules behave as designed; they are **not** an independent accuracy measure (see trade-offs below).
+On the 59 labelled samples in `data/samples/messages.json` (37 scams, 22 legitimate messages, in 4 languages), the rules engine alone catches **37 of 37 scams** with **0 of 22 false alarms**. These samples were written while building the rules, so they show the rules behave as designed; they are **not** an independent accuracy measure (see trade-offs below).
 
 ### API
 
@@ -219,12 +219,12 @@ haris/
 
 ## 8. Third-party software and ownership
 
-The code in this repository was written by the team for the hackathon. It uses these open-source packages under their licences: FastAPI (MIT), Uvicorn (BSD-3-Clause), Pydantic (MIT), and for tests pytest (MIT) and HTTPX (BSD-3-Clause). The optional AI layer calls the Anthropic Claude API under Anthropic's terms. The official contact numbers come from public Abu Dhabi Police and Dubai Police announcements and should be confirmed by the partner authority before launch.
+The code in this repository was written for the hackathon by Mohamed Ibrahim, with Claude (Anthropic) used as an AI coding assistant; the idea, the product decisions and the review of every change are his. It uses these open-source packages under their licences: FastAPI (MIT), Uvicorn (BSD-3-Clause), Pydantic (MIT), and for tests pytest (MIT) and HTTPX (BSD-3-Clause). The optional AI layer calls the Anthropic Claude API under Anthropic's terms. The official contact numbers come from public Abu Dhabi Police and Dubai Police announcements and should be confirmed by the partner authority before launch.
 
 ## Team
 
 | Name | Role |
 | --- | --- |
-| _to fill in_ | |
-| _to fill in_ | |
-| _to fill in_ | |
+| Mohamed Ibrahim | Idea, product, design and development |
+
+Built with Claude (Anthropic) as an AI coding assistant.
