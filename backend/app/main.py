@@ -9,7 +9,7 @@ import os
 import time
 from collections import defaultdict, deque
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Optional
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -36,22 +36,22 @@ app = FastAPI(
 
 class CheckRequest(BaseModel):
     text: str = Field(..., min_length=1, max_length=MAX_TEXT, description="The message, link or offer to check")
-    lang: Lang | None = Field(None, description="Reply language; detected from the text when omitted")
+    lang: Optional[Lang] = Field(None, description="Reply language; detected from the text when omitted")
 
 
 class ReportRequest(BaseModel):
     lang: Lang = "ar"
     incident_type: Literal["money_sent", "account_hacked", "extortion", "identity_shared", "suspicious_only"] = "suspicious_only"
-    occurred_at: str | None = Field(None, max_length=100)
+    occurred_at: Optional[str] = Field(None, max_length=100)
     description: str = Field("", max_length=MAX_TEXT)
-    amount: str | None = Field(None, max_length=40)
-    currency: str | None = Field("AED", max_length=10)
-    payment_method: str | None = Field(None, max_length=200)
+    amount: Optional[str] = Field(None, max_length=40)
+    currency: Optional[str] = Field("AED", max_length=10)
+    payment_method: Optional[str] = Field(None, max_length=200)
     scammer_identifiers: list[str] = Field(default_factory=list, max_length=30)
     evidence: list[str] = Field(default_factory=list, max_length=30)
     steps_taken: list[str] = Field(default_factory=list, max_length=30)
-    reporter_name: str | None = Field(None, max_length=120)
-    reporter_contact: str | None = Field(None, max_length=120)
+    reporter_name: Optional[str] = Field(None, max_length=120)
+    reporter_contact: Optional[str] = Field(None, max_length=120)
 
 
 # --- Middleware -----------------------------------------------------------
@@ -97,12 +97,12 @@ def check(body: CheckRequest):
 
 
 @app.get("/api/playbooks")
-def playbooks(lang: Lang | None = None):
+def playbooks(lang: Optional[Lang] = None):
     return list_playbooks(pick_language(lang))
 
 
 @app.get("/api/playbooks/{playbook_id}")
-def playbook(playbook_id: str, lang: Lang | None = None):
+def playbook(playbook_id: str, lang: Optional[Lang] = None):
     result = get_playbook(playbook_id, pick_language(lang))
     if not result:
         raise HTTPException(status_code=404, detail="Unknown playbook")

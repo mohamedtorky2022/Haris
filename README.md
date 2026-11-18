@@ -58,7 +58,7 @@ Full detail, including model choices and the privacy design, is in [`docs/TECHNI
 
 ## 4. Run it
 
-Requirements: Python 3.10 or newer.
+Requirements: Python 3.9 or newer (macOS ships 3.9 with the Xcode tools).
 
 ```bash
 git clone <this repo> haseen && cd haseen
