@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>رادار الحملات | لوحة الجهة المختصة</title>
+  <link rel="icon" href="haris.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="authority.css">
+</head>
+<body>
+  <header class="bar">
+    <img src="haris.svg" alt="" width="40" height="40">
+    <div>
+      <h1>رادار الحملات</h1>
+      <p>لوحة الجهة المختصة · بلاغات «حارس» عن الرسائل المشبوهة</p>
+    </div>
+    <span class="demo">نسخة تجريبية</span>
+  </header>
+
+  <main>
+    <section class="explain">
+      <p><strong>كيف تعمل:</strong> كل بلاغ يحمل رقم المرسل ورابطه ونص الرسالة بعد إخفاء البيانات الشخصية، دون أي بيانات عن المُبلِّغ. تُجمع البلاغات المتشابهة في حملة واحدة.</p>
+      <ul class="steps">
+        <li><span class="st warning">تحذير في «حارس»</span> 3 مُبلِّغين أو أكثر خلال 24 ساعة: يرى من يفحص الرسالة عدد البلاغات.</li>
+        <li><span class="st escalated">إنذار للجهة</span> 10 مُبلِّغين، أو 3 مع رابط يقلّد جهة رسمية: تحتاج مراجعتكم.</li>
+        <li><span class="st confirmed">تم التعميم</span> بعد اعتمادكم فقط: تحذير رسمي لكل مستخدمي «حارس»، وطلب حظر لشركات الاتصالات.</li>
+      </ul>
+    </section>
+
+    <form id="login" class="login" hidden>
+      <label for="token">رمز الدخول للجهة المختصة</label>
+      <input id="token" type="password" autocomplete="off">
+      <button type="submit">دخول</button>
+    </form>
+
+    <section class="counters" aria-live="polite">
+      <div><b id="n-escalated">0</b><span>إنذار للجهة</span></div>
+      <div><b id="n-warning">0</b><span>تحذير في «حارس»</span></div>
+      <div><b id="n-confirmed">0</b><span>تم التعميم</span></div>
+      <div><b id="n-collecting">0</b><span>قيد التجميع</span></div>
+    </section>
+
+    <p id="updated" class="updated"></p>
+    <section id="list" class="list" aria-live="polite"></section>
+  </main>
+  <script src="authority.js"></script>
+</body>
+</html>

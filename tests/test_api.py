@@ -60,3 +60,21 @@ def test_polish_endpoint():
     assert r.status_code == 200
     assert r.json()["text"] == "they wanted the OTP 4471"
     assert client.post("/api/polish", json={"text": "x", "dialect": "bad value"}).status_code == 422
+
+
+def test_radar_report_and_authority_flow(tmp_path, monkeypatch):
+    monkeypatch.setenv("HARIS_RADAR_DB", str(tmp_path / "radar.db"))
+    monkeypatch.delenv("HARIS_AUTHORITY_TOKEN", raising=False)
+    text = "Your parcel is on hold. Pay AED 5 at https://emirates-post-ae.top/pay or call 0501234567"
+    for i in range(3):
+        r = client.post("/api/radar/report", json={"text": text, "lang": "en", "reporter_id": f"device-{i:04d}"})
+        assert r.status_code == 200
+    campaigns = client.get("/api/authority/campaigns").json()  # the test client counts as this computer
+    assert campaigns[0]["status"] == "escalated"
+    assert client.post(f"/api/authority/campaigns/{campaigns[0]['id']}", json={"status": "confirmed"}).status_code == 200
+    assert client.get("/api/radar/broadcasts?lang=en").json()[0]["title"].startswith("Official warning")
+    assert client.post("/api/check", json={"text": "call 0501234567", "lang": "en"}).json()["radar"]["broadcast"]
+
+    monkeypatch.setenv("HARIS_AUTHORITY_TOKEN", "s3cret")
+    assert client.get("/api/authority/campaigns").status_code == 401
+    assert client.get("/api/authority/campaigns", headers={"x-authority-token": "s3cret"}).status_code == 200

@@ -264,3 +264,10 @@ body {
   border: 0; background: transparent; color: var(--brand-dark); font: inherit; font-size: .82rem;
   text-decoration: underline; cursor: pointer; padding: 2px 4px; min-height: 28px;
 }
+
+/* ---- Campaign radar ---- */
+.official-alert { border: 2px solid var(--high); background: #fdecea; border-radius: 10px; padding: 10px 12px; margin: 4px 0 8px; }
+.official-alert strong { display: block; color: var(--high); margin-bottom: 4px; }
+.official-alert p { margin: 0 0 6px; }
+.official-alert .badge { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: #fff; border: 1px solid var(--high); color: var(--high); }
+.radar-line { background: #fff7e0; border-inline-start: 3px solid #f5b400; padding: 6px 10px; border-radius: 6px; font-size: 14px; }

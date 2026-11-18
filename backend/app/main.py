@@ -5,6 +5,7 @@ Run from the backend folder:  uvicorn app.main:app --reload
 
 from __future__ import annotations
 
+import hmac
 import os
 import time
 from collections import defaultdict, deque
@@ -16,7 +17,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from haris import __version__, llm
+from haris import __version__, llm, radar
 from haris.detector import analyze
 from haris.intake import MAX_IMAGES, extract
 from haris.playbooks import get_playbook, list_playbooks
@@ -55,6 +56,17 @@ class PolishRequest(BaseModel):
     text: str = Field(..., min_length=1, max_length=MAX_TEXT, description="Dictated text to fix")
     lang: Lang = "ar"
     dialect: Optional[str] = Field(None, pattern=r"^[a-z]{2}-[A-Z]{2}$", description="Dictation locale, e.g. ar-EG")
+
+
+class RadarReport(BaseModel):
+    text: str = Field(..., min_length=1, max_length=MAX_TEXT, description="The suspicious message")
+    lang: Lang = "ar"
+    reporter_id: str = Field(..., min_length=8, max_length=64, pattern=r"^[A-Za-z0-9-]+$",
+                             description="A random id the browser made; stored only as a keyed hash")
+
+
+class Decision(BaseModel):
+    status: Literal["confirmed", "dismissed"]
 
 
 class ReportRequest(BaseModel):
@@ -111,7 +123,49 @@ def health():
 
 @app.post("/api/check")
 def check(body: CheckRequest):
-    return analyze(body.text, body.lang)
+    result = analyze(body.text, body.lang)
+    return radar.annotate(result, body.text, result["language"])
+
+
+# --- Campaign radar ---------------------------------------------------------
+
+@app.post("/api/radar/report")
+def radar_report(body: RadarReport):
+    """Report a suspicious message. Only the sender's details and the redacted text are kept."""
+    return radar.report(body.text, body.reporter_id, body.lang)
+
+
+@app.get("/api/radar/broadcasts")
+def radar_broadcasts(lang: Lang = "ar"):
+    """Official warnings the authority approved. Shown to every Haris user."""
+    return radar.broadcasts(lang)
+
+
+def require_authority(request: Request) -> None:
+    """With HARIS_AUTHORITY_TOKEN set, the dashboard needs that token; without it, only this computer."""
+    token = os.getenv("HARIS_AUTHORITY_TOKEN")
+    if token:
+        given = request.headers.get("x-authority-token", "")
+        if not hmac.compare_digest(given.encode(), token.encode()):
+            raise HTTPException(status_code=401, detail="Authority token required")
+    # "testclient" is the address FastAPI's test client reports; a real network peer can't have it.
+    elif not request.client or request.client.host not in ("127.0.0.1", "::1", "localhost", "testclient"):
+        raise HTTPException(status_code=403, detail="Set HARIS_AUTHORITY_TOKEN to open the dashboard remotely")
+
+
+@app.get("/api/authority/campaigns")
+def authority_campaigns(request: Request):
+    require_authority(request)
+    return radar.campaigns("ar")
+
+
+@app.post("/api/authority/campaigns/{campaign_id}")
+def authority_decide(campaign_id: str, body: Decision, request: Request):
+    require_authority(request)
+    result = radar.decide(campaign_id, body.status)
+    if not result:
+        raise HTTPException(status_code=404, detail="Unknown campaign")
+    return result
 
 
 @app.get("/api/playbooks")

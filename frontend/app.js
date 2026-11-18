@@ -68,6 +68,16 @@
       useFixed: "استخدم النص المصحّح",
       keepMine: "أبقِ نصّي كما هو",
       fixedUsed: "تم. النص المصحّح في خانة الكتابة، راجعه ثم أرسله.",
+      reportIt: "أبلغ عنها لحماية غيري",
+      reportConsent: "سيُرسل إلى رادار الحملات: رقم المرسل ورابطه ونص الرسالة بعد إخفاء أي بيانات شخصية فيها. لن يُرسل أي شيء عنك.",
+      sendReport: "أرسل البلاغ",
+      cancel: "إلغاء",
+      reportThanksFirst: "شكراً، وصل بلاغك. أنت أول من أبلغ عن هذه الرسالة.",
+      reportThanks: "شكراً، وصل بلاغك. عدد من أبلغوا عن هذه الحملة حتى الآن: {n}.",
+      reportEscalated: "وصلت البلاغات إلى الحد الذي يُرسَل عنده إنذار إلى الجهة المختصة لمراجعتها.",
+      reportConfirmed: "هذه الحملة أكّدتها الجهة المختصة، وصدر عنها تحذير رسمي.",
+      radarAsk: "الصق الرسالة التي وصلتك وسأرسلها إلى رادار الحملات، حتى تُكتشف الحملة إذا وصلت لآخرين.",
+      officialAlerts: "تحذيرات رسمية نشطة",
       micError: "تعذّر تشغيل الميكروفون. تأكد من السماح للمتصفح باستخدامه، أو اكتب بدلاً منه.",
       maxImages: "يمكن إرفاق 3 صور كحد أقصى في كل مرة.",
       removeImage: "إزالة الصورة",
@@ -159,6 +169,16 @@
       useFixed: "Use the corrected text",
       keepMine: "Keep my text",
       fixedUsed: "Done. The corrected text is in the message box: check it, then send.",
+      reportIt: "Report it to protect others",
+      reportConsent: "This goes to the campaign radar: the sender's number and link, and the message text with any personal details removed. Nothing about you is sent.",
+      sendReport: "Send the report",
+      cancel: "Cancel",
+      reportThanksFirst: "Thank you, your report arrived. You are the first to report this message.",
+      reportThanks: "Thank you, your report arrived. {n} people have reported this campaign so far.",
+      reportEscalated: "Reports have reached the level where the authority is alerted to review it.",
+      reportConfirmed: "The authority has confirmed this campaign and issued an official warning.",
+      radarAsk: "Paste the message you got and I'll send it to the campaign radar, so the campaign is spotted if others get it too.",
+      officialAlerts: "Active official warnings",
       micError: "Couldn't start the microphone. Allow the browser to use it, or type instead.",
       maxImages: "You can attach up to 3 images at a time.",
       removeImage: "Remove image",
@@ -250,6 +270,16 @@
       useFixed: "درست متن استعمال کریں",
       keepMine: "میرا متن رکھیں",
       fixedUsed: "ہو گیا۔ درست متن لکھنے کی جگہ میں ہے، دیکھ کر بھیج دیں۔",
+      reportIt: "دوسروں کی حفاظت کے لیے رپورٹ کریں",
+      reportConsent: "یہ مہم ریڈار کو جائے گا: بھیجنے والے کا نمبر اور لنک، اور پیغام کا متن ذاتی معلومات ہٹا کر۔ آپ کے بارے میں کچھ نہیں بھیجا جائے گا۔",
+      sendReport: "رپورٹ بھیجیں",
+      cancel: "منسوخ",
+      reportThanksFirst: "شکریہ، آپ کی رپورٹ مل گئی۔ آپ اس پیغام کی رپورٹ کرنے والے پہلے شخص ہیں۔",
+      reportThanks: "شکریہ، آپ کی رپورٹ مل گئی۔ اب تک {n} لوگ اس مہم کی رپورٹ کر چکے ہیں۔",
+      reportEscalated: "رپورٹس اس حد تک پہنچ گئی ہیں جہاں متعلقہ ادارے کو جائزے کے لیے اطلاع دی جاتی ہے۔",
+      reportConfirmed: "متعلقہ ادارے نے اس مہم کی تصدیق کر کے سرکاری انتباہ جاری کیا ہے۔",
+      radarAsk: "جو پیغام آیا ہے وہ یہاں چسپاں کریں، میں اسے مہم ریڈار کو بھیج دوں گا تاکہ دوسروں تک پہنچے تو مہم پکڑی جائے۔",
+      officialAlerts: "فعال سرکاری انتباہات",
       micError: "مائیک شروع نہیں ہو سکا۔ براؤزر کو اجازت دیں یا لکھ دیں۔",
       maxImages: "ایک وقت میں زیادہ سے زیادہ 3 تصاویر لگائی جا سکتی ہیں۔",
       removeImage: "تصویر ہٹائیں",
@@ -380,6 +410,8 @@
       ]),
       el("p", { text: r.summary }),
     ];
+    if (r.radar && r.radar.broadcast) parts.unshift(officialAlert(r.radar.broadcast));
+    if (r.radar && r.radar.message) parts.push(el("p", { class: "radar-line", text: r.radar.message }));
     if (r.reasons.length) parts.push(el("h3", { text: tr("reasons") }), list(r.reasons));
     if (r.links.length) {
       parts.push(el("h3", { text: tr("links") }));
@@ -398,7 +430,7 @@
     parts.push(el("p", { class: "note", text: notes.join(" · ") }));
     bubble(parts);
 
-    const next = [[tr("checkAnother"), askCheck]];
+    const next = [[tr("reportIt"), () => confirmReport(text)], [tr("checkAnother"), askCheck]];
     if (r.risk !== "low") next.push([tr("interacted"), chooseSituation]);
     next.push([tr("report"), startReport], [tr("menuBack"), menu]);
     setChips(next);
@@ -418,6 +450,7 @@
     bubble([el("h3", { text: pb.title }), el("p", { text: tr("steps") }), list(pb.steps, true)]);
     bubble(contactsBlock(pb.contacts));
     setChips([
+      ...(id === "suspicious_only" ? [[tr("reportIt"), askRadar]] : []),
       [tr("report"), () => startReport(id)],
       [tr("menuBack"), menu],
     ]);
@@ -432,6 +465,55 @@
       if (href.startsWith("http")) { a.setAttribute("target", "_blank"); a.setAttribute("rel", "noopener noreferrer"); }
       return el("div", { class: "contact" }, [el("span", { text: c.label }), a]);
     })];
+  }
+
+  // ---- Campaign radar: a message nobody fell for still helps catch the campaign ----
+  function officialAlert(b) {
+    return el("div", { class: "official-alert", role: "alert" }, [
+      el("strong", { text: b.title }),
+      el("p", { text: b.body }),
+      el("span", { class: "badge", text: b.demo }),
+    ]);
+  }
+
+  function reporterId() {
+    let id = store.get("haris.reporter");
+    if (!id) {
+      id = (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`).replace(/[^A-Za-z0-9-]/g, "");
+      store.set("haris.reporter", id);
+    }
+    return id;
+  }
+
+  function askRadar() {
+    mode = "radar";
+    bubble(tr("radarAsk"));
+    input.focus();
+  }
+
+  function confirmReport(text) {
+    mode = "check";
+    bubble(tr("reportConsent"));
+    setChips([[tr("sendReport"), () => sendRadarReport(text)], [tr("cancel"), menu]]);
+  }
+
+  async function sendRadarReport(text) {
+    const r = await api("/api/radar/report", { text, lang, reporter_id: reporterId() });
+    if (!r) return;
+    const c = r.campaign;
+    const lines = [el("p", { text: !c || c.people <= 1 ? tr("reportThanksFirst") : tr("reportThanks", { n: c.people }) })];
+    if (c && c.status === "escalated") lines.push(el("p", { class: "radar-line", text: tr("reportEscalated") }));
+    if (c && c.status === "confirmed") lines.push(el("p", { class: "radar-line", text: tr("reportConfirmed") }));
+    bubble(lines);
+    setChips([[tr("checkAnother"), askCheck], [tr("menuBack"), menu]]);
+  }
+
+  async function showBroadcasts() {
+    try {
+      const res = await fetch(`/api/radar/broadcasts?lang=${lang}`);
+      const items = res.ok ? await res.json() : [];
+      if (items.length) bubble([el("h3", { text: tr("officialAlerts") }), ...items.map(officialAlert)]);
+    } catch { /* the radar is optional */ }
   }
 
   // ---- Report: "tell it your way, Haris sorts it out" ----
@@ -632,6 +714,7 @@
     if (mode === "report" && (phase === "story" || phase === "more")) sendStory(text, images);
     else if (mode === "report" && (phase === "field" || phase === "edit")) answerField(text);
     else if (mode === "report" && phase === "summary") { phase = "more"; sendStory(text, images); }
+    else if (mode === "radar" && text) confirmReport(text);
     else if (text) check(text);
   });
 
@@ -831,8 +914,9 @@
     start();
   }));
 
-  function start() {
+  async function start() {
     bubble(tr("welcome"));
+    await showBroadcasts();
     menu();
   }
 

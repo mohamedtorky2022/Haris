@@ -29,6 +29,7 @@ Haris covers the three moments of a cybercrime:
 | **Before** — a suspicious message arrives | Paste any message, link or offer. Haris rates the risk (low / medium / high), names the scam type, explains **why** in plain words, and says what to do. |
 | **After** — "I've been scammed" | A step-by-step emergency plan for ten situations: money sent, account hacked, extortion, online bullying/harassment/defamation, a fake account in your name, being filmed or having photos or personal details posted without permission, a hacked device or ransomware (including SIM swap), ID shared, a business that paid a fake invoice or a fake "boss" request, and a suspicious message only. Each comes with the official reporting channels. |
 | **Reporting** | The victim tells the story their own way: typed, spoken or as screenshots of the chat or the debit alert. For speech, the user picks their dialect once (Emirati/Gulf, Saudi, Egyptian, Levantine, Iraqi, Maghrebi; English and Urdu accents too), and after each dictation Haris suggests fixes for misheard words such as «ارا ماكس» → «أرامكس». The user approves the fix, and numbers are never changed. Haris pulls out the amount, time, payment method, steps already taken and the scammer's numbers, links and IBANs, asks only about what is still missing with ready-made answers, then shows a summary card where any line can be edited. The report opens in a new tab, downloads as a web page with the screenshots inside, or prints and saves as PDF. |
+| **Early warning** — a message nobody fell for | "Report it to protect others" sends the sender's number, link and the redacted text to the **campaign radar** (demo). Reports that share a number, a link or the same text become one campaign. At 3 people Haris tells anyone who checks it "reported by N people"; at 10 people, or 3 with a link imitating an official body, the authority is alerted on its dashboard. Only the authority can approve a public warning, which then reaches every Haris user and sends a block request to the telecom providers (simulated). |
 
 ### What it covers today, and what is next
 
@@ -62,6 +63,7 @@ The same engine serves every group; the scam patterns and advice cover parcel an
    ├─ llm.py        optional Claude second opinion on the REDACTED text
    ├─ intake.py     turns a free story and screenshots into report fields
    ├─ polish.py     fixes misheard words in dictated text (glossary + optional AI), never digits
+   ├─ radar.py      campaign radar: groups reports, warns, escalates; the authority confirms (SQLite)
    ├─ playbooks.py  emergency plans + official contacts
    └─ report.py     builds the police report in memory
 ```
@@ -94,6 +96,14 @@ uvicorn app.main:app --reload --env-file ../.env
 
 Without a key, Haris runs entirely on its rules engine and works offline.
 
+**Demo the campaign radar** (with the server running):
+
+```bash
+python scripts/radar_demo.py          # 10 people report the same fake-parcel campaign
+```
+
+Open <http://127.0.0.1:8000/authority.html> (the authority dashboard), approve the warning, then reload the chat: every user now sees the official warning, and any message from those numbers or links is rated high risk.
+
 ### Tests and evaluation
 
 ```bash
@@ -113,6 +123,10 @@ On the 52 labelled samples in `data/samples/messages.json` (33 scams, 19 legitim
 | `GET` | `/api/playbooks/{id}?lang=` | steps + official contacts for one situation |
 | `POST` | `/api/extract` | `{"text": "...", "images": ["data:image/jpeg;base64,..."], "lang": "ar"}` → report fields found, and the fields still missing |
 | `POST` | `/api/polish` | `{"text": "...", "lang": "ar", "dialect": "ar-EG"}` → corrected text and the list of changed words (numbers never change) |
+| `POST` | `/api/radar/report` | `{"text": "...", "lang": "ar", "reporter_id": "random-device-id"}` → the campaign it joined and how many people reported it |
+| `GET` | `/api/radar/broadcasts?lang=` | official warnings the authority approved |
+| `GET` | `/api/authority/campaigns` | campaigns for the authority dashboard (this computer only, or with `X-Authority-Token`) |
+| `POST` | `/api/authority/campaigns/{id}` | `{"status": "confirmed" \| "dismissed"}`: approve the public warning and block request, or dismiss |
 | `POST` | `/api/report` | build a police report (HTML + Markdown), nothing stored |
 | `GET` | `/api/health` | status, and whether the AI second opinion is on |
 
@@ -130,7 +144,10 @@ On the 52 labelled samples in `data/samples/messages.json` (33 scams, 19 legitim
 
 **Web chat instead of WhatsApp for the MVP.** WhatsApp Business API approval takes weeks, so the demo runs as a WhatsApp-style web chat. The backend is channel-agnostic: a WhatsApp webhook would call the same `/api/check`.
 
-**Stateless by design.** There is no database. Reports are built in memory and returned to the browser. This removes the biggest privacy risk, at the cost of features that need memory (see below).
+**Stateless for users, one small store for scammers.** Checks, police reports, screenshots and dictation are never stored. The only stored data is the campaign radar: the sender's numbers, links and the redacted message text, sent only when the user taps "Report it". Nothing about the reporter is kept except a keyed hash of a random device id, so one device counts once. Reports are deleted after 30 days.
+- *Trade-off:* this is the first data Haris keeps, so a real launch needs a data-sharing agreement, UAE hosting and verified reporters (for example UAE PASS).
+
+**Reports alone never block a number.** People can report an innocent number on purpose, and scammers spoof real numbers. So the radar only warns ("reported by N people", never "this is a scammer") and alerts the authority; the public warning and the block request need a person at the authority to approve them.
 
 **Fix dictation instead of training a speech model.** Transcription is done by the browser's own speech service, which we cannot train. We improve it in two cheap steps: the user's dialect is passed to the service, and a correction pass (a glossary of fraud terms, plus Claude when enabled) fixes misheard words.
 - *Why:* it works today in every modern browser, costs nothing without the AI, and keeps audio off our servers.
@@ -142,7 +159,7 @@ On the 52 labelled samples in `data/samples/messages.json` (33 scams, 19 legitim
 ### What we left out
 
 - **Reading screenshots without the AI.** With no API key, screenshots are attached to the report as evidence but not read. On-device text recognition would let the rules read them too.
-- **The community radar.** Spotting a new campaign when many people report the same text or link needs anonymised storage and a data-sharing agreement with the partner authority. We left it out rather than store data without that agreement.
+- **The radar in production.** The demo radar runs on SQLite on the same server, counts one device as one person, and simulates the telecom block request. Production needs the partner's systems, verified reporters and a real block channel with the telecom providers.
 - **Live link reputation.** Links are judged offline from their structure. Google Safe Browsing or a police blocklist would add a live check.
 - **Training our own speech model.** Dictation accuracy depends on the browser's service. A trainable model (Azure Custom Speech or an open-source model hosted in the UAE) needs recordings with transcripts from the partner, so it is planned for the pilot.
 - **Voice line for older people,** the family app for children and teenagers, and more languages (Hindi, Malayalam, Tagalog, Bengali).
@@ -157,7 +174,8 @@ On the 52 labelled samples in `data/samples/messages.json` (33 scams, 19 legitim
 
 ## 6. Privacy and safety summary
 
-- Nothing users send is stored or logged. API responses carry `Cache-Control: no-store`.
+- Nothing users send is stored or logged, except a report the user chooses to send to the campaign radar: the sender's numbers and links and the redacted text, kept 30 days, with no data about the reporter. API responses carry `Cache-Control: no-store`.
+- The authority dashboard opens only on the computer running Haris, or anywhere with the `HARIS_AUTHORITY_TOKEN` set.
 - Personal data is redacted from text before any AI call; link query strings are dropped.
 - Screenshots are resized in the browser, which also drops photo metadata such as location. They are sent to the AI only when it is switched on, are not stored, and go into the report file on the user's own device.
 - Dictation uses the browser's built-in speech service (in Chrome this is Google's, in Safari Apple's); the user sees and can correct the text before it is sent.
@@ -182,6 +200,7 @@ haris/
 ├── frontend/                   index.html, styles.css, app.js
 ├── data/samples/messages.json  labelled synthetic test messages
 ├── scripts/evaluate.py         accuracy on the samples
+├── scripts/radar_demo.py       sends 10 reports of one campaign, for a live demo
 ├── tests/                      unit and API tests
 └── docs/
     ├── TECHNICAL.md            architecture, model choices, privacy design

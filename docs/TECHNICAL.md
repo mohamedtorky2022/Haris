@@ -16,6 +16,8 @@ flowchart LR
     API --> I[intake.py<br/>story + screenshots → report fields]
     I -->|redacted story + screenshots| C
     API --> PO[polish.py<br/>fix misheard dictation]
+    API --> RA[radar.py<br/>campaign radar, SQLite]
+    RA -->|confirmed campaigns| AUTH[Authority dashboard]
     PO -->|numbers replaced by tokens| C
     API --> P[playbooks.py<br/>emergency plans + contacts]
     API --> RP[report.py<br/>police report, in memory]
@@ -156,12 +158,24 @@ So the rules engine gives the verdict, and the language model is used for what r
 
 A fine-tuned model needs a large, labelled set of real UAE scam and legitimate messages in three languages, which a hackathon team does not have and should not collect without an agreement with the authority. The rules engine plus the AI second opinion gives working protection today; the signals and the AI's reasons can label real data later to train a classifier.
 
+### Campaign radar: `POST /api/radar/report`
+
+A message nobody fell for is still evidence. The radar turns many such reports into an early warning.
+
+1. **Report.** After checking a message, or from the "suspicious message only" plan, the user taps *Report it to protect others* and sees exactly what is sent before confirming.
+2. **Keys.** `radar.keys_of` takes the sender's phone numbers (normalised, so `050 123 4567` and `+971501234567` match), e-mails, IBANs, non-official link domains, and a **template**: a hash of the message with numbers, links and amounts stripped. Scammers rotate numbers, but the campaign text stays the same, so one campaign sent from many numbers still groups together.
+3. **Campaigns.** Reports in the last 24 hours that share any key are joined into one campaign (union-find). People are counted by a keyed hash of a random device id, so one device counts once.
+4. **Steps.** *collecting* → *warning* at 3 people (anyone who checks the message sees "reported by N people") → *escalated* at 10 people, or 3 with a link that imitates an official brand (shown on the authority dashboard) → *confirmed* only when a person at the authority approves it, or *dismissed*. Thresholds are settings (`HARIS_RADAR_WARN`, `HARIS_RADAR_ESCALATE`, `HARIS_RADAR_WINDOW_HOURS`).
+5. **Confirmed.** An official warning is shown to every Haris user when the chat opens, any new message that shares a key with the campaign is rated high risk with the authority's warning first, and a block request for the numbers and links is prepared for the telecom providers (simulated in the demo).
+
+**Safeguards.** Reports alone never block anyone: people can report an innocent number on purpose, and scammers spoof real numbers. The radar's wording counts reports ("reported by 12 people") and never says "this number is a scammer". The authority dashboard (`/authority.html`) opens only on the computer running Haris unless `HARIS_AUTHORITY_TOKEN` is set, and decisions use a two-click confirm with no browser dialogs.
+
 ## 4. Privacy design
 
 ### Principles
 
 1. **Data minimisation:** only the text the user chooses to paste is processed, and only for the duration of the request.
-2. **No storage:** there is no database, no log of message content, and no browser storage. API responses carry `Cache-Control: no-store`.
+2. **No storage of users:** checks, reports, screenshots and dictation are not stored or logged. API responses carry `Cache-Control: no-store`. The one exception is the campaign radar (below), which keeps only what belongs to the sender, and only when the user taps "Report it".
 3. **Redact before sharing:** no personal data leaves the server.
 4. **User control:** the police report is built for the user and handed back to them. Haris does not send it anywhere.
 5. **Honesty:** Haris always says it is an assistant, not the police, and never calls a message certainly safe.
@@ -178,6 +192,8 @@ A fine-tuned model needs a large, labelled set of real UAE scam and legitimate m
 | Dictated speech | The browser's own speech service (Google in Chrome, Apple in Safari); Haris receives only the text | Under the browser vendor's terms |
 | Dictated text sent for correction | Server memory; to Claude only if the AI is on, with numbers, links and e-mails replaced by tokens | Until the response is sent |
 | Dialect choice | The user's browser (localStorage) | Until the user clears site data |
+| Report sent to the campaign radar (user taps "Report it") | `data/radar.db` (SQLite): sender's phone numbers, e-mails, IBANs and link domains, the message text with the reporter's personal data redacted, the scam category, and a keyed hash of a random device id | 30 days (`HARIS_RADAR_RETENTION_DAYS`) |
+| Random device id for the radar | The user's browser (localStorage); the server keeps only an HMAC of it | Until the user clears site data |
 | Conversation in the browser | The page's memory only | Until the tab is closed or the language is switched |
 
 ### What redaction removes
@@ -227,6 +243,7 @@ The design follows the data-minimisation and purpose-limitation principles of UA
 
 ## 7. Known limitations
 
+- The radar demo counts one browser as one person; a determined person could report many times from many browsers. Production should verify reporters (for example UAE PASS) and rate-limit per person.
 - Rules only catch wording someone wrote down; new scams need the AI layer or a new rule.
 - Screenshots are read only when the AI is on; voice notes sent as audio files are not analysed yet.
 - Dictation accuracy depends on the browser's speech service; Haris can fix misheard words but not words the service didn't hear at all.
