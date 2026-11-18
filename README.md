@@ -184,7 +184,7 @@ On the 59 labelled samples in `data/samples/messages.json` (37 scams, 22 legitim
 ## 6. Privacy and safety summary
 
 - Nothing users send is stored or logged, except a report the user chooses to send to the campaign radar: the sender's numbers and links and the redacted text, kept 30 days, with no data about the reporter. API responses carry `Cache-Control: no-store`.
-- The authority dashboard opens only on the computer running Haris, or anywhere with the `HARIS_AUTHORITY_TOKEN` set.
+- The authority dashboard opens only on the computer running Haris, or anywhere with the `HARIS_AUTHORITY_TOKEN` set. Behind a tunnel or proxy (requests carrying `X-Forwarded-For` or `CF-Connecting-IP`) the token is always required.
 - Personal data is redacted from text before any AI call; link query strings are dropped.
 - Screenshots are resized in the browser, which also drops photo metadata such as location. They are sent to the AI only when it is switched on, are not stored, and go into the report file on the user's own device.
 - Dictation uses the browser's built-in speech service (in Chrome this is Google's, in Safari Apple's); the user sees and can correct the text before it is sent.

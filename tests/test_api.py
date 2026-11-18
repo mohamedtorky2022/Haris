@@ -75,6 +75,9 @@ def test_radar_report_and_authority_flow(tmp_path, monkeypatch):
     assert client.get("/api/radar/broadcasts?lang=en").json()[0]["title"].startswith("Official warning")
     assert client.post("/api/check", json={"text": "call 0501234567", "lang": "en"}).json()["radar"]["broadcast"]
 
+    # Through a tunnel the request comes from this computer but carries a forwarding header.
+    assert client.get("/api/authority/campaigns", headers={"cf-connecting-ip": "203.0.113.9"}).status_code == 403
+
     monkeypatch.setenv("HARIS_AUTHORITY_TOKEN", "s3cret")
     assert client.get("/api/authority/campaigns").status_code == 401
     assert client.get("/api/authority/campaigns", headers={"x-authority-token": "s3cret"}).status_code == 200

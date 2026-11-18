@@ -151,6 +151,10 @@ def require_authority(request: Request) -> None:
     # "testclient" is the address FastAPI's test client reports; a real network peer can't have it.
     elif not request.client or request.client.host not in ("127.0.0.1", "::1", "localhost", "testclient"):
         raise HTTPException(status_code=403, detail="Set HARIS_AUTHORITY_TOKEN to open the dashboard remotely")
+    # A tunnel or reverse proxy (Cloudflare, ngrok, a load balancer) also connects from this computer,
+    # but the visitor is elsewhere: it adds these headers, so the token is required then too.
+    elif any(h in request.headers for h in ("x-forwarded-for", "cf-connecting-ip", "forwarded", "x-real-ip")):
+        raise HTTPException(status_code=403, detail="Set HARIS_AUTHORITY_TOKEN to open the dashboard through a tunnel")
 
 
 @app.get("/api/authority/campaigns")
