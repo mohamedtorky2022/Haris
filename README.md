@@ -28,7 +28,7 @@ Haris covers the three moments of a cybercrime:
 | --- | --- |
 | **Before** — a suspicious message arrives | Paste any message, link or offer. Haris rates the risk (low / medium / high), names the scam type, explains **why** in plain words, and says what to do. |
 | **After** — "I've been scammed" | A step-by-step emergency plan for the situation (money sent, account hacked, extortion, ID shared, suspicious message only), with the official reporting channels. |
-| **Reporting** | A guided conversation builds a structured police report (timeline, amount, scammer identifiers, evidence, steps taken). Haris pulls phone numbers, e-mails, IBANs and links out of the victim's description automatically. The report opens in a new tab, downloads as a web page, or prints and saves as PDF. |
+| **Reporting** | The victim tells the story their own way: typed, spoken (the microphone button uses the browser's dictation) or as screenshots of the chat or the debit alert. Haris pulls out the amount, time, payment method, steps already taken and the scammer's numbers, links and IBANs, asks only about what is still missing with ready-made answers, then shows a summary card where any line can be edited. The report opens in a new tab, downloads as a web page with the screenshots inside, or prints and saves as PDF. |
 
 Haris always presents itself as an assistant, **not** an official body, and never tells a user a message is "safe": the lowest rating is "no clear warning signs".
 
@@ -52,6 +52,7 @@ The same engine serves every group; the scam patterns and advice cover parcel an
    ├─ urls.py       offline link analysis: look-alike brands, risky TLDs, shorteners, raw IPs
    ├─ detector.py   combines the above into a score, risk level and category
    ├─ llm.py        optional Claude second opinion on the REDACTED text
+   ├─ intake.py     turns a free story and screenshots into report fields
    ├─ playbooks.py  emergency plans + official contacts
    └─ report.py     builds the police report in memory
 ```
@@ -101,6 +102,7 @@ On the 34 labelled samples in `data/samples/messages.json` (22 scams, 12 legitim
 | `POST` | `/api/check` | `{"text": "...", "lang": "ar|en|ur"}` → risk, category, reasons, advice, link analysis |
 | `GET` | `/api/playbooks?lang=` | list of emergency situations |
 | `GET` | `/api/playbooks/{id}?lang=` | steps + official contacts for one situation |
+| `POST` | `/api/extract` | `{"text": "...", "images": ["data:image/jpeg;base64,..."], "lang": "ar"}` → report fields found, and the fields still missing |
 | `POST` | `/api/report` | build a police report (HTML + Markdown), nothing stored |
 | `GET` | `/api/health` | status, and whether the AI second opinion is on |
 
@@ -124,7 +126,7 @@ On the 34 labelled samples in `data/samples/messages.json` (22 scams, 12 legitim
 
 ### What we left out
 
-- **Screenshots and images.** Many scams arrive as images. The next step is to send screenshots to Claude's vision model, after on-device blurring of personal data.
+- **Reading screenshots without the AI.** With no API key, screenshots are attached to the report as evidence but not read. On-device text recognition would let the rules read them too.
 - **The community radar.** Spotting a new campaign when many people report the same text or link needs anonymised storage and a data-sharing agreement with the partner authority. We left it out rather than store data without that agreement.
 - **Live link reputation.** Links are judged offline from their structure. Google Safe Browsing or a police blocklist would add a live check.
 - **Voice line for older people,** the family app for children and teenagers, and more languages (Hindi, Malayalam, Tagalog, Bengali).
@@ -140,7 +142,9 @@ On the 34 labelled samples in `data/samples/messages.json` (22 scams, 12 legitim
 ## 6. Privacy and safety summary
 
 - Nothing users send is stored or logged. API responses carry `Cache-Control: no-store`.
-- Personal data is redacted before any AI call; link query strings are dropped.
+- Personal data is redacted from text before any AI call; link query strings are dropped.
+- Screenshots are resized in the browser, which also drops photo metadata such as location. They are sent to the AI only when it is switched on, are not stored, and go into the report file on the user's own device.
+- Dictation uses the browser's built-in speech service (in Chrome this is Google's, in Safari Apple's); the user sees and can correct the text before it is sent.
 - The model prompt treats the message strictly as data, so instructions hidden inside a scam message are ignored.
 - Rate limiting, input size limits, strict security headers, and all server text rendered with `textContent` (no HTML injection).
 - Haris is defensive only: it never visits, scans or contacts the links or numbers it analyses.

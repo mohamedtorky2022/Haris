@@ -210,7 +210,7 @@ body {
   cursor: pointer;
   flex: none;
 }
-[dir="rtl"] .composer button svg { transform: scaleX(-1); }
+[dir="rtl"] .composer #send svg { transform: scaleX(-1); }
 .composer button:disabled { opacity: .5; cursor: default; }
 
 :focus-visible { outline: 3px solid #f5b400; outline-offset: 2px; }
@@ -222,4 +222,45 @@ body {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+/* composer tools: attach and dictate */
+.composer .tool {
+  background: transparent;
+  color: var(--brand-dark);
+}
+.composer .tool:hover { background: #e2e8e6; }
+.composer .tool.recording { background: var(--high); color: #fff; }
+.composer [hidden] { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .composer .tool.recording { animation: pulse 1.4s infinite; }
+}
+@keyframes pulse { 50% { opacity: .65; } }
+
+/* screenshots waiting to be sent */
+.pending { display: flex; gap: 8px; padding: 0 12px 6px; }
+.pending:empty { display: none; }
+.pending-item { position: relative; }
+.pending-item img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; border: 1px solid #c9d3d0; display: block; }
+.pending-item .remove {
+  position: absolute; top: -6px; inset-inline-end: -6px;
+  width: 22px; height: 22px; border-radius: 50%; border: 0;
+  background: #1f2933; color: #fff; font-size: 14px; line-height: 1; cursor: pointer;
+}
+.msg .thumbs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.msg .thumbs img { width: 96px; height: 96px; object-fit: cover; border-radius: 8px; }
+
+/* summary card before the file is made */
+.summary { display: flex; flex-direction: column; margin-top: 4px; }
+.summary-row {
+  display: grid; grid-template-columns: 6.5em 1fr auto; gap: 8px; align-items: start;
+  padding: 6px 0; border-bottom: 1px solid #eef0ef;
+}
+.summary-row:last-child { border-bottom: 0; }
+.summary-label { color: var(--muted); font-size: .85rem; }
+.summary-value { white-space: pre-wrap; word-break: break-word; }
+.summary-value.empty { color: #9aa5ab; }
+.summary-edit {
+  border: 0; background: transparent; color: var(--brand-dark); font: inherit; font-size: .82rem;
+  text-decoration: underline; cursor: pointer; padding: 2px 4px; min-height: 28px;
 }

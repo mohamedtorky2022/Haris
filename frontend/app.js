@@ -29,13 +29,13 @@
       contacts: "أين تبلّغ:",
       menuBack: "القائمة الرئيسية",
       qType: "لنجهّز ملف البلاغ. ما نوع ما حدث؟",
-      qWhen: "متى حدث ذلك؟ (مثال: اليوم الساعة 3 عصراً)",
+      qWhen: "متى حدث ذلك؟ اختر، أو اكتب الوقت.",
       qDesc: "اشرح ما حدث بكلماتك: من تواصل معك، وماذا طلب، وماذا فعلت.",
-      qAmount: "هل فقدت مالاً؟ اكتب المبلغ، أو اختر «لا يوجد».",
-      qMethod: "كيف دفعت؟ (بطاقة، تحويل بنكي، عملات رقمية، بطاقات هدايا...)",
+      qAmount: "كم المبلغ الذي فقدته؟ اكتب الرقم، أو اختر «لا يوجد».",
+      qMethod: "كيف دفعت؟",
       qIds: "اكتب أرقام المحتال أو روابطه أو حساباته، كل واحد في سطر.",
       qEvidence: "ما الأدلة المتوفرة لديك؟ (لقطات شاشة، إيصال التحويل، رسائل، سجل مكالمات)",
-      qSteps: "ما الذي فعلته حتى الآن؟ (مثال: اتصلت بالبنك وأوقفت البطاقة)",
+      qSteps: "ماذا فعلت حتى الآن؟",
       skip: "تخطَّ",
       none: "لا يوجد",
       needDesc: "أحتاج وصفاً قصيراً لما حدث حتى يكون البلاغ مفيداً.",
@@ -44,6 +44,46 @@
       view: "عرض البلاغ",
       download: "تنزيل البلاغ",
       print: "طباعة أو حفظ PDF",
+      qStory: "احكِ ما حدث بطريقتك: اكتب، أو اضغط الميكروفون وتكلّم، أو أرفق لقطات شاشة للمحادثة أو لإشعار الخصم. كلما ذكرت تفاصيل أكثر، قلّت أسئلتي.",
+      qStoryMore: "أضف ما تريد: نصاً، أو كلاماً بالميكروفون، أو لقطات شاشة.",
+      dontKnow: "لا أعرف",
+      imagesRead: "قرأتُ لقطات الشاشة وأضفت ما وجدته فيها للبلاغ.",
+      imagesNotRead: "أرفقتُ لقطات الشاشة كأدلة في الملف. قراءة محتواها تحتاج تفعيل الذكاء الاصطناعي.",
+      urgentBank: "إن لم تفعل بعد: اتصل ببنكك الآن على الرقم المكتوب خلف بطاقتك واطلب إيقافها. كل دقيقة مهمة لاسترجاع المال.",
+      summaryTitle: "ملخص البلاغ",
+      summaryHint: "راجع البيانات، واضغط «تعديل» بجانب أي سطر لتصحيحه.",
+      edit: "تعديل",
+      createFile: "صحيح، أنشئ الملف",
+      addMore: "أضف تفاصيل أو صوراً",
+      screenshot: "لقطة شاشة",
+      attached: "الأدلة المرفقة",
+      attach: "إرفاق لقطة شاشة",
+      mic: "تحدّث بدل الكتابة",
+      micNote: "التحويل من صوت إلى نص يتم عبر خدمة الإملاء في متصفحك. راجع النص قبل إرساله.",
+      micError: "تعذّر تشغيل الميكروفون. تأكد من السماح للمتصفح باستخدامه، أو اكتب بدلاً منه.",
+      maxImages: "يمكن إرفاق 3 صور كحد أقصى في كل مرة.",
+      removeImage: "إزالة الصورة",
+      tLessHour: "قبل أقل من ساعة",
+      tToday: "اليوم",
+      tYesterday: "أمس",
+      tOlder: "قبل أكثر من يومين",
+      pCard: "بطاقة بنكية",
+      pTransfer: "تحويل بنكي",
+      pCrypto: "عملات رقمية",
+      pGift: "بطاقات هدايا",
+      pCash: "نقداً",
+      pOther: "طريقة أخرى",
+      sBank: "اتصلت بالبنك",
+      sCard: "أوقفت البطاقة",
+      sNothing: "لم أفعل شيئاً بعد",
+      f_incident_type: "نوع الحادثة",
+      f_occurred_at: "متى",
+      f_description: "ماذا حدث",
+      f_amount: "المبلغ",
+      f_payment_method: "طريقة الدفع",
+      f_scammer_identifiers: "بيانات المحتال",
+      f_evidence: "الأدلة",
+      f_steps_taken: "ما فعلته",
       error: "تعذّر الاتصال بالخادم. حاول مرة أخرى.",
       tooMany: "طلبات كثيرة. انتظر دقيقة ثم حاول.",
     },
@@ -72,13 +112,13 @@
       contacts: "Where to report:",
       menuBack: "Main menu",
       qType: "Let's prepare your report. What happened?",
-      qWhen: "When did it happen? (e.g. today at 3 pm)",
+      qWhen: "When did it happen? Pick one, or type the time.",
       qDesc: "Describe what happened in your own words: who contacted you, what they asked for, what you did.",
       qAmount: "Did you lose money? Type the amount, or choose 'None'.",
-      qMethod: "How did you pay? (card, bank transfer, crypto, gift cards...)",
+      qMethod: "How did you pay?",
       qIds: "Type the scammer's numbers, links or accounts, one per line.",
       qEvidence: "What evidence do you have? (screenshots, transfer receipt, messages, call log)",
-      qSteps: "What have you done so far? (e.g. called the bank and blocked the card)",
+      qSteps: "What have you done so far?",
       skip: "Skip",
       none: "None",
       needDesc: "I need a short description of what happened for the report to be useful.",
@@ -87,6 +127,46 @@
       view: "View report",
       download: "Download report",
       print: "Print or save as PDF",
+      qStory: "Tell me what happened, your way: type it, tap the microphone and speak, or attach screenshots of the chat or the debit alert. The more you share, the fewer questions I'll ask.",
+      qStoryMore: "Add anything else: text, speech or screenshots.",
+      dontKnow: "Not sure",
+      imagesRead: "I read your screenshots and added what I found to the report.",
+      imagesNotRead: "I attached your screenshots to the file as evidence. Reading what they show needs the AI to be switched on.",
+      urgentBank: "If you haven't yet: call your bank now on the number on the back of your card and ask them to block it. Every minute counts.",
+      summaryTitle: "Report summary",
+      summaryHint: "Check the details. Tap Edit next to any line to correct it.",
+      edit: "Edit",
+      createFile: "Looks right, create the file",
+      addMore: "Add details or images",
+      screenshot: "Screenshot",
+      attached: "Attached evidence",
+      attach: "Attach a screenshot",
+      mic: "Speak instead of typing",
+      micNote: "Speech is turned into text by your browser's dictation service. Check the text before you send it.",
+      micError: "Couldn't start the microphone. Allow the browser to use it, or type instead.",
+      maxImages: "You can attach up to 3 images at a time.",
+      removeImage: "Remove image",
+      tLessHour: "Less than an hour ago",
+      tToday: "Today",
+      tYesterday: "Yesterday",
+      tOlder: "More than two days ago",
+      pCard: "Bank card",
+      pTransfer: "Bank transfer",
+      pCrypto: "Crypto",
+      pGift: "Gift cards",
+      pCash: "Cash",
+      pOther: "Other",
+      sBank: "Called the bank",
+      sCard: "Blocked the card",
+      sNothing: "Nothing yet",
+      f_incident_type: "Type",
+      f_occurred_at: "When",
+      f_description: "What happened",
+      f_amount: "Amount",
+      f_payment_method: "Payment method",
+      f_scammer_identifiers: "Scammer details",
+      f_evidence: "Evidence",
+      f_steps_taken: "Steps taken",
       error: "Could not reach the server. Please try again.",
       tooMany: "Too many requests. Please wait a minute.",
     },
@@ -115,13 +195,13 @@
       contacts: "کہاں رپورٹ کریں:",
       menuBack: "مین مینو",
       qType: "آئیے رپورٹ تیار کریں۔ کیا ہوا؟",
-      qWhen: "یہ کب ہوا؟ (مثال: آج سہ پہر 3 بجے)",
+      qWhen: "یہ کب ہوا؟ چنیں یا وقت لکھیں۔",
       qDesc: "اپنے الفاظ میں بتائیں کیا ہوا: کس نے رابطہ کیا، کیا مانگا، آپ نے کیا کیا۔",
       qAmount: "کیا رقم کا نقصان ہوا؟ رقم لکھیں یا 'کوئی نہیں' چنیں۔",
-      qMethod: "ادائیگی کیسے کی؟ (کارڈ، بینک ٹرانسفر، کرپٹو، گفٹ کارڈ...)",
+      qMethod: "ادائیگی کیسے کی؟",
       qIds: "فراڈیے کے نمبر، لنک یا اکاؤنٹس لکھیں، ہر ایک الگ لائن میں۔",
       qEvidence: "آپ کے پاس کیا ثبوت ہیں؟ (اسکرین شاٹس، ٹرانسفر کی رسید، پیغامات، کال لاگ)",
-      qSteps: "اب تک آپ نے کیا کیا ہے؟ (مثال: بینک کو فون کر کے کارڈ بند کروایا)",
+      qSteps: "اب تک آپ نے کیا کیا ہے؟",
       skip: "چھوڑیں",
       none: "کوئی نہیں",
       needDesc: "رپورٹ کے لیے مختصر تفصیل ضروری ہے۔",
@@ -130,6 +210,46 @@
       view: "رپورٹ دیکھیں",
       download: "رپورٹ ڈاؤن لوڈ کریں",
       print: "پرنٹ یا پی ڈی ایف",
+      qStory: "اپنے طریقے سے بتائیں کیا ہوا: لکھیں، یا مائیک دبا کر بولیں، یا چیٹ یا کٹوتی کے پیغام کا اسکرین شاٹ لگائیں۔ جتنی زیادہ تفصیل، اتنے کم سوال۔",
+      qStoryMore: "مزید کچھ شامل کریں: متن، آواز یا اسکرین شاٹ۔",
+      dontKnow: "معلوم نہیں",
+      imagesRead: "میں نے اسکرین شاٹس پڑھ کر ان کی معلومات رپورٹ میں شامل کر دیں۔",
+      imagesNotRead: "اسکرین شاٹس فائل میں بطور ثبوت لگا دیے گئے۔ ان کا مواد پڑھنے کے لیے اے آئی آن ہونا ضروری ہے۔",
+      urgentBank: "اگر ابھی تک نہیں کیا: فوراً کارڈ کی پشت پر لکھے نمبر پر بینک کو فون کریں اور کارڈ بند کروائیں۔ ہر منٹ اہم ہے۔",
+      summaryTitle: "رپورٹ کا خلاصہ",
+      summaryHint: "تفصیلات دیکھیں، اور غلطی درست کرنے کے لیے لائن کے ساتھ 'ترمیم' دبائیں۔",
+      edit: "ترمیم",
+      createFile: "درست ہے، فائل بنائیں",
+      addMore: "مزید تفصیل یا تصاویر",
+      screenshot: "اسکرین شاٹ",
+      attached: "منسلک ثبوت",
+      attach: "اسکرین شاٹ لگائیں",
+      mic: "لکھنے کے بجائے بولیں",
+      micNote: "آواز کو متن میں آپ کے براؤزر کی ڈکٹیشن سروس بدلتی ہے۔ بھیجنے سے پہلے متن دیکھ لیں۔",
+      micError: "مائیک شروع نہیں ہو سکا۔ براؤزر کو اجازت دیں یا لکھ دیں۔",
+      maxImages: "ایک وقت میں زیادہ سے زیادہ 3 تصاویر لگائی جا سکتی ہیں۔",
+      removeImage: "تصویر ہٹائیں",
+      tLessHour: "ایک گھنٹے سے کم پہلے",
+      tToday: "آج",
+      tYesterday: "کل",
+      tOlder: "دو دن سے زیادہ پہلے",
+      pCard: "بینک کارڈ",
+      pTransfer: "بینک ٹرانسفر",
+      pCrypto: "کرپٹو",
+      pGift: "گفٹ کارڈ",
+      pCash: "نقد",
+      pOther: "دیگر",
+      sBank: "بینک کو فون کیا",
+      sCard: "کارڈ بند کروایا",
+      sNothing: "ابھی کچھ نہیں کیا",
+      f_incident_type: "قسم",
+      f_occurred_at: "کب",
+      f_description: "کیا ہوا",
+      f_amount: "رقم",
+      f_payment_method: "ادائیگی کا طریقہ",
+      f_scammer_identifiers: "فراڈیے کی معلومات",
+      f_evidence: "ثبوت",
+      f_steps_taken: "اٹھائے گئے اقدامات",
       error: "سرور سے رابطہ نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
       tooMany: "بہت زیادہ درخواستیں۔ ایک منٹ انتظار کریں۔",
     },
@@ -143,7 +263,6 @@
 
   let lang = "ar";
   let mode = "check"; // check | report
-  let reportStep = 0;
   let draft = {};
   const tr = (key, vars = {}) => UI[lang][key].replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? "");
 
@@ -291,60 +410,137 @@
     })];
   }
 
-  // ---- Guided report ----
-  const REPORT_STEPS = [
-    { key: "occurred_at", q: "qWhen", optional: true },
-    { key: "description", q: "qDesc", required: true },
-    { key: "amount", q: "qAmount", optional: true, noneChip: true },
-    { key: "payment_method", q: "qMethod", optional: true },
-    { key: "scammer_identifiers", q: "qIds", optional: true, list: true },
-    { key: "evidence", q: "qEvidence", optional: true, list: true },
-    { key: "steps_taken", q: "qSteps", optional: true, list: true },
-  ];
+  // ---- Report: "tell it your way, Haris sorts it out" ----
+  // 1. The victim tells the story: typed, dictated (mic) or as screenshots (clip).
+  // 2. /api/extract pulls out what it can; only the missing fields are asked, with ready answers.
+  // 3. A summary card shows every field; any line can be edited before the file is made.
+  let phase = "";          // story | more | field | edit | summary
+  let queue = [];          // missing fields still to ask
+  let editing = "";        // the field being asked or edited
+  let reportImages = [];   // screenshots added to this report (data: URLs)
+  let incidentTitles = {}; // incident id -> title, from /api/playbooks
+  let urgentShown = false;
+
+  const FIELD_CHIPS = {
+    occurred_at: () => ["tLessHour", "tToday", "tYesterday", "tOlder"].map((k) => [tr(k), tr(k)]),
+    payment_method: () => ["pCard", "pTransfer", "pCrypto", "pGift", "pCash", "pOther"].map((k) => [tr(k), tr(k)]),
+    steps_taken: () => ["sBank", "sCard", "sNothing"].map((k) => [tr(k), tr(k)]),
+    amount: () => [[tr("none"), ""]],
+  };
+  const FIELD_QUESTION = { occurred_at: "qWhen", amount: "qAmount", payment_method: "qMethod", steps_taken: "qSteps", description: "qDesc" };
 
   async function startReport(incidentType) {
     mode = "report";
     draft = { lang };
-    reportStep = 0;
-    if (typeof incidentType === "string") {
-      draft.incident_type = incidentType;
-      return askReportStep();
-    }
+    reportImages = [];
+    urgentShown = false;
     const items = await api(`/api/playbooks?lang=${lang}`);
     if (!items) return;
+    incidentTitles = Object.fromEntries(items.map((pb) => [pb.id, pb.title]));
+    if (typeof incidentType === "string") {
+      draft.incident_type = incidentType;
+      return askStory();
+    }
     bubble(tr("qType"));
-    setChips(items.map((pb) => [pb.title, () => { draft.incident_type = pb.id; askReportStep(); }]));
+    setChips([...items.map((pb) => [pb.title, () => { draft.incident_type = pb.id; askStory(); }]), [tr("dontKnow"), askStory]]);
   }
 
-  function askReportStep() {
-    const step = REPORT_STEPS[reportStep];
-    if (!step) return submitReport();
-    bubble(tr(step.q));
-    const options = [];
-    if (step.noneChip) options.push([tr("none"), () => answerReport("")]);
-    if (step.optional) options.push([tr("skip"), () => answerReport("")]);
-    setChips(options);
+  function askStory() {
+    phase = "story";
+    bubble(tr("qStory"));
+    showTools(true);
     input.focus();
   }
 
-  function answerReport(value) {
-    const step = REPORT_STEPS[reportStep];
-    if (step.required && !value.trim()) {
-      bubble(tr("needDesc"));
-      return;
+  async function sendStory(text, images) {
+    const r = await api("/api/extract", { lang, text, images, incident_type: draft.incident_type || null });
+    if (!r) return;
+    const f = r.fields;
+    if (phase === "more" && draft.description && text) f.description = `${draft.description}\n${text}`;
+    for (const key of ["incident_type", "occurred_at", "description", "amount", "currency"]) if (f[key]) draft[key] = f[key];
+    if (f.payment_method_label) draft.payment_method = f.payment_method_label;
+    for (const key of ["scammer_identifiers", "steps_taken"]) {
+      if (f[key]) draft[key] = [...new Set([...(draft[key] || []), ...f[key]])];
     }
-    if (value.trim()) {
-      draft[step.key] = step.list ? value.split(/[\n,،]+/).map((s) => s.trim()).filter(Boolean) : value.trim();
+    reportImages.push(...images);
+    if (reportImages.length) draft.evidence = reportImages.map((_, i) => `${tr("screenshot")} ${i + 1}`);
+    if (images.length) bubble(r.images_read ? tr("imagesRead") : tr("imagesNotRead"));
+    if (draft.incident_type === "money_sent" && !urgentShown) { bubble(tr("urgentBank")); urgentShown = true; }
+    queue = phase === "more" ? [] : r.missing.slice();
+    nextMissing();
+  }
+
+  function nextMissing() {
+    if (!queue.length) return showSummary();
+    askField(queue[0], "field");
+  }
+
+  function askField(key, how) {
+    phase = how;
+    editing = key;
+    showTools(false);
+    if (key === "incident_type") {
+      bubble(tr("qType"));
+      return setChips(Object.entries(incidentTitles).map(([id, title]) => [title, () => answerField(id)]));
     }
-    reportStep += 1;
+    bubble(tr(FIELD_QUESTION[key] || "qDesc"));
+    const chipsFor = FIELD_CHIPS[key];
+    setChips(chipsFor ? chipsFor().map(([label, value]) => [label, () => answerField(value)]) : []);
+    input.focus();
+  }
+
+  function answerField(value) {
+    const key = editing;
+    value = (value || "").trim();
+    if (key === "description" && !value) return bubble(tr("needDesc"));
+    if (key === "steps_taken" || key === "scammer_identifiers") {
+      draft[key] = value ? value.split(/[\n,،]+/).map((x) => x.trim()).filter(Boolean) : [];
+    } else if (value) {
+      draft[key] = key === "amount" ? value.replace(/[^\d.,٠-٩]/g, "") || value : value;
+    } else {
+      delete draft[key];
+    }
     chips.replaceChildren();
-    askReportStep();
+    if (phase === "field") { queue.shift(); return nextMissing(); }
+    showSummary();
+  }
+
+  function showSummary() {
+    phase = "summary";
+    showTools(false);
+    const val = (key) => {
+      const v = draft[key];
+      if (key === "incident_type") return incidentTitles[v] || "";
+      if (key === "amount") return v ? `${v} ${draft.currency || "AED"}` : "";
+      if (key === "evidence") return reportImages.length ? `${reportImages.length} × ${tr("screenshot")}` : "";
+      return Array.isArray(v) ? v.join("، ") : (v || "");
+    };
+    const rows = ["incident_type", "occurred_at", "description", "amount", "payment_method", "scammer_identifiers", "evidence", "steps_taken"];
+    const card = el("div", { class: "summary" }, rows.map((key) => {
+      const text = val(key);
+      const shown = text.length > 220 ? `${text.slice(0, 220)}…` : text;
+      const row = el("div", { class: "summary-row" }, [
+        el("span", { class: "summary-label", text: tr(`f_${key}`) }),
+        el("span", { class: text ? "summary-value" : "summary-value empty", text: shown || "—" }),
+      ]);
+      if (key !== "evidence") {
+        const b = el("button", { type: "button", class: "summary-edit", text: tr("edit"), "aria-label": `${tr("edit")}: ${tr(`f_${key}`)}` });
+        b.addEventListener("click", () => { chips.replaceChildren(); askField(key, "edit"); });
+        row.append(b);
+      }
+      return row;
+    }));
+    bubble([el("h3", { text: tr("summaryTitle") }), el("p", { class: "note", text: tr("summaryHint") }), card]);
+    setChips([[tr("createFile"), submitReport], [tr("addMore"), () => { phase = "more"; bubble(tr("qStoryMore")); showTools(true); input.focus(); }]]);
   }
 
   async function submitReport() {
     mode = "check";
+    phase = "";
+    showTools(false);
     const r = await api("/api/report", draft);
     if (!r) return;
+    const html = withEvidence(r.html);
     // ⁦...⁩ keeps the Latin reference number left-to-right inside Arabic/Urdu text.
     // Non-breaking hyphens (‑) stop the number wrapping across lines.
     const ref = `⁦${r.reference.replaceAll("-", "‑")}⁩`;
@@ -356,12 +552,19 @@
       b.addEventListener("click", onClick);
       actions.append(b);
     };
-    button(tr("view"), () => openReport(r.html, false));
-    button(tr("download"), () => download(r.html, "text/html", `${r.reference}.html`));
-    button(tr("print"), () => openReport(r.html, true));
+    button(tr("view"), () => openReport(html, false));
+    button(tr("download"), () => download(html, "text/html", `${r.reference}.html`));
+    button(tr("print"), () => openReport(html, true));
     parts.push(actions);
     bubble(parts);
     setChips([[tr("checkAnother"), askCheck], [tr("menuBack"), menu]]);
+  }
+
+  // Adds the screenshots to the report file itself, so the police see the evidence.
+  function withEvidence(htmlDoc) {
+    if (!reportImages.length) return htmlDoc;
+    const imgs = reportImages.map((src, i) => `<img src="${src}" alt="${tr("screenshot")} ${i + 1}">`).join("");
+    return htmlDoc.replace("<footer>", `<h2>${tr("attached")}</h2><div class="evidence">${imgs}</div><footer>`);
   }
 
   function download(content, type, filename) {
@@ -390,15 +593,97 @@
   // ---- Input ----
   form.addEventListener("submit", (event) => {
     event.preventDefault();
+    stopDictation();
     const text = input.value.trim();
-    if (!text) return;
-    bubble(text, true);
+    const images = pending.slice();
+    if (!text && !images.length) return;
+    const out = [];
+    if (text) out.push(el("p", { text }));
+    if (images.length) out.push(el("div", { class: "thumbs" }, images.map((src) => el("img", { src, alt: tr("screenshot") }))));
+    bubble(out, true);
     input.value = "";
+    clearPending();
     autosize();
     chips.replaceChildren();
-    if (mode === "report") answerReport(text);
-    else check(text);
+    if (mode === "report" && (phase === "story" || phase === "more")) sendStory(text, images);
+    else if (mode === "report" && (phase === "field" || phase === "edit")) answerField(text);
+    else if (mode === "report" && phase === "summary") { phase = "more"; sendStory(text, images); }
+    else if (text) check(text);
   });
+
+  // ---- Screenshots: resized in the browser (which also drops photo metadata) ----
+  const attachBtn = document.getElementById("attach");
+  const fileInput = document.getElementById("file");
+  const strip = document.getElementById("pending");
+  const MAX_IMAGES = 3;
+  let pending = [];
+
+  function showTools(on) { attachBtn.hidden = !on; if (!on) clearPending(); }
+
+  attachBtn.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", async () => {
+    for (const file of [...fileInput.files]) {
+      if (pending.length >= MAX_IMAGES) { bubble(tr("maxImages")); break; }
+      if (!file.type.startsWith("image/")) continue;
+      try { pending.push(await shrink(file)); } catch { bubble(tr("error")); }
+    }
+    fileInput.value = "";
+    renderPending();
+  });
+
+  async function shrink(file) {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL("image/jpeg", 0.85);
+  }
+
+  function renderPending() {
+    strip.replaceChildren(...pending.map((src, i) => {
+      const remove = el("button", { type: "button", class: "remove", "aria-label": tr("removeImage"), text: "×" });
+      remove.addEventListener("click", () => { pending.splice(i, 1); renderPending(); });
+      return el("div", { class: "pending-item" }, [el("img", { src, alt: `${tr("screenshot")} ${i + 1}` }), remove]);
+    }));
+  }
+  function clearPending() { pending = []; renderPending(); }
+
+  // ---- Dictation (the browser's own speech service; hidden where unsupported) ----
+  const micBtn = document.getElementById("mic");
+  const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const SPEECH_LANG = { ar: "ar-AE", en: "en-US", ur: "ur-PK" };
+  let recognizer = null;
+  let micNoteShown = false;
+  micBtn.hidden = !Speech;
+
+  micBtn.addEventListener("click", () => (recognizer ? stopDictation() : startDictation()));
+
+  function startDictation() {
+    if (!Speech) return;
+    if (!micNoteShown) { bubble(tr("micNote")); micNoteShown = true; }
+    const base = input.value ? `${input.value} ` : "";
+    recognizer = new Speech();
+    recognizer.lang = SPEECH_LANG[lang];
+    recognizer.continuous = true;
+    recognizer.interimResults = true;
+    recognizer.onresult = (e) => {
+      input.value = base + [...e.results].map((r) => r[0].transcript).join(" ");
+      autosize();
+    };
+    recognizer.onerror = () => { bubble(tr("micError")); stopDictation(); };
+    recognizer.onend = () => stopDictation();
+    recognizer.start();
+    micBtn.classList.add("recording");
+    micBtn.setAttribute("aria-pressed", "true");
+  }
+
+  function stopDictation() {
+    if (recognizer) { const r = recognizer; recognizer = null; try { r.stop(); } catch { /* already stopped */ } }
+    micBtn.classList.remove("recording");
+    micBtn.setAttribute("aria-pressed", "false");
+  }
 
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
@@ -421,13 +706,17 @@
     document.getElementById("bot-status").textContent = tr("status");
     document.getElementById("input-label").textContent = tr("inputLabel");
     input.placeholder = tr("placeholder");
+    document.getElementById("attach").setAttribute("aria-label", tr("attach"));
+    document.getElementById("mic").setAttribute("aria-label", tr("mic"));
     document.querySelectorAll(".langs button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
   }
 
   document.querySelectorAll(".langs button").forEach((b) => b.addEventListener("click", () => {
     if (b.dataset.lang === lang) return;
+    stopDictation();
     applyLanguage(b.dataset.lang);
     chat.replaceChildren();
+    showTools(false);
     start();
   }));
 

@@ -9,7 +9,7 @@ import os
 import time
 from collections import defaultdict, deque
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Annotated, List, Literal, Optional
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -18,11 +18,14 @@ from pydantic import BaseModel, Field
 
 from haris import __version__, llm
 from haris.detector import analyze
+from haris.intake import MAX_IMAGES, extract
 from haris.playbooks import get_playbook, list_playbooks
 from haris.report import build_report
 from haris.text import pick_language
 
 Lang = Literal["ar", "en", "ur"]
+Incident = Literal["money_sent", "account_hacked", "extortion", "identity_shared", "suspicious_only"]
+ImageDataUrl = Annotated[str, Field(max_length=6_000_000)]  # a 4 MB image as a base64 data: URL
 FRONTEND_DIR = Path(__file__).resolve().parents[2] / "frontend"
 RATE_LIMIT = int(os.getenv("HARIS_RATE_LIMIT", "30"))  # requests per minute per client
 MAX_TEXT = 5000
@@ -39,9 +42,16 @@ class CheckRequest(BaseModel):
     lang: Optional[Lang] = Field(None, description="Reply language; detected from the text when omitted")
 
 
+class ExtractRequest(BaseModel):
+    lang: Optional[Lang] = None
+    text: str = Field("", max_length=MAX_TEXT, description="The victim's story, typed or dictated")
+    images: List[ImageDataUrl] = Field(default_factory=list, max_length=MAX_IMAGES, description="Screenshots as data: URLs")
+    incident_type: Optional[Incident] = None
+
+
 class ReportRequest(BaseModel):
     lang: Lang = "ar"
-    incident_type: Literal["money_sent", "account_hacked", "extortion", "identity_shared", "suspicious_only"] = "suspicious_only"
+    incident_type: Incident = "suspicious_only"
     occurred_at: Optional[str] = Field(None, max_length=100)
     description: str = Field("", max_length=MAX_TEXT)
     amount: Optional[str] = Field(None, max_length=40)
@@ -107,6 +117,12 @@ def playbook(playbook_id: str, lang: Optional[Lang] = None):
     if not result:
         raise HTTPException(status_code=404, detail="Unknown playbook")
     return result
+
+
+@app.post("/api/extract")
+def extract_fields(body: ExtractRequest):
+    """Pull report fields out of a story and screenshots. Nothing is stored."""
+    return extract(body.text, body.images, body.lang, body.incident_type)
 
 
 @app.post("/api/report")

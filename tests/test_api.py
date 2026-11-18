@@ -44,3 +44,12 @@ def test_security_headers_and_frontend():
     r = client.get("/")
     assert r.status_code == 200
     assert "Content-Security-Policy" in r.headers
+
+
+def test_extract_endpoint():
+    r = client.post("/api/extract", json={"lang": "en", "text": "I paid 120 AED by card yesterday"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["fields"]["amount"] == "120"
+    assert body["missing"] == ["steps_taken"]
+    assert client.post("/api/extract", json={"images": ["x"] * 4}).status_code == 422

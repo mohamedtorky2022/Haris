@@ -6,3 +6,4 @@ h2{font-size:1.05rem;margin:24px 0 6px;color:#075e54;border-bottom:1px solid #e5
 footer{margin-top:32px;font-size:.85rem;color:#6b7280}
 @media print{body{margin:0}
 }
+.evidence img{max-width:100%;border:1px solid #e5e7eb;border-radius:8px;margin:8px 0;display:block}

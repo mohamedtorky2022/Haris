@@ -112,6 +112,7 @@ def _html(L, header, sections, lang) -> str:
         "padding:0 20px;color:#1f2937;line-height:1.6}h1{color:#075e54;margin-bottom:4px}"
         "h2{font-size:1.05rem;margin:24px 0 6px;color:#075e54;border-bottom:1px solid #e5e7eb;padding-bottom:4px}"
         ".meta{color:#4b5563}footer{margin-top:32px;font-size:.85rem;color:#6b7280}"
+        ".evidence img{max-width:100%;border:1px solid #e5e7eb;border-radius:8px;margin:8px 0;display:block}"
         "@media print{body{margin:0}}</style></head><body>",
         f"<h1>{e(L['title'])}</h1>",
     ]

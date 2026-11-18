@@ -13,6 +13,8 @@ flowchart LR
     D --> L[urls.py<br/>offline link analysis]
     D --> X[redact.py<br/>remove personal data]
     X -->|redacted text only| C[(Claude API<br/>optional)]
+    API --> I[intake.py<br/>story + screenshots → report fields]
+    I -->|redacted story + screenshots| C
     API --> P[playbooks.py<br/>emergency plans + contacts]
     API --> RP[report.py<br/>police report, in memory]
 ```
@@ -94,6 +96,16 @@ The category is the category of the heaviest signal that fired (`phishing_link` 
 
 This is a regression test, not an accuracy claim: the samples were written alongside the rules. A real accuracy figure needs a held-out set of genuine, anonymised messages from the partner authority.
 
+### Report intake: `POST /api/extract`
+
+The report is built from the victim's own account rather than a fixed questionnaire.
+
+1. The chat takes a story: typed, dictated with the browser's speech service, and/or up to three screenshots. Screenshots are resized to at most 1600 px and re-encoded as JPEG in the browser, which drops photo metadata.
+2. `intake.rules_extract` finds the incident type, amount and currency, payment method, time words ("yesterday at 8 pm"), steps already taken ("called the bank") and the scammer's phone numbers, e-mails, IBANs and links, in Arabic, English and Urdu.
+3. When the AI is on, `llm.extract` sends the **redacted** story and the screenshots to Claude, which returns the same fields as strict JSON. Rules values win; the AI only fills gaps and adds scammer details it read in the images. It is told not to copy the victim's own card, ID or passport numbers from screenshots.
+4. The response lists the fields still missing for that incident type (money lost needs when, amount, payment method and steps taken). The chat asks only those, each with ready-made answers.
+5. A summary card shows every field with an Edit button per line; "Add details or images" sends more story to the same endpoint.
+
 ## 3. Model choices
 
 ### Why a rules engine as the core
@@ -141,6 +153,8 @@ A fine-tuned model needs a large, labelled set of real UAE scam and legitimate m
 | The same message, redacted | Claude API, only if a key is configured | Under Anthropic's API data-retention terms |
 | Links in the message | Analysed on the server; domain + path only go to Claude | Until the response is sent |
 | Report answers | Server memory during the request, then back to the user's browser | Until the response is sent; the file stays on the user's device |
+| Screenshots | Resized in the browser; sent to Claude only if the AI is on; embedded in the report file in the browser | Not stored on the server |
+| Dictated speech | The browser's own speech service (Google in Chrome, Apple in Safari); Haris receives only the text | Under the browser vendor's terms |
 | Conversation in the browser | The page's memory only | Until the tab is closed or the language is switched |
 
 ### What redaction removes
