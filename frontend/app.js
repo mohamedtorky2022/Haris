@@ -3,338 +3,17 @@
 (() => {
   "use strict";
 
-  const UI = {
-    ar: {
-      name: "حارس",
-      status: "مساعد ذكي · ليس جهة رسمية",
-      placeholder: "الصق الرسالة المشبوهة هنا...",
-      inputLabel: "اكتب رسالتك",
-      welcome: "مرحباً، أنا «حارس». أساعدك على كشف الاحتيال الإلكتروني، وأرشدك إن وقعت ضحية له.\n\nلا أحفظ رسائلك، وأخفي بياناتك الشخصية قبل تحليلها.",
-      menu: "كيف أساعدك؟",
-      check: "افحص رسالة أو رابط",
-      help: "تعرضت لاحتيال، ماذا أفعل؟",
-      report: "جهّز ملف بلاغ",
-      askCheck: "الصق الرسالة أو الرابط أو العرض الذي وصلك، وسأفحصه لك.",
-      checkAnother: "افحص رسالة أخرى",
-      interacted: "تفاعلت معها",
-      reasons: "لماذا؟",
-      advice: "ماذا تفعل الآن؟",
-      links: "الروابط",
-      official: "نطاق رسمي",
-      redacted: "أخفيتُ {n} من بياناتك الشخصية قبل التحليل.",
-      engineAi: "التحليل: قواعد + ذكاء اصطناعي",
-      engineRules: "التحليل: قواعد الكشف",
-      pickSituation: "ما الذي حدث معك؟",
-      steps: "خطوات الآن، بالترتيب:",
-      contacts: "أين تبلّغ:",
-      menuBack: "القائمة الرئيسية",
-      qType: "لنجهّز ملف البلاغ. ما نوع ما حدث؟",
-      qWhen: "متى حدث ذلك؟ اختر، أو اكتب الوقت.",
-      qDesc: "اشرح ما حدث بكلماتك: من تواصل معك، وماذا طلب، وماذا فعلت.",
-      qAmount: "كم المبلغ الذي فقدته؟ اكتب الرقم، أو اختر «لا يوجد».",
-      qMethod: "كيف دفعت؟",
-      qIds: "اكتب أرقام المحتال أو روابطه أو حساباته، كل واحد في سطر.",
-      qEvidence: "ما الأدلة المتوفرة لديك؟ (لقطات شاشة، إيصال التحويل، رسائل، سجل مكالمات)",
-      qSteps: "ماذا فعلت حتى الآن؟",
-      skip: "تخطَّ",
-      none: "لا يوجد",
-      needDesc: "أحتاج وصفاً قصيراً لما حدث حتى يكون البلاغ مفيداً.",
-      reportReady: "ملف البلاغ جاهز. الرقم المرجعي: {ref}\n\nقدّمه للشرطة عبر خدمة «أمان» أو منصة eCrime، وأرفق لقطات الشاشة.",
-      found: "وجدتُ في وصفك هذه البيانات وأضفتها للبلاغ:",
-      view: "عرض البلاغ",
-      download: "تنزيل البلاغ",
-      print: "طباعة أو حفظ PDF",
-      qStory: "احكِ ما حدث بطريقتك: اكتب، أو اضغط الميكروفون وتكلّم، أو أرفق لقطات شاشة للمحادثة أو لإشعار الخصم. كلما ذكرت تفاصيل أكثر، قلّت أسئلتي.",
-      qStoryMore: "أضف ما تريد: نصاً، أو كلاماً بالميكروفون، أو لقطات شاشة.",
-      dontKnow: "لا أعرف",
-      imagesRead: "قرأتُ لقطات الشاشة وأضفت ما وجدته فيها للبلاغ.",
-      imagesNotRead: "أرفقتُ لقطات الشاشة كأدلة في الملف. قراءة محتواها تحتاج تفعيل الذكاء الاصطناعي.",
-      urgentBank: "إن لم تفعل بعد: اتصل ببنكك الآن على الرقم المكتوب خلف بطاقتك واطلب إيقافها. كل دقيقة مهمة لاسترجاع المال.",
-      summaryTitle: "ملخص البلاغ",
-      summaryHint: "راجع البيانات، واضغط «تعديل» بجانب أي سطر لتصحيحه.",
-      edit: "تعديل",
-      createFile: "صحيح، أنشئ الملف",
-      addMore: "أضف تفاصيل أو صوراً",
-      screenshot: "لقطة شاشة",
-      attached: "الأدلة المرفقة",
-      attach: "إرفاق لقطة شاشة",
-      mic: "تحدّث بدل الكتابة",
-      micNote: "خدمة الإملاء في متصفحك تحوّل كلامك إلى نص، ثم يراجعه حارس ويقترح تصحيح الكلمات التي ربما سُمعت خطأً. راجع النص قبل إرساله.",
-      dialectQ: "بأي لهجة ستتكلم؟ اختيار لهجتك يجعل الإملاء يفهمك بدقة أكبر.",
-      dialectSet: "اللهجة: {name}. يمكنك تغييرها في أي وقت.",
-      changeDialect: "تغيير اللهجة",
-      polished: "راجعت النص، وهذه كلمات ربما سُمعت خطأً:",
-      polishNote: "الأرقام وأرقام الهواتف والروابط لا تتغيّر أبداً.",
-      useFixed: "استخدم النص المصحّح",
-      keepMine: "أبقِ نصّي كما هو",
-      fixedUsed: "تم. النص المصحّح في خانة الكتابة، راجعه ثم أرسله.",
-      reportIt: "أبلغ عنها لحماية غيري",
-      reportConsent: "سيُرسل إلى رادار الحملات: رقم المرسل ورابطه ونص الرسالة بعد إخفاء أي بيانات شخصية فيها. لن يُرسل أي شيء عنك.",
-      sendReport: "أرسل البلاغ",
-      cancel: "إلغاء",
-      reportThanksFirst: "شكراً، وصل بلاغك. أنت أول من أبلغ عن هذه الرسالة.",
-      reportThanks: "شكراً، وصل بلاغك. عدد من أبلغوا عن هذه الحملة حتى الآن: {n}.",
-      reportEscalated: "وصلت البلاغات إلى الحد الذي يُرسَل عنده إنذار إلى الجهة المختصة لمراجعتها.",
-      reportConfirmed: "هذه الحملة أكّدتها الجهة المختصة، وصدر عنها تحذير رسمي.",
-      radarAsk: "الصق الرسالة التي وصلتك وسأرسلها إلى رادار الحملات، حتى تُكتشف الحملة إذا وصلت لآخرين.",
-      officialAlerts: "تحذيرات رسمية نشطة",
-      howTo: "كيف أستخدم «حارس»؟",
-      guideTitle: "«حارس» في ثلاث خطوات",
-      guide: [
-        ["قبل أن تتفاعل: افحص", "الصق أي رسالة أو رابط مشبوه. يخبرك «حارس» بدرجة الخطورة، ولماذا، وماذا تفعل."],
-        ["إن وقعت المشكلة: اتبع الخطة", "اختر حالتك، مثل «دفعت مالاً» أو «اختُرق حسابي»، فتظهر لك خطوات فورية بالترتيب مع أرقام البلاغ الرسمية."],
-        ["للتبليغ: احكِ بطريقتك", "اكتب أو تكلّم بلهجتك أو أرفق لقطات شاشة. يسألك «حارس» عن الناقص فقط، ثم يجهّز ملف البلاغ لتقدّمه للشرطة."],
-      ],
-      guideCommunity: "احمِ غيرك: إذا وصلتك رسالة احتيال ولم تتفاعل معها، اضغط «أبلغ عنها لحماية غيري». كل بلاغ يساعد على كشف الحملة مبكراً، فتعتمد الجهة المختصة تحذيراً يصل للجميع.",
-      guidePrivacy: "لا يحفظ «حارس» محادثاتك ولا بياناتك الشخصية، وهو مساعد ذكي وليس جهة رسمية.",
-      micError: "تعذّر تشغيل الميكروفون. تأكد من السماح للمتصفح باستخدامه، أو اكتب بدلاً منه.",
-      maxImages: "يمكن إرفاق 3 صور كحد أقصى في كل مرة.",
-      removeImage: "إزالة الصورة",
-      tLessHour: "قبل أقل من ساعة",
-      tToday: "اليوم",
-      tYesterday: "أمس",
-      tOlder: "قبل أكثر من يومين",
-      pCard: "بطاقة بنكية",
-      pTransfer: "تحويل بنكي",
-      pCrypto: "عملات رقمية",
-      pGift: "بطاقات هدايا",
-      pCash: "نقداً",
-      pOther: "طريقة أخرى",
-      sBank: "اتصلت بالبنك",
-      sCard: "أوقفت البطاقة",
-      sNothing: "لم أفعل شيئاً بعد",
-      f_incident_type: "نوع الحادثة",
-      f_occurred_at: "متى",
-      f_description: "ماذا حدث",
-      f_amount: "المبلغ",
-      f_payment_method: "طريقة الدفع",
-      f_scammer_identifiers: "بيانات المحتال",
-      f_evidence: "الأدلة",
-      f_steps_taken: "ما فعلته",
-      error: "تعذّر الاتصال بالخادم. حاول مرة أخرى.",
-      tooMany: "طلبات كثيرة. انتظر دقيقة ثم حاول.",
-    },
-    en: {
-      name: "Haris",
-      status: "AI assistant · not an official body",
-      placeholder: "Paste the suspicious message here...",
-      inputLabel: "Type your message",
-      welcome: "Hi, I'm Haris. I help you spot online scams, and guide you if you have been a victim.\n\nI don't store your messages, and I hide your personal details before analysing them.",
-      menu: "How can I help?",
-      check: "Check a message or link",
-      help: "I've been scammed, what now?",
-      report: "Prepare a police report",
-      askCheck: "Paste the message, link or offer you received and I'll check it.",
-      checkAnother: "Check another message",
-      interacted: "I responded to it",
-      reasons: "Why?",
-      advice: "What to do now",
-      links: "Links",
-      official: "official domain",
-      redacted: "I hid {n} piece(s) of your personal data before analysis.",
-      engineAi: "Analysis: rules + AI",
-      engineRules: "Analysis: detection rules",
-      pickSituation: "What happened?",
-      steps: "Do this now, in order:",
-      contacts: "Where to report:",
-      menuBack: "Main menu",
-      qType: "Let's prepare your report. What happened?",
-      qWhen: "When did it happen? Pick one, or type the time.",
-      qDesc: "Describe what happened in your own words: who contacted you, what they asked for, what you did.",
-      qAmount: "Did you lose money? Type the amount, or choose 'None'.",
-      qMethod: "How did you pay?",
-      qIds: "Type the scammer's numbers, links or accounts, one per line.",
-      qEvidence: "What evidence do you have? (screenshots, transfer receipt, messages, call log)",
-      qSteps: "What have you done so far?",
-      skip: "Skip",
-      none: "None",
-      needDesc: "I need a short description of what happened for the report to be useful.",
-      reportReady: "Your report is ready. Reference: {ref}\n\nFile it with the police through Aman or eCrime, and attach your screenshots.",
-      found: "I found these details in your description and added them:",
-      view: "View report",
-      download: "Download report",
-      print: "Print or save as PDF",
-      qStory: "Tell me what happened, your way: type it, tap the microphone and speak, or attach screenshots of the chat or the debit alert. The more you share, the fewer questions I'll ask.",
-      qStoryMore: "Add anything else: text, speech or screenshots.",
-      dontKnow: "Not sure",
-      imagesRead: "I read your screenshots and added what I found to the report.",
-      imagesNotRead: "I attached your screenshots to the file as evidence. Reading what they show needs the AI to be switched on.",
-      urgentBank: "If you haven't yet: call your bank now on the number on the back of your card and ask them to block it. Every minute counts.",
-      summaryTitle: "Report summary",
-      summaryHint: "Check the details. Tap Edit next to any line to correct it.",
-      edit: "Edit",
-      createFile: "Looks right, create the file",
-      addMore: "Add details or images",
-      screenshot: "Screenshot",
-      attached: "Attached evidence",
-      attach: "Attach a screenshot",
-      mic: "Speak instead of typing",
-      micNote: "Your browser's dictation turns your speech into text. Haris then checks it and suggests fixes for words that were probably misheard. Check the text before you send it.",
-      dialectQ: "Which accent will you speak in? Choosing it helps dictation understand you better.",
-      dialectSet: "Accent: {name}. You can change it any time.",
-      changeDialect: "Change accent",
-      polished: "I checked the text. These words were probably misheard:",
-      polishNote: "Numbers, phone numbers and links are never changed.",
-      useFixed: "Use the corrected text",
-      keepMine: "Keep my text",
-      fixedUsed: "Done. The corrected text is in the message box: check it, then send.",
-      reportIt: "Report it to protect others",
-      reportConsent: "This goes to the campaign radar: the sender's number and link, and the message text with any personal details removed. Nothing about you is sent.",
-      sendReport: "Send the report",
-      cancel: "Cancel",
-      reportThanksFirst: "Thank you, your report arrived. You are the first to report this message.",
-      reportThanks: "Thank you, your report arrived. {n} people have reported this campaign so far.",
-      reportEscalated: "Reports have reached the level where the authority is alerted to review it.",
-      reportConfirmed: "The authority has confirmed this campaign and issued an official warning.",
-      radarAsk: "Paste the message you got and I'll send it to the campaign radar, so the campaign is spotted if others get it too.",
-      officialAlerts: "Active official warnings",
-      howTo: "How do I use Haris?",
-      guideTitle: "Haris in three steps",
-      guide: [
-        ["Before you respond: check", "Paste any suspicious message or link. Haris tells you how risky it is, why, and what to do."],
-        ["If something happened: follow the plan", "Pick your situation, such as 'I paid' or 'My account was hacked', for immediate steps in order and the official reporting numbers."],
-        ["To report: tell it your way", "Type, speak in your own accent, or attach screenshots. Haris asks only for what's missing, then prepares the report for you to give the police."],
-      ],
-      guideCommunity: "Protect others: if you get a scam message and don't respond, tap 'Report it to protect others'. Every report helps spot the campaign early, so the authority can approve a warning that reaches everyone.",
-      guidePrivacy: "Haris doesn't keep your chats or personal details. It is an assistant, not an official body.",
-      micError: "Couldn't start the microphone. Allow the browser to use it, or type instead.",
-      maxImages: "You can attach up to 3 images at a time.",
-      removeImage: "Remove image",
-      tLessHour: "Less than an hour ago",
-      tToday: "Today",
-      tYesterday: "Yesterday",
-      tOlder: "More than two days ago",
-      pCard: "Bank card",
-      pTransfer: "Bank transfer",
-      pCrypto: "Crypto",
-      pGift: "Gift cards",
-      pCash: "Cash",
-      pOther: "Other",
-      sBank: "Called the bank",
-      sCard: "Blocked the card",
-      sNothing: "Nothing yet",
-      f_incident_type: "Type",
-      f_occurred_at: "When",
-      f_description: "What happened",
-      f_amount: "Amount",
-      f_payment_method: "Payment method",
-      f_scammer_identifiers: "Scammer details",
-      f_evidence: "Evidence",
-      f_steps_taken: "Steps taken",
-      error: "Could not reach the server. Please try again.",
-      tooMany: "Too many requests. Please wait a minute.",
-    },
-    ur: {
-      name: "حارس",
-      status: "اے آئی معاون · سرکاری ادارہ نہیں",
-      placeholder: "مشکوک پیغام یہاں پیسٹ کریں...",
-      inputLabel: "اپنا پیغام لکھیں",
-      welcome: "السلام علیکم، میں حارس ہوں۔ میں آن لائن فراڈ پہچاننے میں مدد کرتا ہوں، اور اگر آپ کے ساتھ فراڈ ہو جائے تو رہنمائی کرتا ہوں۔\n\nمیں آپ کے پیغامات محفوظ نہیں کرتا۔",
-      menu: "میں کیسے مدد کروں؟",
-      check: "پیغام یا لنک چیک کریں",
-      help: "میرے ساتھ فراڈ ہوا، اب کیا کروں؟",
-      report: "پولیس رپورٹ تیار کریں",
-      askCheck: "جو پیغام، لنک یا پیشکش ملی ہے وہ پیسٹ کریں، میں چیک کروں گا۔",
-      checkAnother: "دوسرا پیغام چیک کریں",
-      interacted: "میں نے جواب دیا",
-      reasons: "کیوں؟",
-      advice: "اب کیا کریں",
-      links: "لنکس",
-      official: "سرکاری ڈومین",
-      redacted: "تجزیے سے پہلے آپ کی {n} ذاتی معلومات چھپا دی گئیں۔",
-      engineAi: "تجزیہ: اصول + اے آئی",
-      engineRules: "تجزیہ: اصول",
-      pickSituation: "کیا ہوا؟",
-      steps: "ابھی یہ کریں، اسی ترتیب سے:",
-      contacts: "کہاں رپورٹ کریں:",
-      menuBack: "مین مینو",
-      qType: "آئیے رپورٹ تیار کریں۔ کیا ہوا؟",
-      qWhen: "یہ کب ہوا؟ چنیں یا وقت لکھیں۔",
-      qDesc: "اپنے الفاظ میں بتائیں کیا ہوا: کس نے رابطہ کیا، کیا مانگا، آپ نے کیا کیا۔",
-      qAmount: "کیا رقم کا نقصان ہوا؟ رقم لکھیں یا 'کوئی نہیں' چنیں۔",
-      qMethod: "ادائیگی کیسے کی؟",
-      qIds: "فراڈیے کے نمبر، لنک یا اکاؤنٹس لکھیں، ہر ایک الگ لائن میں۔",
-      qEvidence: "آپ کے پاس کیا ثبوت ہیں؟ (اسکرین شاٹس، ٹرانسفر کی رسید، پیغامات، کال لاگ)",
-      qSteps: "اب تک آپ نے کیا کیا ہے؟",
-      skip: "چھوڑیں",
-      none: "کوئی نہیں",
-      needDesc: "رپورٹ کے لیے مختصر تفصیل ضروری ہے۔",
-      reportReady: "رپورٹ تیار ہے۔ حوالہ نمبر: {ref}\n\nاسے امان یا ای کرائم کے ذریعے پولیس کو جمع کرائیں اور اسکرین شاٹس لگائیں۔",
-      found: "آپ کی تفصیل میں یہ معلومات ملیں اور شامل کر دی گئیں:",
-      view: "رپورٹ دیکھیں",
-      download: "رپورٹ ڈاؤن لوڈ کریں",
-      print: "پرنٹ یا پی ڈی ایف",
-      qStory: "اپنے طریقے سے بتائیں کیا ہوا: لکھیں، یا مائیک دبا کر بولیں، یا چیٹ یا کٹوتی کے پیغام کا اسکرین شاٹ لگائیں۔ جتنی زیادہ تفصیل، اتنے کم سوال۔",
-      qStoryMore: "مزید کچھ شامل کریں: متن، آواز یا اسکرین شاٹ۔",
-      dontKnow: "معلوم نہیں",
-      imagesRead: "میں نے اسکرین شاٹس پڑھ کر ان کی معلومات رپورٹ میں شامل کر دیں۔",
-      imagesNotRead: "اسکرین شاٹس فائل میں بطور ثبوت لگا دیے گئے۔ ان کا مواد پڑھنے کے لیے اے آئی آن ہونا ضروری ہے۔",
-      urgentBank: "اگر ابھی تک نہیں کیا: فوراً کارڈ کی پشت پر لکھے نمبر پر بینک کو فون کریں اور کارڈ بند کروائیں۔ ہر منٹ اہم ہے۔",
-      summaryTitle: "رپورٹ کا خلاصہ",
-      summaryHint: "تفصیلات دیکھیں، اور غلطی درست کرنے کے لیے لائن کے ساتھ 'ترمیم' دبائیں۔",
-      edit: "ترمیم",
-      createFile: "درست ہے، فائل بنائیں",
-      addMore: "مزید تفصیل یا تصاویر",
-      screenshot: "اسکرین شاٹ",
-      attached: "منسلک ثبوت",
-      attach: "اسکرین شاٹ لگائیں",
-      mic: "لکھنے کے بجائے بولیں",
-      micNote: "آپ کے براؤزر کی ڈکٹیشن آواز کو متن میں بدلتی ہے، پھر حارس اسے دیکھ کر غلط سنے گئے الفاظ کی درستی تجویز کرتا ہے۔ بھیجنے سے پہلے متن دیکھ لیں۔",
-      dialectQ: "آپ کس لہجے میں بولیں گے؟ لہجہ چننے سے ڈکٹیشن آپ کو بہتر سمجھتی ہے۔",
-      dialectSet: "لہجہ: {name}۔ آپ اسے کبھی بھی بدل سکتے ہیں۔",
-      changeDialect: "لہجہ بدلیں",
-      polished: "میں نے متن دیکھا، یہ الفاظ شاید غلط سنے گئے:",
-      polishNote: "نمبر، فون نمبر اور لنکس کبھی نہیں بدلے جاتے۔",
-      useFixed: "درست متن استعمال کریں",
-      keepMine: "میرا متن رکھیں",
-      fixedUsed: "ہو گیا۔ درست متن لکھنے کی جگہ میں ہے، دیکھ کر بھیج دیں۔",
-      reportIt: "دوسروں کی حفاظت کے لیے رپورٹ کریں",
-      reportConsent: "یہ مہم ریڈار کو جائے گا: بھیجنے والے کا نمبر اور لنک، اور پیغام کا متن ذاتی معلومات ہٹا کر۔ آپ کے بارے میں کچھ نہیں بھیجا جائے گا۔",
-      sendReport: "رپورٹ بھیجیں",
-      cancel: "منسوخ",
-      reportThanksFirst: "شکریہ، آپ کی رپورٹ مل گئی۔ آپ اس پیغام کی رپورٹ کرنے والے پہلے شخص ہیں۔",
-      reportThanks: "شکریہ، آپ کی رپورٹ مل گئی۔ اب تک {n} لوگ اس مہم کی رپورٹ کر چکے ہیں۔",
-      reportEscalated: "رپورٹس اس حد تک پہنچ گئی ہیں جہاں متعلقہ ادارے کو جائزے کے لیے اطلاع دی جاتی ہے۔",
-      reportConfirmed: "متعلقہ ادارے نے اس مہم کی تصدیق کر کے سرکاری انتباہ جاری کیا ہے۔",
-      radarAsk: "جو پیغام آیا ہے وہ یہاں چسپاں کریں، میں اسے مہم ریڈار کو بھیج دوں گا تاکہ دوسروں تک پہنچے تو مہم پکڑی جائے۔",
-      officialAlerts: "فعال سرکاری انتباہات",
-      howTo: "حارس کیسے استعمال کریں؟",
-      guideTitle: "حارس تین مرحلوں میں",
-      guide: [
-        ["جواب دینے سے پہلے: چیک کریں", "کوئی بھی مشکوک پیغام یا لنک چسپاں کریں۔ حارس بتاتا ہے کہ خطرہ کتنا ہے، کیوں، اور کیا کریں۔"],
-        ["اگر کچھ ہو گیا: منصوبے پر عمل کریں", "اپنی صورتحال چنیں، جیسے 'میں نے رقم دی' یا 'اکاؤنٹ ہیک ہو گیا'، فوری اقدامات ترتیب سے اور سرکاری رپورٹ نمبر ملیں گے۔"],
-        ["رپورٹ کے لیے: اپنے طریقے سے بتائیں", "لکھیں، اپنے لہجے میں بولیں، یا اسکرین شاٹ لگائیں۔ حارس صرف کمی والی بات پوچھتا ہے، پھر پولیس کے لیے رپورٹ تیار کرتا ہے۔"],
-      ],
-      guideCommunity: "دوسروں کی حفاظت کریں: اگر فراڈ کا پیغام آئے اور آپ جواب نہ دیں تو 'دوسروں کی حفاظت کے لیے رپورٹ کریں' دبائیں۔ ہر رپورٹ مہم کو جلد پکڑنے میں مدد دیتی ہے، تاکہ ادارہ سب کے لیے انتباہ جاری کرے۔",
-      guidePrivacy: "حارس آپ کی چیٹس یا ذاتی معلومات محفوظ نہیں کرتا۔ یہ ایک معاون ہے، سرکاری ادارہ نہیں۔",
-      micError: "مائیک شروع نہیں ہو سکا۔ براؤزر کو اجازت دیں یا لکھ دیں۔",
-      maxImages: "ایک وقت میں زیادہ سے زیادہ 3 تصاویر لگائی جا سکتی ہیں۔",
-      removeImage: "تصویر ہٹائیں",
-      tLessHour: "ایک گھنٹے سے کم پہلے",
-      tToday: "آج",
-      tYesterday: "کل",
-      tOlder: "دو دن سے زیادہ پہلے",
-      pCard: "بینک کارڈ",
-      pTransfer: "بینک ٹرانسفر",
-      pCrypto: "کرپٹو",
-      pGift: "گفٹ کارڈ",
-      pCash: "نقد",
-      pOther: "دیگر",
-      sBank: "بینک کو فون کیا",
-      sCard: "کارڈ بند کروایا",
-      sNothing: "ابھی کچھ نہیں کیا",
-      f_incident_type: "قسم",
-      f_occurred_at: "کب",
-      f_description: "کیا ہوا",
-      f_amount: "رقم",
-      f_payment_method: "ادائیگی کا طریقہ",
-      f_scammer_identifiers: "فراڈیے کی معلومات",
-      f_evidence: "ثبوت",
-      f_steps_taken: "اٹھائے گئے اقدامات",
-      error: "سرور سے رابطہ نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
-      tooMany: "بہت زیادہ درخواستیں۔ ایک منٹ انتظار کریں۔",
-    },
-  };
+  // All wording lives in locales/<lang>.json, one file per language, loaded at start.
+  const LANGS = ["ar", "en", "ur", "hi"];
+  const RTL = new Set(["ar", "ur"]);
+  const UI = {};
+  async function loadLocales() {
+    await Promise.all(LANGS.map(async (l) => {
+      const res = await fetch(`locales/${l}.json`);
+      UI[l] = await res.json();
+    }));
+  }
+
 
   const chat = document.getElementById("chat");
   const chips = document.getElementById("chips");
@@ -655,7 +334,7 @@
       if (key === "incident_type") return incidentTitles[v] || "";
       if (key === "amount") return v ? `${v} ${draft.currency || "AED"}` : "";
       if (key === "evidence") return reportImages.length ? `${reportImages.length} × ${tr("screenshot")}` : "";
-      return Array.isArray(v) ? v.join("، ") : (v || "");
+      return Array.isArray(v) ? v.join(RTL.has(lang) ? "، " : ", ") : (v || "");
     };
     const rows = ["incident_type", "occurred_at", "description", "amount", "payment_method", "scammer_identifiers", "evidence", "steps_taken"];
     const card = el("div", { class: "summary" }, rows.map((key) => {
@@ -798,11 +477,7 @@
   // dictation /api/polish suggests fixes for misheard words. Numbers are never changed.
   const micBtn = document.getElementById("mic");
   const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const DIALECTS = {
-    ar: [["ar-AE", "إماراتية / خليجية"], ["ar-SA", "سعودية"], ["ar-EG", "مصرية"], ["ar-JO", "شامية"], ["ar-IQ", "عراقية"], ["ar-MA", "مغاربية"]],
-    en: [["en-US", "American"], ["en-GB", "British"], ["en-IN", "Indian"], ["en-PH", "Filipino"]],
-    ur: [["ur-PK", "پاکستانی اردو"], ["ur-IN", "ہندوستانی اردو"]],
-  };
+
   const store = {
     get(key) { try { return localStorage.getItem(key); } catch { return null; } },
     set(key, value) { try { localStorage.setItem(key, value); } catch { /* private mode: keep for this visit only */ } },
@@ -815,19 +490,19 @@
 
   function dialect() {
     const saved = chosenDialect[lang] || store.get(`haris.dialect.${lang}`);
-    return DIALECTS[lang].some(([code]) => code === saved) ? saved : null;
+    return UI[lang].dialects.some(([code]) => code === saved) ? saved : null;
   }
 
   micBtn.addEventListener("click", () => {
     if (recognizer) return stopDictation(true);
-    if (!dialect()) return askDialect(startDictation);
+    if (!dialect() && UI[lang].dialects.length > 1) return askDialect(startDictation);
     startDictation();
   });
 
   function askDialect(then) {
     const choices = el("div", { class: "actions" });
     const node = bubble([el("p", { text: tr("dialectQ") }), choices]);
-    for (const [code, name] of DIALECTS[lang]) {
+    for (const [code, name] of UI[lang].dialects) {
       const b = el("button", { type: "button", text: name, "aria-pressed": String(code === dialect()) });
       b.addEventListener("click", () => {
         chosenDialect[lang] = code;
@@ -850,7 +525,7 @@
     const base = input.value ? `${input.value} ` : "";
     heard = false;
     recognizer = new Speech();
-    recognizer.lang = dialect() || DIALECTS[lang][0][0];
+    recognizer.lang = dialect() || UI[lang].dialects[0][0];
     recognizer.continuous = true;
     recognizer.interimResults = true;
     recognizer.onresult = (e) => {
@@ -890,7 +565,7 @@
       if (res.ok) r = await res.json();
     } catch { /* offline: keep the text as it is */ }
     if (!r || !r.changes.length || r.text.trim() === original.trim()) return;
-    const arrow = lang === "en" ? "→" : "←";
+    const arrow = RTL.has(lang) ? "←" : "→";
     const actions = el("div", { class: "actions" });
     const node = bubble([
       el("p", { text: tr("polished") }),
@@ -931,7 +606,7 @@
   function applyLanguage(next) {
     lang = next;
     document.documentElement.lang = lang;
-    document.documentElement.dir = lang === "en" ? "ltr" : "rtl";
+    document.documentElement.dir = RTL.has(lang) ? "rtl" : "ltr";
     document.getElementById("bot-name").textContent = tr("name");
     document.getElementById("bot-status").textContent = tr("status");
     document.getElementById("input-label").textContent = tr("inputLabel");
@@ -956,6 +631,8 @@
     menu();
   }
 
-  applyLanguage("ar");
-  start();
+  loadLocales().then(() => {
+    applyLanguage("ar");
+    start();
+  });
 })();

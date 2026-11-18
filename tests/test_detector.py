@@ -127,3 +127,12 @@ def test_shopping_charity_and_visa_scams(text, category):
 
 def test_paying_cash_on_delivery_is_not_a_warning():
     assert analyze("Your order has shipped. Pay cash on delivery.", use_llm=False)["risk"] == "low"
+
+
+def test_hindi_is_detected_and_scored():
+    from haris.text import detect_language
+    assert detect_language("आपका पार्सल रुका है") == "hi"
+    r = analyze("आपका बैंक खाता बंद कर दिया जाएगा। तुरंत अपना ओटीपी कोड भेजें।", use_llm=False)
+    assert r["language"] == "hi" and r["risk"] == "high"
+    assert r["risk_label"] == "धोखाधड़ी का बड़ा खतरा"
+    assert analyze("आपका OTP 482913 है। इसे किसी के साथ शेयर न करें।", use_llm=False)["risk"] == "low"

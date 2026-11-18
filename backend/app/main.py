@@ -25,7 +25,7 @@ from haris.polish import polish
 from haris.report import build_report
 from haris.text import pick_language
 
-Lang = Literal["ar", "en", "ur"]
+Lang = Literal["ar", "en", "ur", "hi"]
 Incident = Literal["money_sent", "account_hacked", "extortion", "harassment", "impersonation", "privacy_violation",
                    "device_hacked", "identity_shared", "business_fraud", "suspicious_only"]
 ImageDataUrl = Annotated[str, Field(max_length=6_000_000)]  # a 4 MB image as a base64 data: URL

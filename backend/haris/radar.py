@@ -40,43 +40,18 @@ from pathlib import Path
 from .detector import analyze
 from .i18n import CATEGORY_LABELS, RISK_LABELS, RISK_SUMMARY, t
 from .redact import EMAIL, IBAN, PHONE, redact
-from .text import normalize, normalize_digits
+from .text import SUPPORTED_LANGS, normalize, normalize_digits
+from .translations import section
 from .urls import analyze_url, extract_urls
 
 DEFAULT_DB = Path(__file__).resolve().parents[2] / "data" / "radar.db"
 DAY = 24 * 3600
 
-AUTHORITY_NAME = {"ar": "الجهة المختصة", "en": "The authority", "ur": "متعلقہ ادارہ"}
-TEXT = {
-    "kind": {
-        "phone": {"ar": "الرقم", "en": "number", "ur": "نمبر"},
-        "domain": {"ar": "الرابط", "en": "link", "ur": "لنک"},
-        "email": {"ar": "البريد", "en": "e-mail", "ur": "ای میل"},
-        "iban": {"ar": "الحساب البنكي", "en": "bank account", "ur": "بینک اکاؤنٹ"},
-        "template": {"ar": "نص الرسالة", "en": "message text", "ur": "پیغام کا متن"},
-    },
-    "reported": {
-        "ar": "عدد من أبلغوا عن هذه الرسالة أو مرسلها عبر «حارس» خلال آخر {h} ساعة: {n}.",
-        "en": "{n} people reported this message or sender through Haris in the last {h} hours.",
-        "ur": "پچھلے {h} گھنٹوں میں {n} لوگوں نے حارس پر اس پیغام یا بھیجنے والے کی رپورٹ کی۔",
-    },
-    "broadcast_title": {
-        "ar": "تحذير رسمي: حملة {category} منتشرة الآن",
-        "en": "Official warning: a {category} campaign is spreading now",
-        "ur": "سرکاری انتباہ: {category} کی مہم ابھی پھیل رہی ہے",
-    },
-    "broadcast_body": {
-        "ar": "أكّدت {authority} أن هذه حملة احتيال. لا ترد، ولا تضغط على الروابط، ولا ترسل أي مال أو بيانات إلى: {ids}.",
-        "en": "{authority} confirmed this is a scam campaign. Don't reply, don't tap links, and don't send money or details to: {ids}.",
-        "ur": "{authority} نے تصدیق کی ہے کہ یہ فراڈ مہم ہے۔ جواب نہ دیں، لنک نہ کھولیں، اور ان کو رقم یا معلومات نہ بھیجیں: {ids}۔",
-    },
-    "confirmed_reason": {
-        "ar": "أكّدت الجهة المختصة أن هذه الرسالة جزء من حملة احتيال، وأصدرت تحذيراً رسمياً.",
-        "en": "The authority confirmed this message is part of a scam campaign and issued an official warning.",
-        "ur": "متعلقہ ادارے نے تصدیق کی ہے کہ یہ پیغام فراڈ مہم کا حصہ ہے اور سرکاری انتباہ جاری کیا ہے۔",
-    },
-    "demo": {"ar": "نسخة تجريبية", "en": "Demo", "ur": "ڈیمو"},
-}
+AUTHORITY_NAME = {lang: section(lang, "radar")["authority"] for lang in SUPPORTED_LANGS}
+TEXT = {key: {lang: section(lang, "radar")[key] for lang in SUPPORTED_LANGS}
+        for key in section("ar", "radar") if key not in ("authority", "kind")}
+TEXT["kind"] = {kind: {lang: section(lang, "radar")["kind"][kind] for lang in SUPPORTED_LANGS}
+                for kind in section("ar", "radar")["kind"]}
 
 
 def _settings() -> dict:
@@ -285,7 +260,7 @@ def decide(campaign_id: str, status: str) -> dict | None:
 
 def _describe(keys: list, lang: str) -> str:
     shown = [f"{TEXT['kind'][k][lang]} ⁦{v if k != 'phone' else '+' + v}⁩" for k, v in keys if k != "template"]
-    return "، ".join(shown) if lang != "en" else ", ".join(shown)
+    return "، ".join(shown) if lang in ("ar", "ur") else ", ".join(shown)
 
 
 def _broadcast_view(row, lang: str) -> dict:

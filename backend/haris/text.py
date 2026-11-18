@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 import unicodedata
 
-SUPPORTED_LANGS = ("ar", "en", "ur")
+SUPPORTED_LANGS = ("ar", "en", "ur", "hi")
 
 _DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹", "01234567890123456789")
 _ARABIC_DIACRITICS = re.compile(r"[ؐ-ًؚ-ٰٟۖ-ۭـ]")
@@ -20,6 +20,7 @@ _ARABIC_LETTERS = str.maketrans({"أ": "ا", "إ": "ا", "آ": "ا", "ٱ": "ا",
 # Letters used in Urdu but not in standard Arabic.
 _URDU_ONLY = re.compile(r"[ٹڈڑںےۓھہ]")
 _ARABIC_SCRIPT = re.compile(r"[؀-ۿ]")
+_DEVANAGARI = re.compile(r"[\u0900-\u097F]")
 
 
 def normalize_digits(text: str) -> str:
@@ -36,7 +37,9 @@ def normalize(text: str) -> str:
 
 
 def detect_language(text: str) -> str:
-    """Return 'ur', 'ar' or 'en' from the script the text is written in."""
+    """Return 'ur', 'ar', 'hi' or 'en' from the script the text is written in."""
+    if _DEVANAGARI.search(text):
+        return "hi"
     if _URDU_ONLY.search(text):
         return "ur"
     if _ARABIC_SCRIPT.search(text):

@@ -50,5 +50,12 @@
   {"id": "en-donation-receipt", "label": "legit", "text": "Thank you for your donation to Emirates Red Crescent. Your receipt number is 4821"},
   {"id": "en-visa-approved", "label": "legit", "text": "Your visa application has been approved. Download it from the ICP app."},
   {"id": "en-cod", "label": "legit", "text": "Your order has shipped and arrives tomorrow. Pay cash on delivery."},
-  {"id": "en-mall-sale", "label": "legit", "text": "Pay with your Visa card and get 70% off at the mall this weekend"}
+  {"id": "en-mall-sale", "label": "legit", "text": "Pay with your Visa card and get 70% off at the mall this weekend"},
+  {"id": "hi-delivery", "label": "scam", "text": "प्रिय ग्राहक, आपका पार्सल अधूरे पते के कारण रुका है। 24 घंटे में 5 दिरहम का भुगतान करें: https://emirates-post-ae.top/track"},
+  {"id": "hi-bank-otp", "label": "scam", "text": "आपका बैंक खाता बंद कर दिया जाएगा। तुरंत अपना ओटीपी कोड भेजें।"},
+  {"id": "hi-visa", "label": "scam", "text": "दुबई में वर्क वीज़ा गारंटी के साथ, बिना शर्त। वीजा फीस 4000 दिरहम भेजें"},
+  {"id": "hi-job", "label": "scam", "text": "घर से काम करें! रोज़ाना कमाई 500 दिरहम। रजिस्ट्रेशन फीस 100 दिरहम भेजें"},
+  {"id": "hi-otp-legit", "label": "legit", "text": "आपका OTP 482913 है। इसे किसी के साथ शेयर न करें।"},
+  {"id": "hi-family", "label": "legit", "text": "माँ, मैं शाम को घर आऊँगा, खाना बना लेना"},
+  {"id": "hi-cod", "label": "legit", "text": "आपका पार्सल कल पहुँचेगा। डिलीवरी पर भुगतान करें।"}
 ]

@@ -4,7 +4,7 @@
 
 > **حارس** مساعد ذكي يحمي كل من يعيش في الإمارات من الاحتيال والجرائم الإلكترونية، بلغته: يفحص الرسائل والروابط المشبوهة، ويرشد الضحية خطوة بخطوة، ويجهّز ملف بلاغ منظماً للشرطة. لا يحفظ رسائل المستخدمين، ويخفي بياناتهم الشخصية قبل أي تحليل.
 
-Haris is a chat assistant that helps anyone in the UAE spot online scams, act fast when they have been scammed, and hand the police a complete report. It speaks Arabic, English and Urdu, and stores nothing users send.
+Haris is a chat assistant that helps anyone in the UAE spot online scams, act fast when they have been scammed, and hand the police a complete report. It speaks Arabic, English, Urdu and Hindi, and stores nothing users send.
 
 This repository is the hackathon MVP: a FastAPI backend and a WhatsApp-style web chat.
 
@@ -49,7 +49,7 @@ Haris always presents itself as an assistant, **not** an official body, and neve
 
 ### Who it serves
 
-The same engine serves every group; the scam patterns and advice cover parcel and payment scams (shoppers), OTP and bank impersonation (older people), fake jobs and visa fees (migrant workers, in Urdu), investment and crypto scams (investors), extortion (teenagers and women, with "you are not to blame, don't pay, don't delete, report" guidance) and fake tech support.
+The same engine serves every group; the scam patterns and advice cover parcel and payment scams (shoppers), OTP and bank impersonation (older people), fake jobs and visa fees (migrant workers, in Urdu and Hindi), investment and crypto scams (investors), extortion (teenagers and women, with "you are not to blame, don't pay, don't delete, report" guidance) and fake tech support.
 
 ## 3. How it works
 
@@ -63,13 +63,14 @@ The same engine serves every group; the scam patterns and advice cover parcel an
  haris core (pure Python, no dependencies)
    ├─ text.py       normalise Arabic spelling and digits, detect language
    ├─ redact.py     remove card numbers (Luhn-checked), Emirates ID, IBAN, phones, e-mails
-   ├─ rules.py      ~20 weighted scam signals in 3 languages, with "unless" exceptions
+   ├─ rules.py      30 weighted scam signals in 4 languages, with "unless" exceptions
    ├─ urls.py       offline link analysis: look-alike brands, risky TLDs, shorteners, raw IPs
    ├─ detector.py   combines the above into a score, risk level and category
    ├─ llm.py        optional Claude second opinion on the REDACTED text
    ├─ intake.py     turns a free story and screenshots into report fields
    ├─ polish.py     fixes misheard words in dictated text (glossary + optional AI), never digits
    ├─ radar.py      campaign radar: groups reports, warns, escalates; the authority confirms (SQLite)
+   ├─ translations.py  loads all wording from locales/<lang>.json (one file per language)
    ├─ playbooks.py  emergency plans + official contacts
    └─ report.py     builds the police report in memory
 ```
@@ -118,7 +119,7 @@ pytest                                 # from the repo root
 python scripts/evaluate.py             # accuracy on the labelled sample messages
 ```
 
-On the 52 labelled samples in `data/samples/messages.json` (33 scams, 19 legitimate messages, in 3 languages), the rules engine alone catches **33 of 33 scams** with **0 of 19 false alarms**. These samples were written by the team while building the rules, so they show the rules behave as designed; they are **not** an independent accuracy measure (see trade-offs below).
+On the 59 labelled samples in `data/samples/messages.json` (37 scams, 22 legitimate messages, in 4 languages), the rules engine alone catches **37 of 37 scams** with **0 of 22 false alarms**. These samples were written by the team while building the rules, so they show the rules behave as designed; they are **not** an independent accuracy measure (see trade-offs below).
 
 ### API
 
@@ -160,6 +161,8 @@ On the 52 labelled samples in `data/samples/messages.json` (33 scams, 19 legitim
 - *Trade-off:* it can't fix what the service didn't hear at all. A trainable server-side model (Azure Custom Speech, which supports ar-AE, ar-EG, ar-SA and more; Urdu only as ur-IN) is the plan for the police pilot, hosted in a UAE region and trained on anonymised data from the partner.
 - *Safety:* numbers, links and e-mails are swapped for tokens before the AI sees the text and put back after; an answer that loses, repeats or adds a digit is thrown away. The user always sees the changes and chooses.
 
+**One file per language.** Every sentence the user sees is in `frontend/locales/<lang>.json` (the chat) and `backend/haris/locales/<lang>.json` (results, advice, plans, the report, the radar). A reviewer corrects wording without touching code, a new language is one new file in each folder, and `tests/test_locales.py` fails if any language is missing a key, has a different number of steps, or loses a `{placeholder}`. The Hindi text was drafted with AI help and needs a native speaker's review before launch.
+
 **Plain JavaScript front end.** No framework and no build step, so judges can run it with one command, and the strict Content-Security-Policy (`script-src 'self'`) stays simple.
 
 ### What we left out
@@ -168,13 +171,13 @@ On the 52 labelled samples in `data/samples/messages.json` (33 scams, 19 legitim
 - **The radar in production.** The demo radar runs on SQLite on the same server, counts one device as one person, and simulates the telecom block request. Production needs the partner's systems, verified reporters and a real block channel with the telecom providers.
 - **Live link reputation.** Links are judged offline from their structure. Google Safe Browsing or a police blocklist would add a live check.
 - **Training our own speech model.** Dictation accuracy depends on the browser's service. A trainable model (Azure Custom Speech or an open-source model hosted in the UAE) needs recordings with transcripts from the partner, so it is planned for the pilot.
-- **Voice line for older people,** the family app for children and teenagers, and more languages (Hindi, Malayalam, Tagalog, Bengali).
+- **Voice line for older people,** the family app for children and teenagers, and more languages (Malayalam, Tagalog, Bengali).
 - **Direct submission to the police.** Haris prepares the report; the user still files it. Direct submission needs an integration agreement.
 
 ### What we would do differently with more time
 
 - Build the test set from **real, anonymised scam messages** supplied by the partner authority, measured separately from the rules, instead of samples we wrote ourselves.
-- Have the **Arabic dialect and Urdu wording reviewed** by native speakers and by child-protection and victim-support specialists, especially the extortion guidance.
+- Have the **Arabic dialect, Urdu and Hindi wording reviewed** by native speakers and by child-protection and victim-support specialists, especially the extortion guidance.
 - Replace keyword weights with a **small fine-tuned classifier** trained on that data, keeping the rules as an explainable safety net.
 - Store rules and advice text in a **reviewable content file** the partner authority can edit without a code change.
 

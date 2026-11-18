@@ -27,7 +27,7 @@ The system has three layers:
 
 | Layer | Files | Responsibility |
 | --- | --- | --- |
-| Front end | `frontend/index.html`, `styles.css`, `app.js` | WhatsApp-style chat, three languages with right-to-left layout, guided flows, report download. Plain JavaScript, no build step. |
+| Front end | `frontend/index.html`, `styles.css`, `app.js` | WhatsApp-style chat in four languages (Arabic and Urdu right-to-left, English and Hindi left-to-right), guided flows, report download. Plain JavaScript, no build step. |
 | API | `backend/app/main.py` | Input validation (Pydantic), rate limiting, security headers, routing, serving the front end. Holds no logic of its own. |
 | Core | `backend/haris/*.py` | All detection, redaction, guidance and reporting. Pure Python standard library, so it can be reused behind any channel (WhatsApp webhook, voice line, browser extension). |
 
@@ -105,7 +105,7 @@ The category is the category of the heaviest signal that fired (`phishing_link` 
 
 ### Evaluation
 
-`scripts/evaluate.py` runs the rules engine on `data/samples/messages.json`: 33 scam messages and 19 legitimate ones (OTP notices that say "never share", delivery confirmations, "pay cash on delivery", salary deposits, paid fines, donation receipts, visa approvals, genuine rental viewings, mall sales, family and spouse messages with words like "darling") across Arabic, English and Urdu. Current result: **33/33 scams flagged as medium or high, 0/19 false alarms.**
+`scripts/evaluate.py` runs the rules engine on `data/samples/messages.json`: 37 scam messages and 22 legitimate ones (OTP notices that say "never share", delivery confirmations, "pay cash on delivery", salary deposits, paid fines, donation receipts, visa approvals, genuine rental viewings, mall sales, family and spouse messages with words like "darling") across Arabic, English, Urdu and Hindi. Current result: **37/37 scams flagged as medium or high, 0/22 false alarms.**
 
 This is a regression test, not an accuracy claim: the samples were written alongside the rules. A real accuracy figure needs a held-out set of genuine, anonymised messages from the partner authority.
 
@@ -156,7 +156,7 @@ So the rules engine gives the verdict, and the language model is used for what r
 
 ### Why not a fine-tuned classifier now
 
-A fine-tuned model needs a large, labelled set of real UAE scam and legitimate messages in three languages, which a hackathon team does not have and should not collect without an agreement with the authority. The rules engine plus the AI second opinion gives working protection today; the signals and the AI's reasons can label real data later to train a classifier.
+A fine-tuned model needs a large, labelled set of real UAE scam and legitimate messages in four languages, which a hackathon team does not have and should not collect without an agreement with the authority. The rules engine plus the AI second opinion gives working protection today; the signals and the AI's reasons can label real data later to train a classifier.
 
 ### Campaign radar: `POST /api/radar/report`
 
@@ -228,14 +228,16 @@ The design follows the data-minimisation and purpose-limitation principles of UA
 
 ## 5. Accessibility and languages
 
-- Arabic and Urdu switch the page to right-to-left; English to left-to-right. Latin text such as domains and report numbers is kept left-to-right inside Arabic text.
-- Language is detected from the script of the message (Urdu-only letters such as ے and ں distinguish Urdu from Arabic), and the user can switch at any time.
+- Arabic and Urdu switch the page to right-to-left; English and Hindi to left-to-right. Latin text such as domains and report numbers is kept left-to-right inside Arabic text.
+- Language is detected from the script of the message (Devanagari means Hindi; Urdu-only letters such as ے and ں distinguish Urdu from Arabic), and the user can switch at any time.
+- **Translations live in one file per language:** `frontend/locales/<lang>.json` for the chat (including each language's dictation accents) and `backend/haris/locales/<lang>.json` for risk labels, reasons, advice, the ten plans, contacts, the report, the radar and payment labels. `haris/translations.py` loads them; `tests/test_locales.py` checks every file has the same keys, list lengths and `{placeholders}`. Hindi scam phrases for detection are kept together in `rules.py` (`HINDI`) and `intake.py` so a native speaker can review them in one place.
 - Quick-reply buttons mean most flows need no typing. Quick replies are at least 36 px high, focus is clearly visible, the chat is announced to screen readers (`aria-live`), and animations stop when the user prefers reduced motion.
 
 ## 6. Extending Haris
 
-- **Add a victim situation:** add a playbook in `playbooks.py` (title and steps in all three languages, same number of steps), add its id to `Incident` in `app/main.py`, `INCIDENT_TYPES` in `llm.py`, and `REQUIRED` and `INCIDENT_HINTS` in `intake.py`. The chat, the report and the summary card pick it up with no front-end change.
-- **Add a scam pattern:** add a `Signal` in `rules.py` and its reason sentence in all three languages in `i18n.py`, then add sample messages to `data/samples/messages.json` and run `pytest` and `scripts/evaluate.py`.
+- **Add a language:** copy `en.json` in both `locales` folders to `<code>.json` and translate it, add the code to `SUPPORTED_LANGS` in `text.py`, `Lang` in `app/main.py`, `LANG_NAMES` in `llm.py` and `LANGS` in `app.js`, add a button in `index.html`, and add scam phrases for the new language in `rules.py`. Run `pytest`: the locale test lists anything missing.
+- **Add a victim situation:** add a playbook in `playbooks.py` (title and steps under `playbooks` in every `locales/<lang>.json`, same number of steps), add its id to `Incident` in `app/main.py`, `INCIDENT_TYPES` in `llm.py`, and `REQUIRED` and `INCIDENT_HINTS` in `intake.py`. The chat, the report and the summary card pick it up with no front-end change.
+- **Add a scam pattern:** add a `Signal` in `rules.py` and its reason sentence under `reasons` in every `locales/<lang>.json`, then add sample messages to `data/samples/messages.json` and run `pytest` and `scripts/evaluate.py`.
 - **Add a language:** add the language code to `SUPPORTED_LANGS`, phrases to the signals, and text to `i18n.py`, `playbooks.py`, `report.py` and the `UI` table in `app.js`.
 - **Fix a new mishearing:** add the spoken variants and the written form to `GLOSSARY` in `polish.py`, with a test in `tests/test_polish.py`.
 - **Train speech recognition for the pilot:** move transcription to a server-side service such as Azure Speech with Custom Speech, hosted in a UAE region. Train it on the glossary terms (plain-text data) and on anonymised recordings with transcripts from the partner authority. `/api/polish` stays as the safety net.
@@ -248,5 +250,5 @@ The design follows the data-minimisation and purpose-limitation principles of UA
 - Screenshots are read only when the AI is on; voice notes sent as audio files are not analysed yet.
 - Dictation accuracy depends on the browser's speech service; Haris can fix misheard words but not words the service didn't hear at all.
 - Link analysis is offline and structural; it has no live reputation data.
-- The Urdu and dialect wording has not yet been reviewed by native speakers.
+- The Urdu, Hindi and dialect wording has not yet been reviewed by native speakers; the Hindi was drafted with AI help.
 - Official contact details come from public police announcements and must be confirmed by the partner authority before launch.

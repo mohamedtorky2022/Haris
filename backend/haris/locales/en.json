@@ -1,0 +1,292 @@
+{
+ "risk_labels": {
+  "high": "High risk of fraud",
+  "medium": "Suspicious signs",
+  "low": "No clear warning signs"
+ },
+ "risk_summary": {
+  "high": "Do not click any link, and do not send any details or money.",
+  "medium": "Slow down and check the sender through their official channel before doing anything.",
+  "low": "This does not mean the message is certainly safe. Always check the official channel."
+ },
+ "categories": {
+  "otp_theft": "One-time code theft",
+  "bank_impersonation": "Bank impersonation",
+  "gov_impersonation": "Government impersonation",
+  "delivery_scam": "Fake delivery",
+  "job_scam": "Fake job offer",
+  "investment_scam": "Fake investment",
+  "prize_scam": "Fake prize",
+  "extortion": "Online extortion",
+  "tech_support": "Fake tech support",
+  "phishing_link": "Phishing link",
+  "romance_scam": "Romance scam",
+  "shopping_scam": "Fake shop, listing or rental",
+  "charity_scam": "Fake charity",
+  "visa_scam": "Fake visa or residency",
+  "recovery_scam": "Fake money recovery",
+  "unknown": "Not identified"
+ },
+ "reasons": {
+  "deposit_to_reserve": "It asks for a deposit before you see the flat or item, or says the owner is abroad. This is how rental and listing scams work.",
+  "transfer_only": "It refuses cash on delivery and only takes an advance transfer, so you can't get your money back.",
+  "too_good_deal": "A price or discount far below the market. Unreal offers are a common bait for fake shops.",
+  "charity_appeal": "A request to donate by transfer or through a link. Donate only through licensed charities and their official channels.",
+  "personal_account": "It asks for payment to a personal account. Real organisations are paid into accounts in their own name.",
+  "visa_offer": "It promises a 'guaranteed' or fast visa or residency. Visas are only issued through official government channels.",
+  "romance_money": "Affectionate words together with a request for money, tickets or fees. This is the classic romance scam.",
+  "romance_profile": "An online relationship with someone never met in person, or a far-away job story (oil rig, military mission).",
+  "recovery_offer": "It promises to recover money you lost. This is a second scam aimed at victims; police never charge to recover funds.",
+  "otp_request": "It asks for a one-time code (OTP). Official bodies never ask for it.",
+  "card_details": "It asks for bank card details.",
+  "account_suspended": "It threatens to block your account or card to scare you.",
+  "bank_mention": "It uses a bank's name.",
+  "gov_impersonation": "It uses a government body's name or mentions a fine.",
+  "delivery": "It talks about a parcel or delivery, a very common scam.",
+  "payment_request": "It asks you to pay or transfer money.",
+  "small_amount": "It asks for a small amount, a trick to steal your card details.",
+  "urgency": "It rushes you so you do not stop to think.",
+  "prize": "It promises a prize you never entered for.",
+  "job_offer": "An easy job or unrealistic income.",
+  "upfront_fee": "It asks for an upfront fee. Real employers do not.",
+  "investment": "It talks about investment, trading or profits.",
+  "guaranteed": "It promises guaranteed returns. No real investment does.",
+  "extortion_threat": "A threat to publish photos, videos or chats. This is extortion, a crime.",
+  "secrecy": "It asks you to tell no one.",
+  "remote_access": "It asks you to install an app that lets someone control your device.",
+  "gift_cards": "It asks for payment in gift cards, a scammer favourite.",
+  "crypto_payment": "It asks for payment in crypto, which is hard to recover.",
+  "personal_info_request": "It asks for personal details such as your ID or passport.",
+  "link_click": "It asks you to click a link.",
+  "suspicious_link": "It contains a suspicious link.",
+  "official_link": "The link is on a known official domain."
+ },
+ "url_flags": {
+  "brand_lookalike": "imitates a known brand but is not its official site",
+  "ip_host": "uses a raw IP address",
+  "at_symbol": "hides the real destination with @",
+  "punycode": "uses look-alike characters",
+  "risky_tld": "a domain ending often used in scams",
+  "shortener": "a short link that hides the destination",
+  "many_hyphens": "many hyphens in the domain",
+  "many_subdomains": "many sub-domains",
+  "no_https": "not encrypted (no https)"
+ },
+ "advice": {
+  "general": [
+   "Never share your one-time code or card details with anyone.",
+   "Check with the organisation on its official number, not the one in the message.",
+   "If it is a scam, report it to Aman on 8002626 or at ecrime.ae."
+  ],
+  "delivery_scam": [
+   "Track parcels only in the courier's own app or official website."
+  ],
+  "bank_impersonation": [
+   "Call your bank on the number printed on the back of your card."
+  ],
+  "gov_impersonation": [
+   "Check fines and fees only in official government apps and websites."
+  ],
+  "otp_theft": [
+   "A one-time code approves a transaction. Anyone asking for it wants to use your account."
+  ],
+  "job_scam": [
+   "Real employers never charge you for a job or a visa."
+  ],
+  "investment_scam": [
+   "Check that the platform is licensed by a financial regulator before investing."
+  ],
+  "prize_scam": [
+   "Real prizes never ask you to pay a fee to claim them."
+  ],
+  "extortion": [
+   "Do not pay or negotiate. Paying does not stop extortion.",
+   "Do not delete the chats. Keep screenshots as evidence.",
+   "Report to the police now. You are not alone, and reports are handled confidentially."
+  ],
+  "tech_support": [
+   "Never install a remote-control app because a caller asked you to."
+  ],
+  "shopping_scam": [
+   "Never pay a deposit before seeing the flat or item yourself, and check the owner's identity and a registered tenancy contract.",
+   "Shop at known stores, and prefer cash on delivery or a card that lets you dispute the charge."
+  ],
+  "charity_scam": [
+   "Donate only through charities licensed in the UAE and their official apps and websites, never to personal accounts."
+  ],
+  "visa_scam": [
+   "Check any visa or residency on official government websites and apps, and never pay an agent who promises it is guaranteed."
+  ],
+  "romance_scam": [
+   "Never send money to someone you haven't met in person, however moving the story.",
+   "Ask for a live video call, and talk to someone you trust before deciding anything."
+  ],
+  "recovery_scam": [
+   "Never pay a fee to get your money back. Follow up your case with the police directly: Aman 8002626 or ecrime.ae."
+  ],
+  "phishing_link": [
+   "Type the official website address yourself instead of tapping the link."
+  ]
+ },
+ "playbooks": {
+  "money_sent": {
+   "title": "I paid, or shared my card details or a one-time code",
+   "steps": [
+    "Call your bank now on the number on the back of your card. Ask them to block the card and stop the transaction.",
+    "Do not delete the messages, chats or call log.",
+    "Take screenshots: the message, the link, the sender's number and the debit alert.",
+    "Report to the police now: every minute makes recovery harder.",
+    "Change your banking app and e-mail passwords from a safe device.",
+    "Stop all contact with the scammer."
+   ]
+  },
+  "account_hacked": {
+   "title": "My account was hacked (WhatsApp, Instagram, e-mail...)",
+   "steps": [
+    "Use 'Forgot password' or account recovery in the official app.",
+    "Turn on two-step verification as soon as you are back in.",
+    "Tell friends and family not to send money or codes to anyone using your name.",
+    "Check the devices logged in to the account and remove any you do not know.",
+    "If someone asks for money to return the account, do not pay. Report it."
+   ]
+  },
+  "extortion": {
+   "title": "Someone is threatening to publish my photos or chats",
+   "steps": [
+    "You are not to blame. The person threatening you is committing the crime.",
+    "Do not pay: paying rarely ends it and often makes it worse.",
+    "Do not delete the chats. Screenshot the account and the threats.",
+    "Stop replying, and do not send any more photos or videos.",
+    "Report it to the police now. Reports are handled confidentially.",
+    "If you are under 18, tell a parent or an adult you trust."
+   ]
+  },
+  "harassment": {
+   "title": "I'm being bullied, harassed or insulted online",
+   "steps": [
+    "Don't answer abuse with abuse: an insulting reply can count against you too.",
+    "Screenshot the account, the date and the abusive words, and don't delete them.",
+    "Block the account and use the app's own 'Report' option.",
+    "Online insults, defamation and harassment are crimes under UAE law. Report it to the police.",
+    "If you are under 18, tell a parent or a teacher you trust.",
+    "If there is a threat to hurt you, call 999."
+   ]
+  },
+  "impersonation": {
+   "title": "Someone made a fake account with my name or photo",
+   "steps": [
+    "Screenshot the fake account, its link and its username.",
+    "Report it in the app as 'impersonation', and ask your friends to report it too.",
+    "Post from your real account that a fake one exists and that you never ask anyone for money or codes.",
+    "If the fake account asked anyone for money, report it to the police now.",
+    "Make your photos and friends list private, and turn on two-step verification."
+   ]
+  },
+  "privacy_violation": {
+   "title": "Someone filmed me, or posted my photos or personal details without permission",
+   "steps": [
+    "Screenshot the post, its link, the account name and the date before it is deleted.",
+    "Ask for removal using the app's 'Report a privacy violation' option.",
+    "Don't share the content again yourself, even to warn people about it.",
+    "Filming people or posting their photos or details without permission is a crime under UAE law. Report it to the police.",
+    "If your address or numbers were posted and you feel unsafe, call 999."
+   ]
+  },
+  "device_hacked": {
+   "title": "My phone or computer is hacked, or my files are locked for a ransom",
+   "steps": [
+    "Take the device offline now: turn off Wi-Fi and mobile data, and unplug the network cable.",
+    "Don't pay the ransom: paying doesn't guarantee your files back, and it funds the criminals.",
+    "If your phone suddenly loses signal and messages stop, call your telecom provider now: your SIM may have been moved to another device.",
+    "From another, safe device, change your e-mail and banking passwords and turn on two-step verification.",
+    "Photograph the ransom note or any strange message, and don't delete anything.",
+    "Report it to the police. If it is a work device, tell your company's IT team at once."
+   ]
+  },
+  "identity_shared": {
+   "title": "I sent my ID or passport to someone suspicious",
+   "steps": [
+    "Report it to the police so it is on record that your documents may be misused.",
+    "Tell your bank and ask them to watch for new applications in your name.",
+    "Watch for any SIM card, account or loan opened in your name.",
+    "Keep a copy of the chat where you sent the document."
+   ]
+  },
+  "business_fraud": {
+   "title": "My business paid a fake invoice or a transfer asked for by the 'boss' or a 'supplier'",
+   "steps": [
+    "Call the company's bank now and ask them to recall the transfer and freeze it at the receiving bank.",
+    "Call the supplier or manager on a number you already know, not the number or e-mail in the request.",
+    "Keep the full messages with e-mail addresses, the invoice and the transfer receipt.",
+    "Change the company e-mail passwords and turn on two-step verification: the mailbox may be hacked.",
+    "Report it to the police now: every hour lowers the chance of getting the money back.",
+    "Make it a rule: any change to a supplier's bank details is confirmed by a phone call."
+   ]
+  },
+  "suspicious_only": {
+   "title": "I got a suspicious message but did not respond",
+   "steps": [
+    "Well done: do not tap the link and do not reply.",
+    "Block the number or account, and use 'Report spam' in the app.",
+    "Report it to the police to protect others from the same campaign.",
+    "Warn your family, especially older relatives."
+   ]
+  }
+ },
+ "contacts": {
+  "emergency": "Emergency (immediate danger)",
+  "aman": "Aman service - Abu Dhabi Police (toll-free call)",
+  "aman_sms": "Aman service (SMS)",
+  "aman_email": "Aman service e-mail",
+  "ecrime": "eCrime platform - Dubai Police (online report)",
+  "dubai_police": "Dubai Police (non-emergency)"
+ },
+ "report": {
+  "title": "Cybercrime incident report",
+  "reference": "Reference",
+  "generated": "Prepared on",
+  "type": "Type of incident",
+  "occurred": "When it happened",
+  "description": "What happened",
+  "money": "Money lost",
+  "payment_method": "Payment method",
+  "identifiers": "Scammer details (numbers, links, accounts)",
+  "found_in_text": "found automatically in the description",
+  "steps_taken": "Steps already taken",
+  "evidence": "Evidence you have",
+  "reporter": "Reporter",
+  "where": "Where to file this report",
+  "none": "None",
+  "disclaimer": "Prepared with Haris to make reporting easier. Haris is not an official body: the report is only filed once you submit it to the police."
+ },
+ "radar": {
+  "authority": "The authority",
+  "kind": {
+   "phone": "number",
+   "domain": "link",
+   "email": "e-mail",
+   "iban": "bank account",
+   "template": "message text"
+  },
+  "reported": "{n} people reported this message or sender through Haris in the last {h} hours.",
+  "broadcast_title": "Official warning: a {category} campaign is spreading now",
+  "broadcast_body": "{authority} confirmed this is a scam campaign. Don't reply, don't tap links, and don't send money or details to: {ids}.",
+  "confirmed_reason": "The authority confirmed this message is part of a scam campaign and issued an official warning.",
+  "demo": "Demo"
+ },
+ "payment_labels": {
+  "card": "Bank card",
+  "transfer": "Bank transfer",
+  "crypto": "Crypto",
+  "gift_cards": "Gift cards",
+  "cash": "Cash",
+  "other": "Other"
+ },
+ "step_labels": {
+  "bank": "Called the bank",
+  "card": "Blocked the card",
+  "password": "Changed the password",
+  "offline": "Took the device offline",
+  "blocked": "Blocked the scammer"
+ }
+}

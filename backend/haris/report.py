@@ -14,30 +14,10 @@ from datetime import datetime, timezone
 from .playbooks import PLAYBOOKS, contacts
 from .redact import find_identifiers
 from .text import normalize_digits
+from .translations import table
 from .urls import extract_urls
 
-LABELS = {
-    "title": {"ar": "ملف بلاغ عن جريمة إلكترونية", "en": "Cybercrime incident report", "ur": "سائبر کرائم کی رپورٹ"},
-    "reference": {"ar": "الرقم المرجعي", "en": "Reference", "ur": "حوالہ نمبر"},
-    "generated": {"ar": "تاريخ إعداد الملف", "en": "Prepared on", "ur": "تیاری کی تاریخ"},
-    "type": {"ar": "نوع الحادثة", "en": "Type of incident", "ur": "واقعے کی قسم"},
-    "occurred": {"ar": "وقت الحادثة", "en": "When it happened", "ur": "واقعہ کب ہوا"},
-    "description": {"ar": "ماذا حدث", "en": "What happened", "ur": "کیا ہوا"},
-    "money": {"ar": "المبلغ المفقود", "en": "Money lost", "ur": "نقصان کی رقم"},
-    "payment_method": {"ar": "طريقة الدفع", "en": "Payment method", "ur": "ادائیگی کا طریقہ"},
-    "identifiers": {"ar": "بيانات المحتال (أرقام، روابط، حسابات)", "en": "Scammer details (numbers, links, accounts)", "ur": "فراڈیے کی معلومات (نمبر، لنک، اکاؤنٹس)"},
-    "found_in_text": {"ar": "وُجدت تلقائياً في الوصف", "en": "found automatically in the description", "ur": "تفصیل میں خودکار طور پر ملا"},
-    "steps_taken": {"ar": "الإجراءات التي اتخذتها", "en": "Steps already taken", "ur": "اٹھائے گئے اقدامات"},
-    "evidence": {"ar": "الأدلة المتوفرة لديك", "en": "Evidence you have", "ur": "آپ کے پاس موجود ثبوت"},
-    "reporter": {"ar": "بيانات المبلِّغ", "en": "Reporter", "ur": "رپورٹ کرنے والا"},
-    "where": {"ar": "أين تقدّم هذا البلاغ", "en": "Where to file this report", "ur": "یہ رپورٹ کہاں جمع کریں"},
-    "none": {"ar": "لا يوجد", "en": "None", "ur": "کوئی نہیں"},
-    "disclaimer": {
-        "ar": "أُعدّ هذا الملف بمساعدة «حارس» لتسهيل البلاغ. «حارس» ليس جهة رسمية، والبلاغ لا يُعد مقدَّماً إلا عند تسليمه للشرطة.",
-        "en": "Prepared with Haris to make reporting easier. Haris is not an official body: the report is only filed once you submit it to the police.",
-        "ur": "یہ فائل حارس کی مدد سے تیار کی گئی۔ حارس سرکاری ادارہ نہیں ہے: رپورٹ پولیس کو جمع کرانے پر ہی درج ہوتی ہے۔",
-    },
-}
+LABELS = table("report")
 
 MAX_FIELD = 4000
 
@@ -104,7 +84,7 @@ def _markdown(L, header, sections) -> str:
 
 def _html(L, header, sections, lang) -> str:
     e = html.escape
-    direction = "ltr" if lang == "en" else "rtl"
+    direction = "rtl" if lang in ("ar", "ur") else "ltr"
     parts = [
         f'<!DOCTYPE html><html lang="{lang}" dir="{direction}"><head><meta charset="utf-8">',
         f"<title>{e(L['title'])}</title>",

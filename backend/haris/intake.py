@@ -15,6 +15,7 @@ import re
 from . import llm
 from .redact import find_identifiers, redact
 from .text import normalize, normalize_digits, pick_language
+from .translations import table
 from .urls import extract_urls
 
 MAX_IMAGES = 3
@@ -77,40 +78,57 @@ PAYMENT_HINTS = {
     "cash": ("نقداً", "نقدا", "كاش", "cash", "نقد"),
 }
 
-PAYMENT_LABELS = {
-    "card": {"ar": "بطاقة بنكية", "en": "Bank card", "ur": "بینک کارڈ"},
-    "transfer": {"ar": "تحويل بنكي", "en": "Bank transfer", "ur": "بینک ٹرانسفر"},
-    "crypto": {"ar": "عملات رقمية", "en": "Crypto", "ur": "کرپٹو"},
-    "gift_cards": {"ar": "بطاقات هدايا", "en": "Gift cards", "ur": "گفٹ کارڈ"},
-    "cash": {"ar": "نقداً", "en": "Cash", "ur": "نقد"},
-    "other": {"ar": "طريقة أخرى", "en": "Other", "ur": "دیگر"},
+PAYMENT_LABELS = table("payment_labels")
+
+# Phrases that mean the victim already took a step; the label shown is in locales/<lang>.json.
+STEP_PHRASES = {
+    "bank": (("اتصلت بالبنك", "كلمت البنك", "أبلغت البنك", "called the bank", "called my bank", "told the bank",
+              "بینک کو فون")),
+    "card": (("أوقفت البطاقة", "اوقفت البطاقة", "جمدت البطاقة", "blocked the card", "blocked my card", "froze my card",
+              "کارڈ بند")),
+    "password": (("غيرت كلمة المرور", "غيرت الباسورد", "changed my password", "changed the password",
+                  "پاس ورڈ بدل")),
+    "offline": (("فصلت الانترنت", "فصلت الجهاز", "اطفأت الواي فاي", "disconnected", "turned off wi-fi", "turned off the wifi",
+                 "انٹرنیٹ بند")),
+    "blocked": (("حظرت الرقم", "حظرته", "blocked the number", "blocked him", "blocked them", "نمبر بلاک")),
 }
 
-STEP_HINTS = {
-    "bank": (("اتصلت بالبنك", "كلمت البنك", "أبلغت البنك", "called the bank", "called my bank", "told the bank",
-              "بینک کو فون"),
-             {"ar": "اتصلت بالبنك", "en": "Called the bank", "ur": "بینک کو فون کیا"}),
-    "card": (("أوقفت البطاقة", "اوقفت البطاقة", "جمدت البطاقة", "blocked the card", "blocked my card", "froze my card",
-              "کارڈ بند"),
-             {"ar": "أوقفت البطاقة", "en": "Blocked the card", "ur": "کارڈ بند کروایا"}),
-    "password": (("غيرت كلمة المرور", "غيرت الباسورد", "changed my password", "changed the password",
-                  "پاس ورڈ بدل"),
-                 {"ar": "غيّرت كلمة المرور", "en": "Changed the password", "ur": "پاس ورڈ بدلا"}),
-    "offline": (("فصلت الانترنت", "فصلت الجهاز", "اطفأت الواي فاي", "disconnected", "turned off wi-fi", "turned off the wifi",
-                 "انٹرنیٹ بند"),
-                {"ar": "فصلت الجهاز عن الإنترنت", "en": "Took the device offline", "ur": "ڈیوائس انٹرنیٹ سے الگ کی"}),
-    "blocked": (("حظرت الرقم", "حظرته", "blocked the number", "blocked him", "blocked them", "نمبر بلاک"),
-                {"ar": "حظرت رقم المحتال", "en": "Blocked the scammer", "ur": "نمبر بلاک کیا"}),
-}
+# Hindi phrases, kept together for review by a native speaker.
+for _key, _extra in {
+    "money_sent": ("पैसे भेज दिए", "भुगतान कर दिया", "पैसे कट गए", "कार्ड की जानकारी दे दी", "ओटीपी दे दिया", "ट्रांसफर कर दिए"),
+    "extortion": ("ब्लैकमेल", "धमकी"),
+    "account_hacked": ("हैक", "खाता चोरी"),
+    "harassment": ("परेशान कर", "गाली", "बदनाम कर", "धमका"),
+    "impersonation": ("मेरे नाम से नकली", "मेरे नाम का नकली", "मेरी फोटो से"),
+    "privacy_violation": ("बिना अनुमति", "बिना इजाज़त", "बिना इजाजत"),
+    "device_hacked": ("फिरौती", "वायरस", "फ़ाइलें लॉक", "फाइलें लॉक", "फोन हैक"),
+    "identity_shared": ("आधार भेज", "पासपोर्ट भेज", "आईडी भेज"),
+    "business_fraud": ("बिल का भुगतान", "सप्लायर", "इनवॉइस"),
+}.items():
+    INCIDENT_HINTS[_key] = INCIDENT_HINTS[_key] + _extra
+for _key, _extra in {
+    "gift_cards": ("गिफ्ट कार्ड", "गिफ़्ट कार्ड"), "crypto": ("क्रिप्टो", "बिटकॉइन"),
+    "transfer": ("ट्रांसफर", "ट्रांसफ़र"), "card": ("कार्ड",), "cash": ("नकद",),
+}.items():
+    PAYMENT_HINTS[_key] = PAYMENT_HINTS[_key] + _extra
+for _key, _extra in {
+    "bank": ("बैंक को फोन", "बैंक को फ़ोन"), "card": ("कार्ड बंद",), "password": ("पासवर्ड बदल",),
+    "offline": ("इंटरनेट बंद", "वाई-फाई बंद"), "blocked": ("ब्लॉक कर दिया",),
+}.items():
+    STEP_PHRASES[_key] = STEP_PHRASES[_key] + _extra
+EXTORTION_THREATS = EXTORTION_THREATS + ("ब्लैकमेल", "धमकी दे रहा")
+
+STEP_LABELS = table("step_labels")
+STEP_HINTS = {key: (phrases, STEP_LABELS[key]) for key, phrases in STEP_PHRASES.items()}
 
 AMOUNT = re.compile(
-    r"(\d[\d,]*(?:\.\d{1,2})?)\s?(درهم|دراهم|درہم|aed|dhs|dh|usdt|usd|\$|دولار|ريال|sar)"
+    r"(\d[\d,]*(?:\.\d{1,2})?)\s?(درهم|دراهم|درہم|दिरहम|रुपये|aed|dhs|dh|usdt|usd|\$|دولار|ريال|sar)"
     r"|(aed|dhs|usdt|usd|\$)\s?(\d[\d,]*(?:\.\d{1,2})?)",
     re.IGNORECASE,
 )
-CURRENCY = {"درهم": "AED", "دراهم": "AED", "درہم": "AED", "aed": "AED", "dhs": "AED", "dh": "AED", "usd": "USD",
+CURRENCY = {"दिरहम": "AED", "रुपये": "INR", "درهم": "AED", "دراهم": "AED", "درہم": "AED", "aed": "AED", "dhs": "AED", "dh": "AED", "usd": "USD",
             "$": "USD", "دولار": "USD", "usdt": "USDT", "ريال": "SAR", "sar": "SAR"}
-DAY_WORDS = re.compile(r"(اليوم|امس|أمس|البارحة|قبل ساعة|قبل ساعتين|قبل قليل|today|yesterday|this morning|tonight|"
+DAY_WORDS = re.compile(r"(आज|कल रात|कल|एक घंटे पहले|اليوم|امس|أمس|البارحة|قبل ساعة|قبل ساعتين|قبل قليل|today|yesterday|this morning|tonight|"
                        r"an hour ago|آج|کل|ابھی)", re.IGNORECASE)
 CLOCK = re.compile(r"(?:الساعة\s?)?\b\d{1,2}(?::\d{2})?\s?(?:صباحاً|صباحا|مساءً|مساء|ظهراً|عصراً|am|pm|بجے)?",
                    re.IGNORECASE)

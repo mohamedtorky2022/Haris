@@ -60,6 +60,14 @@ GLOSSARY = [
     ("ur", ["واٹس اپ", "وٹس ایپ"], "واٹس ایپ"),
     ("ur", ["ارامیکس", "ارا میکس"], "ارامیکس (Aramex)"),
     ("ur", ["بٹ کوئن"], "بٹ کوائن"),
+    ("hi", ["ओ टी पी", "ओटी पी", "ओ टीपी"], "OTP"),
+    ("hi", ["सी वी वी"], "CVV"),
+    ("hi", ["आई बैन", "आई बान"], "IBAN"),
+    ("hi", ["यू एस डी टी"], "USDT"),
+    ("hi", ["व्हाट्स ऐप", "वाट्स ऐप", "व्हाट्स एप"], "व्हाट्सऐप"),
+    ("hi", ["अरा मेक्स", "आरामेक्स", "अरामैक्स"], "अरामेक्स (Aramex)"),
+    ("hi", ["बिट कॉइन"], "बिटकॉइन"),
+    ("hi", ["एमिरेट्स आई डी"], "एमिरेट्स आईडी"),
 ]
 
 DIALECTS = {
@@ -67,14 +75,15 @@ DIALECTS = {
     "ar-JO": "Levantine Arabic", "ar-IQ": "Iraqi Arabic", "ar-MA": "Maghrebi Arabic",
     "en-US": "American English", "en-GB": "British English", "en-IN": "Indian English",
     "en-PH": "Philippine English", "ur-PK": "Pakistani Urdu", "ur-IN": "Indian Urdu",
+    "hi-IN": "Hindi (India)",
 }
 
 _ARABIC_CLASSES = {"ا": "[اأإآ]", "أ": "[اأإآ]", "إ": "[اأإآ]", "آ": "[اأإآ]", "ي": "[يى]", "ى": "[يى]", "ه": "[هة]", "ة": "[هة]"}
 # Numbers, links, e-mails and any word with a digit in it.
 PROTECTED = re.compile(r"https?://\S+|www\.\S+|[\w.+-]+@[\w-]+(?:\.[\w-]+)+|[^\s]*\d[^\s]*")
 TOKEN = re.compile(r"\[#(\d+)\]")
-WORD_EDGE = r"(?<![\w؀-ۿ])"
-WORD_END = r"(?![\w؀-ۿ])"
+WORD_EDGE = r"(?<![\w\u0600-\u06FF\u0900-\u097F])"
+WORD_END = r"(?![\w\u0600-\u06FF\u0900-\u097F])"
 
 
 def _variant_pattern(variant: str, lang: str) -> str:
@@ -108,7 +117,7 @@ def _words(text: str) -> list[str]:
 
 
 def _bare(word: str) -> str:
-    return re.sub(r"[^\w؀-ۿ]", "", word)
+    return re.sub(r"[^\w\u0600-\u06FF\u0900-\u097F]", "", word)
 
 
 def word_changes(before: str, after: str, limit: int = 12) -> list[dict]:
