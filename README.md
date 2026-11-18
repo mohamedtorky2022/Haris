@@ -39,6 +39,12 @@ Haris starts with **fraud**, the most common and costly cybercrime, and is built
 - **Guides and reports 10 situations** (listed above).
 - **Next:** protecting children from grooming (with specialists reviewing the wording), voice calls and AI-cloned voices, QR codes and screenshot checks, attacks on businesses (data leaks, outages), and rumours and fake news.
 
+### Using it
+
+Open Haris and pick a language. The menu offers four things: **check a message or link**, **I've been scammed, what now?**, **prepare a police report**, and **how do I use Haris?**, a short in-app guide in Arabic, English and Urdu that explains the three steps and how reporting an ignored scam protects others.
+
+The next version, a mobile app and a WhatsApp channel, is designed in an official government style: home and quick check, check result, report by voice or screenshots, report summary, official warnings and the campaign radar, and the same flows inside a WhatsApp business chat.
+
 Haris always presents itself as an assistant, **not** an official body, and never tells a user a message is "safe": the lowest rating is "no clear warning signs".
 
 ### Who it serves

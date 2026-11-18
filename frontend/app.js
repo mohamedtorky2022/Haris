@@ -78,6 +78,15 @@
       reportConfirmed: "هذه الحملة أكّدتها الجهة المختصة، وصدر عنها تحذير رسمي.",
       radarAsk: "الصق الرسالة التي وصلتك وسأرسلها إلى رادار الحملات، حتى تُكتشف الحملة إذا وصلت لآخرين.",
       officialAlerts: "تحذيرات رسمية نشطة",
+      howTo: "كيف أستخدم «حارس»؟",
+      guideTitle: "«حارس» في ثلاث خطوات",
+      guide: [
+        ["قبل أن تتفاعل: افحص", "الصق أي رسالة أو رابط مشبوه. يخبرك «حارس» بدرجة الخطورة، ولماذا، وماذا تفعل."],
+        ["إن وقعت المشكلة: اتبع الخطة", "اختر حالتك، مثل «دفعت مالاً» أو «اختُرق حسابي»، فتظهر لك خطوات فورية بالترتيب مع أرقام البلاغ الرسمية."],
+        ["للتبليغ: احكِ بطريقتك", "اكتب أو تكلّم بلهجتك أو أرفق لقطات شاشة. يسألك «حارس» عن الناقص فقط، ثم يجهّز ملف البلاغ لتقدّمه للشرطة."],
+      ],
+      guideCommunity: "احمِ غيرك: إذا وصلتك رسالة احتيال ولم تتفاعل معها، اضغط «أبلغ عنها لحماية غيري». كل بلاغ يساعد على كشف الحملة مبكراً، فتعتمد الجهة المختصة تحذيراً يصل للجميع.",
+      guidePrivacy: "لا يحفظ «حارس» محادثاتك ولا بياناتك الشخصية، وهو مساعد ذكي وليس جهة رسمية.",
       micError: "تعذّر تشغيل الميكروفون. تأكد من السماح للمتصفح باستخدامه، أو اكتب بدلاً منه.",
       maxImages: "يمكن إرفاق 3 صور كحد أقصى في كل مرة.",
       removeImage: "إزالة الصورة",
@@ -179,6 +188,15 @@
       reportConfirmed: "The authority has confirmed this campaign and issued an official warning.",
       radarAsk: "Paste the message you got and I'll send it to the campaign radar, so the campaign is spotted if others get it too.",
       officialAlerts: "Active official warnings",
+      howTo: "How do I use Haris?",
+      guideTitle: "Haris in three steps",
+      guide: [
+        ["Before you respond: check", "Paste any suspicious message or link. Haris tells you how risky it is, why, and what to do."],
+        ["If something happened: follow the plan", "Pick your situation, such as 'I paid' or 'My account was hacked', for immediate steps in order and the official reporting numbers."],
+        ["To report: tell it your way", "Type, speak in your own accent, or attach screenshots. Haris asks only for what's missing, then prepares the report for you to give the police."],
+      ],
+      guideCommunity: "Protect others: if you get a scam message and don't respond, tap 'Report it to protect others'. Every report helps spot the campaign early, so the authority can approve a warning that reaches everyone.",
+      guidePrivacy: "Haris doesn't keep your chats or personal details. It is an assistant, not an official body.",
       micError: "Couldn't start the microphone. Allow the browser to use it, or type instead.",
       maxImages: "You can attach up to 3 images at a time.",
       removeImage: "Remove image",
@@ -280,6 +298,15 @@
       reportConfirmed: "متعلقہ ادارے نے اس مہم کی تصدیق کر کے سرکاری انتباہ جاری کیا ہے۔",
       radarAsk: "جو پیغام آیا ہے وہ یہاں چسپاں کریں، میں اسے مہم ریڈار کو بھیج دوں گا تاکہ دوسروں تک پہنچے تو مہم پکڑی جائے۔",
       officialAlerts: "فعال سرکاری انتباہات",
+      howTo: "حارس کیسے استعمال کریں؟",
+      guideTitle: "حارس تین مرحلوں میں",
+      guide: [
+        ["جواب دینے سے پہلے: چیک کریں", "کوئی بھی مشکوک پیغام یا لنک چسپاں کریں۔ حارس بتاتا ہے کہ خطرہ کتنا ہے، کیوں، اور کیا کریں۔"],
+        ["اگر کچھ ہو گیا: منصوبے پر عمل کریں", "اپنی صورتحال چنیں، جیسے 'میں نے رقم دی' یا 'اکاؤنٹ ہیک ہو گیا'، فوری اقدامات ترتیب سے اور سرکاری رپورٹ نمبر ملیں گے۔"],
+        ["رپورٹ کے لیے: اپنے طریقے سے بتائیں", "لکھیں، اپنے لہجے میں بولیں، یا اسکرین شاٹ لگائیں۔ حارس صرف کمی والی بات پوچھتا ہے، پھر پولیس کے لیے رپورٹ تیار کرتا ہے۔"],
+      ],
+      guideCommunity: "دوسروں کی حفاظت کریں: اگر فراڈ کا پیغام آئے اور آپ جواب نہ دیں تو 'دوسروں کی حفاظت کے لیے رپورٹ کریں' دبائیں۔ ہر رپورٹ مہم کو جلد پکڑنے میں مدد دیتی ہے، تاکہ ادارہ سب کے لیے انتباہ جاری کرے۔",
+      guidePrivacy: "حارس آپ کی چیٹس یا ذاتی معلومات محفوظ نہیں کرتا۔ یہ ایک معاون ہے، سرکاری ادارہ نہیں۔",
       micError: "مائیک شروع نہیں ہو سکا۔ براؤزر کو اجازت دیں یا لکھ دیں۔",
       maxImages: "ایک وقت میں زیادہ سے زیادہ 3 تصاویر لگائی جا سکتی ہیں۔",
       removeImage: "تصویر ہٹائیں",
@@ -389,7 +416,16 @@
       [tr("check"), askCheck],
       [tr("help"), chooseSituation],
       [tr("report"), startReport],
+      [tr("howTo"), showGuide],
     ]);
+  }
+
+  function showGuide() {
+    const steps = el("ol", { class: "guide" }, UI[lang].guide.map(([title, body]) =>
+      el("li", {}, [el("strong", { text: title }), el("span", { text: body })])));
+    bubble([el("h3", { text: tr("guideTitle") }), steps,
+      el("p", { class: "radar-line", text: tr("guideCommunity") }), el("p", { class: "note", text: tr("guidePrivacy") })]);
+    setChips([[tr("check"), askCheck], [tr("help"), chooseSituation], [tr("report"), startReport]]);
   }
 
   function askCheck() {

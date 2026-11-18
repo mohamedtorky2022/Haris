@@ -271,3 +271,8 @@ body {
 .official-alert p { margin: 0 0 6px; }
 .official-alert .badge { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: #fff; border: 1px solid var(--high); color: var(--high); }
 .radar-line { background: #fff7e0; border-inline-start: 3px solid #f5b400; padding: 6px 10px; border-radius: 6px; font-size: 14px; }
+
+/* ---- How to use ---- */
+.guide { padding-inline-start: 22px; margin: 6px 0 8px; }
+.guide li { margin-bottom: 8px; }
+.guide strong { display: block; color: var(--brand-dark, #0a4740); }
