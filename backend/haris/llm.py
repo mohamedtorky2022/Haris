@@ -21,7 +21,8 @@ API_URL = "https://api.anthropic.com/v1/messages"
 DEFAULT_MODEL = "claude-haiku-5-5"
 CATEGORIES = (
     "otp_theft", "bank_impersonation", "gov_impersonation", "delivery_scam", "job_scam",
-    "investment_scam", "prize_scam", "extortion", "tech_support", "phishing_link", "unknown",
+    "investment_scam", "prize_scam", "extortion", "tech_support", "phishing_link", "romance_scam",
+    "recovery_scam", "unknown",
 )
 LANG_NAMES = {"ar": "Arabic", "en": "English", "ur": "Urdu"}
 
@@ -106,7 +107,8 @@ def parse(text: str) -> dict | None:
 
 # --- Report intake: read a victim's story and screenshots -------------------
 
-INCIDENT_TYPES = ("money_sent", "account_hacked", "extortion", "identity_shared", "suspicious_only")
+INCIDENT_TYPES = ("money_sent", "account_hacked", "extortion", "harassment", "impersonation", "identity_shared",
+                  "business_fraud", "suspicious_only")
 PAYMENT_METHODS = ("card", "transfer", "crypto", "gift_cards", "cash", "other")
 
 EXTRACT_PROMPT = """You help victims of online fraud in the UAE prepare a police report.

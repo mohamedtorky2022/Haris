@@ -3,7 +3,7 @@ import base64
 import pytest
 
 from haris import intake, llm
-from haris.intake import decode_images, extract
+from haris.intake import decode_images, extract, rules_extract
 
 PNG = "data:image/png;base64," + base64.b64encode(b"\x89PNG\r\n\x1a\n" + b"0" * 100).decode()
 
@@ -95,3 +95,15 @@ def test_llm_extract_cleans_output(monkeypatch):
     assert out["incident_type"] is None and out["payment_method"] is None
     assert out["amount"] == "1200"
     assert out["scammer_identifiers"] == ["0559876543"]
+
+
+def test_new_incident_types_are_recognised():
+    assert rules_extract("someone made a fake account in my name on Instagram", "en")["incident_type"] == "impersonation"
+    assert rules_extract("زميلي يتنمر علي ويسبني في مجموعة الواتساب", "ar")["incident_type"] == "harassment"
+    assert rules_extract("We paid the supplier invoice to new bank details from an e-mail", "en")["incident_type"] == "business_fraud"
+
+
+def test_business_fraud_asks_for_money_fields():
+    r = extract("We paid a supplier invoice to new bank details", [], "en")
+    assert r["fields"]["incident_type"] == "business_fraud"
+    assert "amount" in r["missing"] and "payment_method" in r["missing"]

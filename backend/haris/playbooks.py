@@ -144,6 +144,69 @@ PLAYBOOKS: dict[str, dict] = {
             ],
         },
     },
+    "harassment": {
+        "title": {
+            "ar": "أتعرض لتنمّر أو تحرش أو سبّ وتشهير على الإنترنت",
+            "en": "I'm being bullied, harassed or insulted online",
+            "ur": "مجھے آن لائن تنگ، ہراساں یا بدنام کیا جا رہا ہے",
+        },
+        "steps": {
+            "ar": [
+                "لا ترد بالإساءة نفسها، فالرد المسيء قد يُحسب عليك أيضاً.",
+                "التقط صوراً للشاشة تُظهر الحساب والتاريخ والكلام المسيء، ولا تحذفها.",
+                "احظر الحساب، واستخدم خيار «الإبلاغ» في التطبيق نفسه.",
+                "السب والتشهير والتحرش عبر الإنترنت جرائم يعاقب عليها القانون في الإمارات، فأبلغ الشرطة.",
+                "إن كنت دون 18 عاماً، أخبر أحد والديك أو معلماً تثق به.",
+                "إن كان في الكلام تهديد بإيذائك، اتصل بالطوارئ 999.",
+            ],
+            "en": [
+                "Don't answer abuse with abuse: an insulting reply can count against you too.",
+                "Screenshot the account, the date and the abusive words, and don't delete them.",
+                "Block the account and use the app's own 'Report' option.",
+                "Online insults, defamation and harassment are crimes under UAE law. Report it to the police.",
+                "If you are under 18, tell a parent or a teacher you trust.",
+                "If there is a threat to hurt you, call 999.",
+            ],
+            "ur": [
+                "بدتمیزی کا جواب بدتمیزی سے نہ دیں، ایسا جواب آپ کے خلاف بھی جا سکتا ہے۔",
+                "اکاؤنٹ، تاریخ اور توہین آمیز الفاظ کے اسکرین شاٹس لیں اور انہیں ڈیلیٹ نہ کریں۔",
+                "اکاؤنٹ بلاک کریں اور ایپ میں 'رپورٹ' کا آپشن استعمال کریں۔",
+                "متحدہ عرب امارات کے قانون میں آن لائن گالی، بدنامی اور ہراسانی جرم ہیں۔ پولیس کو رپورٹ کریں۔",
+                "اگر آپ کی عمر 18 سال سے کم ہے تو والدین یا کسی بھروسہ مند استاد کو بتائیں۔",
+                "اگر نقصان پہنچانے کی دھمکی ہو تو 999 پر کال کریں۔",
+            ],
+        },
+    },
+    "impersonation": {
+        "title": {
+            "ar": "أحدهم أنشأ حساباً مزيفاً باسمي أو بصورتي",
+            "en": "Someone made a fake account with my name or photo",
+            "ur": "کسی نے میرے نام یا تصویر سے جعلی اکاؤنٹ بنایا",
+        },
+        "steps": {
+            "ar": [
+                "التقط صوراً للشاشة للحساب المزيف ورابطه واسم المستخدم.",
+                "أبلغ عن الحساب في التطبيق باختيار «انتحال شخصية»، واطلب من أصدقائك الإبلاغ عنه أيضاً.",
+                "انشر من حسابك الحقيقي أن هناك حساباً مزيفاً، وأنك لا تطلب مالاً أو رموزاً من أحد.",
+                "إن طلب الحساب المزيف أموالاً من أي شخص، فأبلغ الشرطة فوراً.",
+                "اجعل صورك وقائمة أصدقائك خاصة، وفعّل التحقق بخطوتين.",
+            ],
+            "en": [
+                "Screenshot the fake account, its link and its username.",
+                "Report it in the app as 'impersonation', and ask your friends to report it too.",
+                "Post from your real account that a fake one exists and that you never ask anyone for money or codes.",
+                "If the fake account asked anyone for money, report it to the police now.",
+                "Make your photos and friends list private, and turn on two-step verification.",
+            ],
+            "ur": [
+                "جعلی اکاؤنٹ، اس کے لنک اور یوزرنیم کے اسکرین شاٹس لیں۔",
+                "ایپ میں اسے 'نقالی' کے طور پر رپورٹ کریں اور دوستوں سے بھی رپورٹ کروائیں۔",
+                "اپنے اصلی اکاؤنٹ سے بتائیں کہ جعلی اکاؤنٹ موجود ہے اور آپ کسی سے رقم یا کوڈ نہیں مانگتے۔",
+                "اگر جعلی اکاؤنٹ نے کسی سے رقم مانگی ہے تو فوراً پولیس کو رپورٹ کریں۔",
+                "اپنی تصاویر اور دوستوں کی فہرست پرائیویٹ کریں اور دو مرحلہ تصدیق آن کریں۔",
+            ],
+        },
+    },
     "identity_shared": {
         "title": {
             "ar": "أرسلت صورة الهوية أو جواز السفر لجهة مشبوهة",
@@ -168,6 +231,39 @@ PLAYBOOKS: dict[str, dict] = {
                 "بینک کو بتائیں اور اپنے نام پر نئی درخواستوں پر نظر رکھنے کو کہیں۔",
                 "اپنے نام پر کھلنے والی سم، اکاؤنٹ یا قرض پر نظر رکھیں۔",
                 "جس چیٹ میں دستاویز بھیجی اس کی کاپی رکھیں۔",
+            ],
+        },
+    },
+    "business_fraud": {
+        "title": {
+            "ar": "شركتي دفعت فاتورة مزيفة أو حوّلت مالاً بطلب من «المدير» أو «المورّد»",
+            "en": "My business paid a fake invoice or a transfer asked for by the 'boss' or a 'supplier'",
+            "ur": "میرے کاروبار نے جعلی انوائس یا 'باس' یا 'سپلائر' کے کہنے پر رقم بھیج دی",
+        },
+        "steps": {
+            "ar": [
+                "اتصل ببنك الشركة فوراً، واطلب استدعاء التحويل وتجميده لدى البنك المستلم.",
+                "اتصل بالمورّد أو المدير على رقم تعرفه مسبقاً، لا على الرقم أو البريد الموجود في الطلب.",
+                "احتفظ بالرسائل كاملة مع عناوين البريد والفاتورة وإيصال التحويل.",
+                "غيّر كلمات مرور بريد الشركة وفعّل التحقق بخطوتين، فقد يكون البريد مخترقاً.",
+                "أبلغ الشرطة الآن: كل ساعة تقلل فرصة استرجاع المبلغ.",
+                "اعتمد قاعدة دائمة: أي تغيير في الحساب البنكي لمورّد يُؤكَّد بمكالمة هاتفية.",
+            ],
+            "en": [
+                "Call the company's bank now and ask them to recall the transfer and freeze it at the receiving bank.",
+                "Call the supplier or manager on a number you already know, not the number or e-mail in the request.",
+                "Keep the full messages with e-mail addresses, the invoice and the transfer receipt.",
+                "Change the company e-mail passwords and turn on two-step verification: the mailbox may be hacked.",
+                "Report it to the police now: every hour lowers the chance of getting the money back.",
+                "Make it a rule: any change to a supplier's bank details is confirmed by a phone call.",
+            ],
+            "ur": [
+                "فوراً کمپنی کے بینک کو فون کریں اور ٹرانسفر واپس منگوانے اور وصول کرنے والے بینک میں روکنے کا کہیں۔",
+                "سپلائر یا مینیجر کو پہلے سے معلوم نمبر پر فون کریں، درخواست میں دیے گئے نمبر یا ای میل پر نہیں۔",
+                "پورے پیغامات، ای میل ایڈریس، انوائس اور ٹرانسفر کی رسید محفوظ رکھیں۔",
+                "کمپنی کی ای میل کے پاس ورڈ بدلیں اور دو مرحلہ تصدیق آن کریں، ای میل ہیک ہو سکتی ہے۔",
+                "ابھی پولیس کو رپورٹ کریں: ہر گھنٹہ رقم واپس ملنے کا امکان کم کرتا ہے۔",
+                "اصول بنائیں: سپلائر کے بینک اکاؤنٹ میں کوئی بھی تبدیلی فون کال سے تصدیق ہو۔",
             ],
         },
     },

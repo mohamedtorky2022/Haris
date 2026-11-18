@@ -489,7 +489,7 @@
     reportImages.push(...images);
     if (reportImages.length) draft.evidence = reportImages.map((_, i) => `${tr("screenshot")} ${i + 1}`);
     if (images.length) bubble(r.images_read ? tr("imagesRead") : tr("imagesNotRead"));
-    if (draft.incident_type === "money_sent" && !urgentShown) { bubble(tr("urgentBank")); urgentShown = true; }
+    if (["money_sent", "business_fraud"].includes(draft.incident_type) && !urgentShown) { bubble(tr("urgentBank")); urgentShown = true; }
     queue = phase === "more" ? [] : r.missing.slice();
     nextMissing();
   }

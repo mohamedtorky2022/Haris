@@ -41,10 +41,27 @@ CATEGORY_LABELS = {
     "extortion": {"ar": "ابتزاز إلكتروني", "en": "Online extortion", "ur": "آن لائن بلیک میل"},
     "tech_support": {"ar": "دعم فني وهمي", "en": "Fake tech support", "ur": "جعلی ٹیکنیکل سپورٹ"},
     "phishing_link": {"ar": "رابط تصيّد", "en": "Phishing link", "ur": "فشنگ لنک"},
+    "romance_scam": {"ar": "احتيال عاطفي", "en": "Romance scam", "ur": "محبت کا جھانسہ"},
+    "recovery_scam": {"ar": "احتيال «استرداد الأموال»", "en": "Fake money recovery", "ur": "رقم واپسی کا جعلی وعدہ"},
     "unknown": {"ar": "غير محدد", "en": "Not identified", "ur": "نامعلوم"},
 }
 
 REASONS = {
+    "romance_money": {
+        "ar": "كلام عاطفي مع طلب مال أو تذاكر أو رسوم. هذا أسلوب الاحتيال العاطفي المعروف.",
+        "en": "Affectionate words together with a request for money, tickets or fees. This is the classic romance scam.",
+        "ur": "پیار بھری باتوں کے ساتھ رقم، ٹکٹ یا فیس کا مطالبہ۔ یہ محبت کے جھانسے کا عام طریقہ ہے۔",
+    },
+    "romance_profile": {
+        "ar": "علاقة عبر الإنترنت مع شخص لم تلتقِ به، أو قصة عمل بعيد (منصة نفط، مهمة عسكرية).",
+        "en": "An online relationship with someone never met in person, or a far-away job story (oil rig, military mission).",
+        "ur": "کسی ایسے شخص سے آن لائن تعلق جس سے کبھی ملاقات نہیں ہوئی، یا دور کی نوکری کی کہانی۔",
+    },
+    "recovery_offer": {
+        "ar": "تَعِد باسترداد أموال سُرقت منك. هذا احتيال ثانٍ يستهدف الضحايا، والشرطة لا تطلب رسوماً للاسترداد.",
+        "en": "It promises to recover money you lost. This is a second scam aimed at victims; police never charge to recover funds.",
+        "ur": "یہ کھوئی ہوئی رقم واپس دلانے کا وعدہ کرتا ہے۔ یہ متاثرین کے ساتھ دوسرا فراڈ ہے؛ پولیس رقم واپسی کی فیس نہیں لیتی۔",
+    },
     "otp_request": {
         "ar": "تطلب الرسالة رمز التحقق (OTP). الجهات الرسمية لا تطلبه أبداً.",
         "en": "It asks for a one-time code (OTP). Official bodies never ask for it.",
@@ -252,6 +269,16 @@ ADVICE = {
         "ar": ["لا تثبّت أي تطبيق تحكم عن بعد بطلب من شخص اتصل بك."],
         "en": ["Never install a remote-control app because a caller asked you to."],
         "ur": ["کسی کال کرنے والے کے کہنے پر ریموٹ کنٹرول ایپ کبھی انسٹال نہ کریں۔"],
+    },
+    "romance_scam": {
+        "ar": ["لا ترسل مالاً لشخص لم تقابله وجهاً لوجه، مهما كانت القصة مؤثرة.", "اطلب مكالمة فيديو مباشرة، وتحدث مع شخص تثق به قبل أي قرار."],
+        "en": ["Never send money to someone you haven't met in person, however moving the story.", "Ask for a live video call, and talk to someone you trust before deciding anything."],
+        "ur": ["جس سے آمنے سامنے نہیں ملے اسے کبھی رقم نہ بھیجیں، کہانی جتنی بھی دکھ بھری ہو۔", "لائیو ویڈیو کال کا کہیں، اور فیصلے سے پہلے کسی بھروسہ مند سے بات کریں۔"],
+    },
+    "recovery_scam": {
+        "ar": ["لا تدفع أي رسوم لاسترداد أموالك. تابع بلاغك مع الشرطة مباشرة عبر «أمان» 8002626 أو ecrime.ae."],
+        "en": ["Never pay a fee to get your money back. Follow up your case with the police directly: Aman 8002626 or ecrime.ae."],
+        "ur": ["رقم واپس لینے کے لیے کبھی فیس نہ دیں۔ اپنا کیس براہ راست پولیس سے دیکھیں: امان 8002626 یا ecrime.ae۔"],
     },
     "phishing_link": {
         "ar": ["اكتب عنوان الموقع الرسمي بنفسك بدلاً من الضغط على الرابط."],

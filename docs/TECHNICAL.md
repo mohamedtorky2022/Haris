@@ -43,11 +43,14 @@ The system has three layers:
 
 ### Signals
 
-`rules.py` defines about 20 signals, each with a weight, one or more phrase groups, an optional scam category, and optional `unless` phrases. A signal fires when **every** group has a match and **no** `unless` phrase appears. Phrases are written in Arabic, English and Urdu and normalised with the same function as the input, so spelling variants match.
+`rules.py` defines 23 signals, each with a weight, one or more phrase groups, an optional scam category, and optional `unless` phrases. A signal fires when **every** group has a match and **no** `unless` phrase appears. Phrases are written in Arabic, English and Urdu and normalised with the same function as the input, so spelling variants match.
 
 | Signal | Weight | Category | Example trigger |
 | --- | ---: | --- | --- |
 | `extortion_threat` | 45 | extortion | "photos / video" **and** "your family / publish / leak" |
+| `recovery_offer` | 30 | recovery_scam | "recover your money", "fund recovery" (a second scam aimed at victims) |
+| `romance_money` | 20 | romance_scam | affection ("my love", "حبيبتي") **and** a money request ("send me", "plane ticket", "hospital"). Alone it stays low, so family messages are not flagged |
+| `romance_profile` | 15 | romance_scam | "we met online", "never met in person", "oil rig", "peacekeeping mission" |
 | `otp_request` | 35 | otp_theft | "code / OTP" **and** "send / share / tell me", **unless** "never share" |
 | `prize`, `card_details`, `remote_access`, `gift_cards` | 25 | various | "you won", "CVV", "AnyDesk", "gift card" |
 | `account_suspended`, `upfront_fee`, `investment`, `personal_info_request` | 20 | various | "your account … blocked", "visa fee", "forex", "send … Emirates ID" |
@@ -78,7 +81,8 @@ Links on official domains (any `*.gov.ae`, `u.ae`, and the listed brands' real d
 ```
 score = Σ signal weights
       + 10 if a small amount (≤ 99 AED) is requested
-      + combination bonuses   (prize + payment: +20, extortion + payment: +10, job + upfront fee: +10)
+      + combination bonuses   (prize + payment: +20, romance + met online: +20, recovery + payment: +15,
+                               extortion + payment: +10, job + upfront fee: +10, recovery + "police": +10)
       + min(50, Σ risky link points)
       + 15 if a risky link appears with a payment, card, OTP or ID request
       + 10 if a risky link appears with bank, government or courier impersonation
@@ -94,7 +98,7 @@ The category is the category of the heaviest signal that fired (`phishing_link` 
 
 ### Evaluation
 
-`scripts/evaluate.py` runs the rules engine on `data/samples/messages.json`: 22 scam messages and 12 legitimate ones (OTP notices that say "never share", delivery confirmations, salary deposits, paid fines, family messages) across Arabic, English and Urdu. Current result: **22/22 scams flagged as medium or high, 0/12 false alarms.**
+`scripts/evaluate.py` runs the rules engine on `data/samples/messages.json`: 27 scam messages and 14 legitimate ones (OTP notices that say "never share", delivery confirmations, salary deposits, paid fines, family and spouse messages with words like "darling") across Arabic, English and Urdu. Current result: **27/27 scams flagged as medium or high, 0/14 false alarms.**
 
 This is a regression test, not an accuracy claim: the samples were written alongside the rules. A real accuracy figure needs a held-out set of genuine, anonymised messages from the partner authority.
 
@@ -209,6 +213,7 @@ The design follows the data-minimisation and purpose-limitation principles of UA
 
 ## 6. Extending Haris
 
+- **Add a victim situation:** add a playbook in `playbooks.py` (title and steps in all three languages, same number of steps), add its id to `Incident` in `app/main.py`, `INCIDENT_TYPES` in `llm.py`, and `REQUIRED` and `INCIDENT_HINTS` in `intake.py`. The chat, the report and the summary card pick it up with no front-end change.
 - **Add a scam pattern:** add a `Signal` in `rules.py` and its reason sentence in all three languages in `i18n.py`, then add sample messages to `data/samples/messages.json` and run `pytest` and `scripts/evaluate.py`.
 - **Add a language:** add the language code to `SUPPORTED_LANGS`, phrases to the signals, and text to `i18n.py`, `playbooks.py`, `report.py` and the `UI` table in `app.js`.
 - **Fix a new mishearing:** add the spoken variants and the written form to `GLOSSARY` in `polish.py`, with a test in `tests/test_polish.py`.

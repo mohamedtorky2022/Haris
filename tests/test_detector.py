@@ -100,3 +100,15 @@ def test_llm_response_parsing():
     assert len(parsed["reasons"]) == 3
     assert llm.parse('{"risk":"definitely safe"}') is None
     assert llm.parse("no json") is None
+
+
+def test_romance_scam_needs_affection_and_a_money_request():
+    r = analyze("My love, we met online and I need money for my flight ticket. Please send me 2000 dollars", use_llm=False)
+    assert r["risk"] == "high" and r["category"] == "romance_scam"
+    assert analyze("Hi darling, can you pay for the groceries on the way home?", use_llm=False)["risk"] == "low"
+    assert analyze("حبيبي أرسل لي صورة الفاتورة لما توصل البيت", use_llm=False)["risk"] == "low"
+
+
+def test_recovery_scam_is_flagged():
+    r = analyze("نستطيع استرداد أموالك المسروقة خلال أسبوع. ادفع رسوم فتح الملف 900 درهم", use_llm=False)
+    assert r["risk"] == "high" and r["category"] == "recovery_scam"

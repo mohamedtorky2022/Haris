@@ -109,6 +109,26 @@ SIGNALS: tuple[Signal, ...] = (
              "بھیجیں", "تصدیق"),
         ),
     ),
+    # Romance scams: affection plus a request for money, often from someone never met in person.
+    Signal(
+        "romance_money", 20, category="romance_scam",
+        groups=(
+            ("حبيبتي", "حبيبي", "عزيزتي", "أحبك", "احبك", "يا عمري", "my love", "darling", "sweetheart", "i love you",
+             "honey", "babe", "میری جان", "پیار", "محبت"),
+            ("أرسل لي", "ارسل لي", "حول لي", "حولي لي", "أحتاج مبلغ", "احتاج مبلغ", "أحتاج مال", "تذكرة", "تذاكر الطيران",
+             "المستشفى", "رسوم الجمارك", "send me", "wire me", "transfer me", "lend me", "plane ticket", "flight ticket",
+             "hospital", "customs fee", "need money", "مجھے پیسے", "ٹکٹ", "ہسپتال"),
+        ),
+    ),
+    Signal("romance_profile", 15, category="romance_scam", groups=((
+        "لم نلتق", "لم نلتقي", "تعارفنا عبر", "تعرفنا على الانترنت", "موقع زواج", "تطبيق تعارف", "سنلتقي قريبا",
+        "dating app", "we met online", "never met in person", "oil rig", "deployed overseas", "peacekeeping mission",
+        "un doctor", "ڈیٹنگ ایپ", "آن لائن ملے"),)),
+    # Recovery scams target people who were already scammed.
+    Signal("recovery_offer", 30, category="recovery_scam", groups=((
+        "استرداد أموالك", "استرجاع أموالك", "نسترجع أموالك", "نسترد أموالك", "استعادة أموالك", "استرداد المبلغ المسروق",
+        "recover your money", "recover your funds", "recover lost funds", "fund recovery", "funds recovery",
+        "get your money back", "asset recovery", "recovery agent", "رقم واپس دلا", "پیسے واپس دلا"),)),
     Signal("link_click", 5, groups=((
         "اضغط", "انقر", "افتح الرابط", "الرابط", "click", "tap", "visit", "follow the link", "link below",
         "لنک", "کلک"),)),
@@ -126,6 +146,9 @@ COMBOS: tuple[tuple[tuple[str, ...], int], ...] = (
     (("prize", "payment_request"), 20),
     (("job_offer", "upfront_fee"), 10),
     (("extortion_threat", "payment_request"), 10),
+    (("romance_money", "romance_profile"), 20),
+    (("recovery_offer", "payment_request"), 15),
+    (("recovery_offer", "gov_impersonation"), 10),
 )
 
 

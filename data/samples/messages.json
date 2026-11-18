@@ -21,7 +21,6 @@
   {"id": "ur-prize", "label": "scam", "text": "مبارک ہو! آپ نے 50,000 درہم کا انعام جیتا ہے۔ انعام حاصل کرنے کے لیے 100 درہم فیس ادا کریں۔"},
   {"id": "ur-otp", "label": "scam", "text": "میں بینک سے بات کر رہا ہوں۔ آپ کا اکاؤنٹ بند ہو جائے گا۔ جو کوڈ آیا ہے وہ مجھے فوری بتائیں۔"},
   {"id": "ur-delivery", "label": "scam", "text": "آپ کا پارسل رکا ہوا ہے۔ ڈیلیوری کے لیے 5 درہم ادا کریں: http://emiratespost-uae.top"},
-
   {"id": "ar-otp-legit", "label": "legit", "text": "رمز التحقق الخاص بك هو 482913. لا تشارك هذا الرمز مع أي شخص."},
   {"id": "ar-delivered", "label": "legit", "text": "تم تسليم شحنتك بنجاح. شكراً لتسوقك معنا."},
   {"id": "ar-family", "label": "legit", "text": "مرحبا، سنلتقي عند بيت جدتي الساعة 8 مساءً. لا تتأخر."},
@@ -33,5 +32,12 @@
   {"id": "en-meeting", "label": "legit", "text": "Reminder: interview for the accountant role at our Abu Dhabi office on Monday at 10 am."},
   {"id": "en-statement", "label": "legit", "text": "Your monthly investment statement is now available in the app."},
   {"id": "ur-family", "label": "legit", "text": "امی، میں دفتر سے نکل گیا ہوں، آدھے گھنٹے میں گھر پہنچوں گا۔"},
-  {"id": "ur-otp-legit", "label": "legit", "text": "آپ کا تصدیقی کوڈ 551203 ہے۔ یہ کوڈ کسی کو نہ بتائیں۔"}
+  {"id": "ur-otp-legit", "label": "legit", "text": "آپ کا تصدیقی کوڈ 551203 ہے۔ یہ کوڈ کسی کو نہ بتائیں۔"},
+  {"id": "ar-romance", "label": "scam", "text": "حبيبتي، أنا عالق في المطار وأحتاج مبلغ لتذكرة الطيران، أرسل لي 3000 درهم اليوم. تعارفنا عبر الانترنت وسنلتقي قريبا"},
+  {"id": "en-romance", "label": "scam", "text": "My love, I am a doctor on a UN peacekeeping mission. We met online and I can't wait to see you, but I need money for my flight ticket. Please send me 2000 dollars"},
+  {"id": "ur-romance", "label": "scam", "text": "میری جان، میں ہسپتال میں ہوں، مجھے پیسے بھیج دو۔ ہم آن لائن ملے تھے لیکن میں تم سے سچا پیار کرتا ہوں"},
+  {"id": "en-recovery", "label": "scam", "text": "Dear customer, we are a fund recovery agency working with the police. We can recover your money lost to online trading. Pay a processing fee of AED 500 to open your file."},
+  {"id": "ar-recovery", "label": "scam", "text": "نحن مكتب محاماة متخصص، نستطيع استرداد أموالك المسروقة من منصات التداول خلال أسبوع. ادفع رسوم فتح الملف 900 درهم"},
+  {"id": "ar-family-love", "label": "legit", "text": "حبيبي أرسل لي صورة الفاتورة لما توصل البيت، وجيب معك خبز"},
+  {"id": "en-spouse", "label": "legit", "text": "Hi darling, can you pay for the groceries on the way home? Love you"}
 ]
