@@ -41,9 +41,9 @@
       needDesc: "أحتاج وصفاً قصيراً لما حدث حتى يكون البلاغ مفيداً.",
       reportReady: "ملف البلاغ جاهز. الرقم المرجعي: {ref}\n\nقدّمه للشرطة عبر خدمة «أمان» أو منصة eCrime، وأرفق لقطات الشاشة.",
       found: "وجدتُ في وصفك هذه البيانات وأضفتها للبلاغ:",
-      download: "تنزيل الملف",
-      downloadMd: "تنزيل نص البلاغ",
-      print: "طباعة",
+      view: "عرض البلاغ",
+      download: "تنزيل البلاغ",
+      print: "طباعة أو حفظ PDF",
       error: "تعذّر الاتصال بالخادم. حاول مرة أخرى.",
       tooMany: "طلبات كثيرة. انتظر دقيقة ثم حاول.",
     },
@@ -84,9 +84,9 @@
       needDesc: "I need a short description of what happened for the report to be useful.",
       reportReady: "Your report is ready. Reference: {ref}\n\nFile it with the police through Aman or eCrime, and attach your screenshots.",
       found: "I found these details in your description and added them:",
+      view: "View report",
       download: "Download report",
-      downloadMd: "Download as text",
-      print: "Print",
+      print: "Print or save as PDF",
       error: "Could not reach the server. Please try again.",
       tooMany: "Too many requests. Please wait a minute.",
     },
@@ -127,9 +127,9 @@
       needDesc: "رپورٹ کے لیے مختصر تفصیل ضروری ہے۔",
       reportReady: "رپورٹ تیار ہے۔ حوالہ نمبر: {ref}\n\nاسے امان یا ای کرائم کے ذریعے پولیس کو جمع کرائیں اور اسکرین شاٹس لگائیں۔",
       found: "آپ کی تفصیل میں یہ معلومات ملیں اور شامل کر دی گئیں:",
+      view: "رپورٹ دیکھیں",
       download: "رپورٹ ڈاؤن لوڈ کریں",
-      downloadMd: "متن ڈاؤن لوڈ کریں",
-      print: "پرنٹ",
+      print: "پرنٹ یا پی ڈی ایف",
       error: "سرور سے رابطہ نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
       tooMany: "بہت زیادہ درخواستیں۔ ایک منٹ انتظار کریں۔",
     },
@@ -351,16 +351,14 @@
     const parts = [el("p", { text: tr("reportReady", { ref }) })];
     if (r.identifiers_found.length) parts.push(el("p", { text: tr("found") }), list(r.identifiers_found));
     const actions = el("div", { class: "actions" });
-    const dl = (label, content, type, ext) => {
+    const button = (label, onClick) => {
       const b = el("button", { type: "button", text: label });
-      b.addEventListener("click", () => download(content, type, `${r.reference}.${ext}`));
+      b.addEventListener("click", onClick);
       actions.append(b);
     };
-    dl(tr("download"), r.html, "text/html", "html");
-    dl(tr("downloadMd"), r.markdown, "text/markdown", "md");
-    const printBtn = el("button", { type: "button", text: tr("print") });
-    printBtn.addEventListener("click", () => printReport(r.html));
-    actions.append(printBtn);
+    button(tr("view"), () => openReport(r.html, false));
+    button(tr("download"), () => download(r.html, "text/html", `${r.reference}.html`));
+    button(tr("print"), () => openReport(r.html, true));
     parts.push(actions);
     bubble(parts);
     setChips([[tr("checkAnother"), askCheck], [tr("menuBack"), menu]]);
@@ -375,10 +373,17 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  function printReport(htmlDoc) {
-    const url = URL.createObjectURL(new Blob([htmlDoc], { type: "text/html;charset=utf-8" }));
-    const w = window.open(url, "_blank", "noopener");
-    if (!w) download(htmlDoc, "text/html", "haris-report.html");
+  // Opens the report in a new tab. The tab inherits this page's Content-Security-Policy,
+  // which blocks inline styles, so the report's <style> is swapped for report.css.
+  function openReport(htmlDoc, andPrint) {
+    const styled = htmlDoc.replace(/<style>[\s\S]*?<\/style>/, `<link rel="stylesheet" href="${location.origin}/report.css">`);
+    const url = URL.createObjectURL(new Blob([styled], { type: "text/html;charset=utf-8" }));
+    const w = window.open(url, "_blank");
+    if (!w) {
+      download(htmlDoc, "text/html", "haris-report.html"); // pop-ups blocked: fall back to a download
+    } else if (andPrint) {
+      w.addEventListener("load", () => setTimeout(() => w.print(), 300));
+    }
     setTimeout(() => URL.revokeObjectURL(url), 60000);
   }
 

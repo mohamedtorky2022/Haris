@@ -28,7 +28,7 @@ Haris covers the three moments of a cybercrime:
 | --- | --- |
 | **Before** — a suspicious message arrives | Paste any message, link or offer. Haris rates the risk (low / medium / high), names the scam type, explains **why** in plain words, and says what to do. |
 | **After** — "I've been scammed" | A step-by-step emergency plan for the situation (money sent, account hacked, extortion, ID shared, suspicious message only), with the official reporting channels. |
-| **Reporting** | A guided conversation builds a structured police report (timeline, amount, scammer identifiers, evidence, steps taken). Haris pulls phone numbers, e-mails, IBANs and links out of the victim's description automatically. The report downloads as HTML or text, ready to print. |
+| **Reporting** | A guided conversation builds a structured police report (timeline, amount, scammer identifiers, evidence, steps taken). Haris pulls phone numbers, e-mails, IBANs and links out of the victim's description automatically. The report opens in a new tab, downloads as a web page, or prints and saves as PDF. |
 
 Haris always presents itself as an assistant, **not** an official body, and never tells a user a message is "safe": the lowest rating is "no clear warning signs".
 
