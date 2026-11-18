@@ -45,6 +45,8 @@ Open Haris and pick a language. The menu offers four things: **check a message o
 
 The next version, a mobile app and a WhatsApp channel, is designed in an official government style: home and quick check, check result, report by voice or screenshots, report summary, official warnings and the campaign radar, and the same flows inside a WhatsApp business chat.
 
+**Campaign poster: «حارس» إماراتي وأفتخر ("Haris: Emirati and proud").** An A3 poster shows the mascot standing in front of the UAE map and holding a QR code. Scanning it opens WhatsApp straight to a chat with Haris, where people save the contact and forward suspicious messages. The source is in `docs/poster/` (`poster.html` and a rendered `haris-poster.png`). The QR holds a placeholder message until the official WhatsApp number is live; then `qr.svg` is regenerated with the `wa.me/<number>` link.
+
 Haris always presents itself as an assistant, **not** an official body, and never tells a user a message is "safe": the lowest rating is "no clear warning signs".
 
 ### Who it serves
@@ -213,6 +215,7 @@ haris/
 ├── tests/                      unit and API tests
 └── docs/
     ├── TECHNICAL.md            architecture, model choices, privacy design
+    ├── poster/                 campaign poster (HTML source, QR, UAE map, rendered PNG)
     ├── Haris-presentation.pptx     presentation (English)
     └── Haris-presentation-ar.pptx  presentation (Arabic)
 ```

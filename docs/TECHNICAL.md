@@ -238,10 +238,10 @@ The design follows the data-minimisation and purpose-limitation principles of UA
 - **Add a language:** copy `en.json` in both `locales` folders to `<code>.json` and translate it, add the code to `SUPPORTED_LANGS` in `text.py`, `Lang` in `app/main.py`, `LANG_NAMES` in `llm.py` and `LANGS` in `app.js`, add a button in `index.html`, and add scam phrases for the new language in `rules.py`. Run `pytest`: the locale test lists anything missing.
 - **Add a victim situation:** add a playbook in `playbooks.py` (title and steps under `playbooks` in every `locales/<lang>.json`, same number of steps), add its id to `Incident` in `app/main.py`, `INCIDENT_TYPES` in `llm.py`, and `REQUIRED` and `INCIDENT_HINTS` in `intake.py`. The chat, the report and the summary card pick it up with no front-end change.
 - **Add a scam pattern:** add a `Signal` in `rules.py` and its reason sentence under `reasons` in every `locales/<lang>.json`, then add sample messages to `data/samples/messages.json` and run `pytest` and `scripts/evaluate.py`.
-- **Add a language:** add the language code to `SUPPORTED_LANGS`, phrases to the signals, and text to `i18n.py`, `playbooks.py`, `report.py` and the `UI` table in `app.js`.
 - **Fix a new mishearing:** add the spoken variants and the written form to `GLOSSARY` in `polish.py`, with a test in `tests/test_polish.py`.
 - **Train speech recognition for the pilot:** move transcription to a server-side service such as Azure Speech with Custom Speech, hosted in a UAE region. Train it on the glossary terms (plain-text data) and on anonymised recordings with transcripts from the partner authority. `/api/polish` stays as the safety net.
 - **Add a channel (for example WhatsApp):** a webhook receives the message, calls `detector.analyze(text)`, and formats `risk_label`, `summary`, `reasons` and `advice` as a reply. No change to the core is needed.
+- **Go live with the campaign poster:** once the WhatsApp number is approved, regenerate `docs/poster/qr.svg` with `https://wa.me/<number>?text=مرحباً حارس` (same size and colour), check that it scans, and render `poster.html` to `haris-poster.png` (for example with headless Chrome at 2x).
 
 ## 7. Known limitations
 
