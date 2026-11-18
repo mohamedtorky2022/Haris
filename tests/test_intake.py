@@ -107,3 +107,15 @@ def test_business_fraud_asks_for_money_fields():
     r = extract("We paid a supplier invoice to new bank details", [], "en")
     assert r["fields"]["incident_type"] == "business_fraud"
     assert "amount" in r["missing"] and "payment_method" in r["missing"]
+
+
+def test_privacy_and_device_incidents_are_recognised():
+    assert rules_extract("someone posted my photos without my permission on Snapchat", "en")["incident_type"] == "privacy_violation"
+    assert rules_extract("أحدهم نشر صوري دون إذني في مجموعة", "ar")["incident_type"] == "privacy_violation"
+    r = extract("My laptop files are encrypted and they want a ransom in bitcoin. I disconnected it", [], "en")
+    assert r["fields"]["incident_type"] == "device_hacked"
+    assert "Took the device offline" in r["fields"]["steps_taken"]
+
+
+def test_threat_to_publish_stays_extortion():
+    assert rules_extract("صوروني دون إذني ويهددني بنشر الفيديو إن لم أدفع", "ar")["incident_type"] == "extortion"

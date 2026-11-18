@@ -58,7 +58,9 @@ SIGNALS: tuple[Signal, ...] = (
         "violation", "پولیس", "جرمانہ", "عدالت"),)),
     Signal("payment_request", 15, groups=((
         "ادفع", "سدد", "سداد", "دفع", "تحويل", "حول المبلغ", "رسوم", "pay", "payment", "fee", "transfer", "settle",
-        "ادائیگی", "ادا کریں", "فیس", "رقم بھیجیں"),)),
+        "ادائیگی", "ادا کریں", "فیس", "رقم بھیجیں"),),
+        # Paying in cash when the parcel arrives is the safe way to pay, not a red flag.
+        unless=("cash on delivery", "pay on delivery", "الدفع عند الاستلام", "دفع عند الاستلام", "ڈیلیوری پر ادائیگی")),
     Signal("urgency", 15, groups=((
         "فورا", "فوراً", "حالا", "عاجل", "خلال 24 ساعة", "خلال ساعة", "خلال ساعتين", "اليوم فقط", "آخر فرصة",
         "آخر تحذير", "قبل فوات", "urgent", "immediately", "within 24 hours", "within 2 hours", "final notice",
@@ -71,7 +73,7 @@ SIGNALS: tuple[Signal, ...] = (
         "work from home", "part-time", "part time", "salary", "daily income", "earn", "hiring", "like videos",
         "rate products", "نوکری", "ملازمت", "تنخواہ", "گھر سے کام"),)),
     Signal("upfront_fee", 20, category="job_scam", groups=((
-        "رسوم التأشيرة", "رسوم التسجيل", "رسوم المعاملة", "مبلغ تأمين", "دفعة مقدمة", "رسوم مقدمة", "عربون",
+        "رسوم التأشيرة", "رسوم التسجيل", "رسوم المعاملة", "مبلغ تأمين", "دفعة مقدمة", "رسوم مقدمة",
         "visa fee", "registration fee", "processing fee", "security deposit", "pay a deposit", "upfront fee",
         "ویزا فیس", "رجسٹریشن فیس"),)),
     Signal("investment", 20, category="investment_scam", groups=((
@@ -129,6 +131,45 @@ SIGNALS: tuple[Signal, ...] = (
         "استرداد أموالك", "استرجاع أموالك", "نسترجع أموالك", "نسترد أموالك", "استعادة أموالك", "استرداد المبلغ المسروق",
         "recover your money", "recover your funds", "recover lost funds", "fund recovery", "funds recovery",
         "get your money back", "asset recovery", "recovery agent", "رقم واپس دلا", "پیسے واپس دلا"),)),
+    # Shopping and rental scams: a deposit before seeing the item or flat, transfer-only payment, unreal prices.
+    Signal("deposit_to_reserve", 25, category="shopping_scam", groups=((
+        "عربون لحجز", "عربون للحجز", "عربون قبل المعاينة", "قبل المعاينة", "بدون معاينة", "دون معاينة",
+        "احجز الشقة", "لحجز الشقة", "deposit to reserve", "deposit to hold", "before viewing",
+        "without viewing", "send the deposit", "token money",
+        "دیکھے بغیر", "بکنگ کے لیے ایڈوانس"),)),
+    Signal("owner_abroad", 15, category="shopping_scam", groups=((
+        "المالك مسافر", "المالك خارج الدولة", "انا مسافر حاليا", "owner is abroad", "landlord is abroad", "i am abroad",
+        "i'm abroad", "currently overseas", "مالک ملک سے باہر"),)),
+    Signal("transfer_only", 20, category="shopping_scam", groups=((
+        "تحويل فقط", "تحويل بنكي فقط", "لا يوجد دفع عند الاستلام", "لا يوجد استلام نقدي", "الدفع مقدما فقط",
+        "bank transfer only", "transfer only", "no cash on delivery", "no cod", "pay in advance only", "advance payment only",
+        "صرف ایڈوانس", "صرف ٹرانسفر"),)),
+    Signal("too_good_deal", 15, category="shopping_scam", groups=((
+        "خصم 90", "خصم 80", "تصفية كاملة", "نصف السعر", "ارخص من السوق", "90% off", "80% off",
+        "clearance sale", "half price", "below market price", "too good to miss", "آدھی قیمت"),)),
+    # Fake charity appeals: donations to a personal account or an unofficial link.
+    Signal(
+        "charity_appeal", 20, category="charity_scam",
+        groups=(
+            ("تبرع", "تبرعك", "صدقة", "زكاة", "كفالة يتيم", "ساهم في علاج", "donate", "donation", "charity",
+             "help the victims", "orphans", "zakat", "sadaqah", "عطیہ", "خیرات", "زکوٰۃ"),
+            ("رقم الحساب", "حساب شخصي", "حول", "تحويل", "ارسل", "الرابط", "send", "transfer", "link", "account number",
+             "bank account", "iban", "بھیجیں", "اکاؤنٹ نمبر"),
+        ),
+    ),
+    Signal("personal_account", 15, groups=((
+        "حساب شخصي", "حسابي الشخصي", "باسمي الشخصي", "personal account", "my own account", "ذاتی اکاؤنٹ"),)),
+    # Visa and residency scams: guaranteed visas for a fee, often aimed at workers.
+    Signal(
+        "visa_offer", 25, category="visa_scam",
+        groups=(
+            ("تأشيرة", "تاشيرة", "فيزا عمل", "فيزا زيارة", "إقامة", "اقامة", "الاقامة الذهبية", "golden visa",
+             "work visa", "visit visa", "residency", "work permit", "ویزا", "اقامہ", "ورک پرمٹ"),
+            ("مضمونة", "مضمون", "بدون شروط", "بدون كفيل", "خلال 24 ساعة", "خلال 48 ساعة", "خلال اسبوع", "guaranteed",
+             "no requirements", "without a job", "without sponsor", "in 24 hours", "in 48 hours", "100%", "گارنٹی",
+             "یقینی", "بغیر شرط"),
+        ),
+    ),
     Signal("link_click", 5, groups=((
         "اضغط", "انقر", "افتح الرابط", "الرابط", "click", "tap", "visit", "follow the link", "link below",
         "لنک", "کلک"),)),
@@ -149,6 +190,12 @@ COMBOS: tuple[tuple[tuple[str, ...], int], ...] = (
     (("romance_money", "romance_profile"), 20),
     (("recovery_offer", "payment_request"), 15),
     (("recovery_offer", "gov_impersonation"), 10),
+    (("deposit_to_reserve", "payment_request"), 10),
+    (("deposit_to_reserve", "owner_abroad"), 15),
+    (("too_good_deal", "transfer_only"), 15),
+    (("charity_appeal", "personal_account"), 20),
+    (("visa_offer", "upfront_fee"), 10),
+    (("visa_offer", "payment_request"), 10),
 )
 
 

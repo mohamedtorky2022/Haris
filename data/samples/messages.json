@@ -39,5 +39,16 @@
   {"id": "en-recovery", "label": "scam", "text": "Dear customer, we are a fund recovery agency working with the police. We can recover your money lost to online trading. Pay a processing fee of AED 500 to open your file."},
   {"id": "ar-recovery", "label": "scam", "text": "نحن مكتب محاماة متخصص، نستطيع استرداد أموالك المسروقة من منصات التداول خلال أسبوع. ادفع رسوم فتح الملف 900 درهم"},
   {"id": "ar-family-love", "label": "legit", "text": "حبيبي أرسل لي صورة الفاتورة لما توصل البيت، وجيب معك خبز"},
-  {"id": "en-spouse", "label": "legit", "text": "Hi darling, can you pay for the groceries on the way home? Love you"}
+  {"id": "en-spouse", "label": "legit", "text": "Hi darling, can you pay for the groceries on the way home? Love you"},
+  {"id": "ar-rental", "label": "scam", "text": "شقة غرفة وصالة في المرسى بـ 2500 درهم شهرياً. المالك مسافر، حوّل عربون لحجز الشقة 1000 درهم قبل المعاينة"},
+  {"id": "en-rental", "label": "scam", "text": "Studio in JLT, AED 3,000 a month. I am abroad so I can't show it, send the deposit to reserve and I will courier the keys"},
+  {"id": "en-shop", "label": "scam", "text": "iPhone 16 Pro 80% off! Clearance sale, bank transfer only, no cash on delivery. Order on WhatsApp now"},
+  {"id": "ar-charity", "label": "scam", "text": "ساهم في علاج طفل مريض، تبرعك ينقذ حياة. حول على حسابي الشخصي رقم الحساب AE070331234567890123456"},
+  {"id": "en-visa", "label": "scam", "text": "Golden visa guaranteed in 48 hours, no requirements. Pay the processing fee of AED 3500 to our agent"},
+  {"id": "ur-visa", "label": "scam", "text": "دبئی کا ورک ویزا گارنٹی کے ساتھ، بغیر شرط۔ ویزا فیس 4000 درہم بھیجیں"},
+  {"id": "ar-rental-legit", "label": "legit", "text": "المعاينة غداً الساعة 5 مساءً، والعربون يُدفع عند توقيع العقد في مكتب الوسيط"},
+  {"id": "en-donation-receipt", "label": "legit", "text": "Thank you for your donation to Emirates Red Crescent. Your receipt number is 4821"},
+  {"id": "en-visa-approved", "label": "legit", "text": "Your visa application has been approved. Download it from the ICP app."},
+  {"id": "en-cod", "label": "legit", "text": "Your order has shipped and arrives tomorrow. Pay cash on delivery."},
+  {"id": "en-mall-sale", "label": "legit", "text": "Pay with your Visa card and get 70% off at the mall this weekend"}
 ]

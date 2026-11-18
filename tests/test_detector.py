@@ -112,3 +112,18 @@ def test_romance_scam_needs_affection_and_a_money_request():
 def test_recovery_scam_is_flagged():
     r = analyze("نستطيع استرداد أموالك المسروقة خلال أسبوع. ادفع رسوم فتح الملف 900 درهم", use_llm=False)
     assert r["risk"] == "high" and r["category"] == "recovery_scam"
+
+
+@pytest.mark.parametrize("text, category", [
+    ("شقة في المرسى. المالك مسافر، حوّل عربون لحجز الشقة 1000 درهم قبل المعاينة", "shopping_scam"),
+    ("iPhone 16 Pro 80% off! Clearance sale, bank transfer only, no cash on delivery", "shopping_scam"),
+    ("تبرعك ينقذ حياة. حول على حسابي الشخصي رقم الحساب AE070331234567890123456", "charity_scam"),
+    ("Golden visa guaranteed in 48 hours, no requirements. Pay the processing fee of AED 3500", "visa_scam"),
+])
+def test_shopping_charity_and_visa_scams(text, category):
+    r = analyze(text, use_llm=False)
+    assert r["risk"] == "high" and r["category"] == category
+
+
+def test_paying_cash_on_delivery_is_not_a_warning():
+    assert analyze("Your order has shipped. Pay cash on delivery.", use_llm=False)["risk"] == "low"

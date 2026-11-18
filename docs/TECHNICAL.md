@@ -43,13 +43,16 @@ The system has three layers:
 
 ### Signals
 
-`rules.py` defines 23 signals, each with a weight, one or more phrase groups, an optional scam category, and optional `unless` phrases. A signal fires when **every** group has a match and **no** `unless` phrase appears. Phrases are written in Arabic, English and Urdu and normalised with the same function as the input, so spelling variants match.
+`rules.py` defines 30 signals, each with a weight, one or more phrase groups, an optional scam category, and optional `unless` phrases. A signal fires when **every** group has a match and **no** `unless` phrase appears. Phrases are written in Arabic, English and Urdu and normalised with the same function as the input, so spelling variants match.
 
 | Signal | Weight | Category | Example trigger |
 | --- | ---: | --- | --- |
 | `extortion_threat` | 45 | extortion | "photos / video" **and** "your family / publish / leak" |
 | `recovery_offer` | 30 | recovery_scam | "recover your money", "fund recovery" (a second scam aimed at victims) |
 | `romance_money` | 20 | romance_scam | affection ("my love", "حبيبتي") **and** a money request ("send me", "plane ticket", "hospital"). Alone it stays low, so family messages are not flagged |
+| `deposit_to_reserve`, `visa_offer` | 25 | shopping_scam, visa_scam | "deposit to reserve … before viewing"; "visa" **and** "guaranteed / no requirements / in 48 hours" |
+| `transfer_only`, `charity_appeal` | 20 | shopping_scam, charity_scam | "bank transfer only, no cash on delivery"; "donate" **and** "transfer / account number / link" |
+| `owner_abroad`, `too_good_deal`, `personal_account` | 15 | shopping_scam / — | "the owner is abroad", "80% off", "my personal account" |
 | `romance_profile` | 15 | romance_scam | "we met online", "never met in person", "oil rig", "peacekeeping mission" |
 | `otp_request` | 35 | otp_theft | "code / OTP" **and** "send / share / tell me", **unless** "never share" |
 | `prize`, `card_details`, `remote_access`, `gift_cards` | 25 | various | "you won", "CVV", "AnyDesk", "gift card" |
@@ -58,7 +61,7 @@ The system has three layers:
 | `bank_mention`, `secrecy`, `small_amount` | 10 | various | "bank", "don't tell anyone", "AED 5" |
 | `link_click` | 5 | — | "click the link" |
 
-The `unless` mechanism matters: real OTP messages say "your code is 482913, **do not share it**". Without the exception, every genuine bank message would trigger the OTP-theft signal.
+The `unless` mechanism matters: real OTP messages say "your code is 482913, **do not share it**". Without the exception, every genuine bank message would trigger the OTP-theft signal. In the same way, "pay cash on delivery" does not count as a payment request, because paying when the parcel arrives is the safe way to pay.
 
 ### Link analysis
 
@@ -81,8 +84,10 @@ Links on official domains (any `*.gov.ae`, `u.ae`, and the listed brands' real d
 ```
 score = Σ signal weights
       + 10 if a small amount (≤ 99 AED) is requested
-      + combination bonuses   (prize + payment: +20, romance + met online: +20, recovery + payment: +15,
-                               extortion + payment: +10, job + upfront fee: +10, recovery + "police": +10)
+      + combination bonuses   (prize + payment: +20, romance + met online: +20, charity + personal account: +20,
+                               recovery + payment: +15, deposit + owner abroad: +15, unreal price + transfer only: +15,
+                               extortion, deposit or visa + payment: +10, job or visa + upfront fee: +10,
+                               recovery + "police": +10)
       + min(50, Σ risky link points)
       + 15 if a risky link appears with a payment, card, OTP or ID request
       + 10 if a risky link appears with bank, government or courier impersonation
@@ -98,7 +103,7 @@ The category is the category of the heaviest signal that fired (`phishing_link` 
 
 ### Evaluation
 
-`scripts/evaluate.py` runs the rules engine on `data/samples/messages.json`: 27 scam messages and 14 legitimate ones (OTP notices that say "never share", delivery confirmations, salary deposits, paid fines, family and spouse messages with words like "darling") across Arabic, English and Urdu. Current result: **27/27 scams flagged as medium or high, 0/14 false alarms.**
+`scripts/evaluate.py` runs the rules engine on `data/samples/messages.json`: 33 scam messages and 19 legitimate ones (OTP notices that say "never share", delivery confirmations, "pay cash on delivery", salary deposits, paid fines, donation receipts, visa approvals, genuine rental viewings, mall sales, family and spouse messages with words like "darling") across Arabic, English and Urdu. Current result: **33/33 scams flagged as medium or high, 0/19 false alarms.**
 
 This is a regression test, not an accuracy claim: the samples were written alongside the rules. A real accuracy figure needs a held-out set of genuine, anonymised messages from the partner authority.
 

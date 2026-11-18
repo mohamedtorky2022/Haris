@@ -27,16 +27,16 @@ Haris covers the three moments of a cybercrime:
 | Moment | What Haris does |
 | --- | --- |
 | **Before** — a suspicious message arrives | Paste any message, link or offer. Haris rates the risk (low / medium / high), names the scam type, explains **why** in plain words, and says what to do. |
-| **After** — "I've been scammed" | A step-by-step emergency plan for eight situations: money sent, account hacked, extortion, online bullying/harassment/defamation, a fake account in your name, ID shared, a business that paid a fake invoice or a fake "boss" request, and a suspicious message only. Each comes with the official reporting channels. |
+| **After** — "I've been scammed" | A step-by-step emergency plan for ten situations: money sent, account hacked, extortion, online bullying/harassment/defamation, a fake account in your name, being filmed or having photos or personal details posted without permission, a hacked device or ransomware (including SIM swap), ID shared, a business that paid a fake invoice or a fake "boss" request, and a suspicious message only. Each comes with the official reporting channels. |
 | **Reporting** | The victim tells the story their own way: typed, spoken or as screenshots of the chat or the debit alert. For speech, the user picks their dialect once (Emirati/Gulf, Saudi, Egyptian, Levantine, Iraqi, Maghrebi; English and Urdu accents too), and after each dictation Haris suggests fixes for misheard words such as «ارا ماكس» → «أرامكس». The user approves the fix, and numbers are never changed. Haris pulls out the amount, time, payment method, steps already taken and the scammer's numbers, links and IBANs, asks only about what is still missing with ready-made answers, then shows a summary card where any line can be edited. The report opens in a new tab, downloads as a web page with the screenshots inside, or prints and saves as PDF. |
 
 ### What it covers today, and what is next
 
 Haris starts with **fraud**, the most common and costly cybercrime, and is built so a new crime type is one playbook or one signal away.
 
-- **Detects 12 scam types:** one-time code theft, bank and government impersonation, fake delivery, fake jobs, fake investments, fake prizes, extortion, fake tech support, phishing links, romance scams, and fake "money recovery" offers aimed at people already scammed.
-- **Guides and reports 8 situations** (listed above).
-- **Next:** protecting children from grooming (with specialists reviewing the wording), voice calls and AI-cloned voices, QR codes and image checks, first aid for ransomware and malware, and rumours and fake news.
+- **Detects 15 scam types:** one-time code theft, bank and government impersonation, fake delivery, fake jobs, fake investments, fake prizes, extortion, fake tech support, phishing links, romance scams, fake "money recovery" offers aimed at people already scammed, fake shops, listings and rentals, fake charities, and fake visas or residency.
+- **Guides and reports 10 situations** (listed above).
+- **Next:** protecting children from grooming (with specialists reviewing the wording), voice calls and AI-cloned voices, QR codes and screenshot checks, attacks on businesses (data leaks, outages), and rumours and fake news.
 
 Haris always presents itself as an assistant, **not** an official body, and never tells a user a message is "safe": the lowest rating is "no clear warning signs".
 
@@ -102,7 +102,7 @@ pytest                                 # from the repo root
 python scripts/evaluate.py             # accuracy on the labelled sample messages
 ```
 
-On the 41 labelled samples in `data/samples/messages.json` (27 scams, 14 legitimate messages, in 3 languages), the rules engine alone catches **27 of 27 scams** with **0 of 14 false alarms**. These samples were written by the team while building the rules, so they show the rules behave as designed; they are **not** an independent accuracy measure (see trade-offs below).
+On the 52 labelled samples in `data/samples/messages.json` (33 scams, 19 legitimate messages, in 3 languages), the rules engine alone catches **33 of 33 scams** with **0 of 19 false alarms**. These samples were written by the team while building the rules, so they show the rules behave as designed; they are **not** an independent accuracy measure (see trade-offs below).
 
 ### API
 

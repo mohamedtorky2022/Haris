@@ -207,6 +207,69 @@ PLAYBOOKS: dict[str, dict] = {
             ],
         },
     },
+    "privacy_violation": {
+        "title": {
+            "ar": "صوّرني أحدهم، أو نشر صوري أو بياناتي الشخصية دون إذني",
+            "en": "Someone filmed me, or posted my photos or personal details without permission",
+            "ur": "کسی نے میری اجازت کے بغیر ویڈیو بنائی، یا میری تصاویر یا ذاتی معلومات شائع کیں",
+        },
+        "steps": {
+            "ar": [
+                "التقط صوراً للشاشة للمنشور ورابطه واسم الحساب وتاريخ النشر، قبل أن يُحذف.",
+                "اطلب حذف المحتوى عبر خيار «الإبلاغ عن انتهاك الخصوصية» في التطبيق.",
+                "لا تُعِد نشر المحتوى بنفسك، ولو للتحذير منه.",
+                "تصوير الأشخاص أو نشر صورهم وبياناتهم دون إذنهم جريمة في القانون الإماراتي، فأبلغ الشرطة.",
+                "إن نُشر عنوانك أو أرقامك وتشعر بخطر، اتصل بالطوارئ 999.",
+            ],
+            "en": [
+                "Screenshot the post, its link, the account name and the date before it is deleted.",
+                "Ask for removal using the app's 'Report a privacy violation' option.",
+                "Don't share the content again yourself, even to warn people about it.",
+                "Filming people or posting their photos or details without permission is a crime under UAE law. Report it to the police.",
+                "If your address or numbers were posted and you feel unsafe, call 999.",
+            ],
+            "ur": [
+                "پوسٹ ڈیلیٹ ہونے سے پہلے اس کا، لنک، اکاؤنٹ کے نام اور تاریخ کا اسکرین شاٹ لیں۔",
+                "ایپ میں 'پرائیویسی کی خلاف ورزی رپورٹ کریں' سے اسے ہٹانے کی درخواست دیں۔",
+                "خود یہ مواد دوبارہ شیئر نہ کریں، چاہے خبردار کرنے کے لیے ہی کیوں نہ ہو۔",
+                "متحدہ عرب امارات کے قانون میں کسی کی اجازت کے بغیر ویڈیو بنانا یا تصاویر اور معلومات شائع کرنا جرم ہے۔ پولیس کو رپورٹ کریں۔",
+                "اگر آپ کا پتہ یا نمبر شائع ہوا ہے اور آپ خطرہ محسوس کرتے ہیں تو 999 پر کال کریں۔",
+            ],
+        },
+    },
+    "device_hacked": {
+        "title": {
+            "ar": "هاتفي أو جهازي مخترق، أو ملفاتي مشفّرة ويطلبون فدية",
+            "en": "My phone or computer is hacked, or my files are locked for a ransom",
+            "ur": "میرا فون یا کمپیوٹر ہیک ہو گیا، یا فائلیں لاک کر کے تاوان مانگا جا رہا ہے",
+        },
+        "steps": {
+            "ar": [
+                "افصل الجهاز عن الإنترنت فوراً: أطفئ الواي فاي والبيانات، وافصل كابل الشبكة.",
+                "لا تدفع الفدية: الدفع لا يضمن عودة الملفات، ويموّل المجرمين.",
+                "إن فقد هاتفك الإشارة فجأة وتوقفت الرسائل، اتصل بشركة الاتصالات فوراً، فقد تكون شريحتك نُقلت إلى جهاز آخر.",
+                "من جهاز آخر آمن، غيّر كلمات مرور البريد والبنك، وفعّل التحقق بخطوتين.",
+                "التقط صورة لرسالة الفدية أو أي رسالة غريبة، ولا تحذف شيئاً.",
+                "أبلغ الشرطة. وإن كان جهاز عمل، أبلغ قسم تقنية المعلومات في شركتك فوراً.",
+            ],
+            "en": [
+                "Take the device offline now: turn off Wi-Fi and mobile data, and unplug the network cable.",
+                "Don't pay the ransom: paying doesn't guarantee your files back, and it funds the criminals.",
+                "If your phone suddenly loses signal and messages stop, call your telecom provider now: your SIM may have been moved to another device.",
+                "From another, safe device, change your e-mail and banking passwords and turn on two-step verification.",
+                "Photograph the ransom note or any strange message, and don't delete anything.",
+                "Report it to the police. If it is a work device, tell your company's IT team at once.",
+            ],
+            "ur": [
+                "فوراً ڈیوائس کو انٹرنیٹ سے الگ کریں: وائی فائی اور موبائل ڈیٹا بند کریں اور نیٹ ورک کیبل نکال دیں۔",
+                "تاوان نہ دیں: ادائیگی سے فائلیں واپس ملنے کی ضمانت نہیں، اور مجرموں کو پیسہ ملتا ہے۔",
+                "اگر فون کا سگنل اچانک چلا جائے اور پیغامات بند ہو جائیں تو فوراً موبائل کمپنی کو فون کریں، ہو سکتا ہے آپ کی سم کسی اور ڈیوائس میں منتقل ہو گئی ہو۔",
+                "کسی دوسری محفوظ ڈیوائس سے ای میل اور بینک کے پاس ورڈ بدلیں اور دو مرحلہ تصدیق آن کریں۔",
+                "تاوان کے پیغام یا کسی عجیب پیغام کی تصویر لیں، اور کچھ ڈیلیٹ نہ کریں۔",
+                "پولیس کو رپورٹ کریں۔ اگر کام کی ڈیوائس ہے تو فوراً کمپنی کی آئی ٹی ٹیم کو بتائیں۔",
+            ],
+        },
+    },
     "identity_shared": {
         "title": {
             "ar": "أرسلت صورة الهوية أو جواز السفر لجهة مشبوهة",

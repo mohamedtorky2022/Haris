@@ -42,11 +42,44 @@ CATEGORY_LABELS = {
     "tech_support": {"ar": "دعم فني وهمي", "en": "Fake tech support", "ur": "جعلی ٹیکنیکل سپورٹ"},
     "phishing_link": {"ar": "رابط تصيّد", "en": "Phishing link", "ur": "فشنگ لنک"},
     "romance_scam": {"ar": "احتيال عاطفي", "en": "Romance scam", "ur": "محبت کا جھانسہ"},
+    "shopping_scam": {"ar": "متجر أو إعلان أو إيجار وهمي", "en": "Fake shop, listing or rental", "ur": "جعلی دکان، اشتہار یا کرایہ"},
+    "charity_scam": {"ar": "تبرع وهمي", "en": "Fake charity", "ur": "جعلی خیرات"},
+    "visa_scam": {"ar": "تأشيرة أو إقامة وهمية", "en": "Fake visa or residency", "ur": "جعلی ویزا یا اقامہ"},
     "recovery_scam": {"ar": "احتيال «استرداد الأموال»", "en": "Fake money recovery", "ur": "رقم واپسی کا جعلی وعدہ"},
     "unknown": {"ar": "غير محدد", "en": "Not identified", "ur": "نامعلوم"},
 }
 
 REASONS = {
+    "deposit_to_reserve": {
+        "ar": "يطلب عربوناً قبل أن ترى الشقة أو السلعة، أو يقول إن المالك مسافر. هذا أسلوب احتيال الإيجار والإعلانات.",
+        "en": "It asks for a deposit before you see the flat or item, or says the owner is abroad. This is how rental and listing scams work.",
+        "ur": "یہ فلیٹ یا چیز دیکھنے سے پہلے ایڈوانس مانگتا ہے، یا کہتا ہے کہ مالک ملک سے باہر ہے۔ کرائے اور اشتہار کے فراڈ ایسے ہی ہوتے ہیں۔",
+    },
+    "transfer_only": {
+        "ar": "يرفض الدفع عند الاستلام ويقبل التحويل المسبق فقط، فلا يمكنك استرجاع مالك.",
+        "en": "It refuses cash on delivery and only takes an advance transfer, so you can't get your money back.",
+        "ur": "یہ ڈیلیوری پر ادائیگی سے انکار کرتا ہے اور صرف پیشگی ٹرانسفر لیتا ہے، اس لیے رقم واپس نہیں ملتی۔",
+    },
+    "too_good_deal": {
+        "ar": "سعر أو خصم أقل بكثير من السوق. العروض غير الواقعية طُعم شائع للمتاجر الوهمية.",
+        "en": "A price or discount far below the market. Unreal offers are a common bait for fake shops.",
+        "ur": "قیمت یا رعایت بازار سے بہت کم ہے۔ غیر حقیقی پیشکش جعلی دکانوں کا عام جال ہے۔",
+    },
+    "charity_appeal": {
+        "ar": "طلب تبرع بالتحويل أو عبر رابط. تبرّع فقط عبر الجمعيات المرخّصة وقنواتها الرسمية.",
+        "en": "A request to donate by transfer or through a link. Donate only through licensed charities and their official channels.",
+        "ur": "منتقلی یا لنک کے ذریعے عطیہ کی درخواست۔ صرف لائسنس یافتہ اداروں اور ان کے سرکاری ذرائع سے عطیہ دیں۔",
+    },
+    "personal_account": {
+        "ar": "يطلب التحويل إلى حساب شخصي. الجهات والشركات الحقيقية تستلم على حسابات باسمها.",
+        "en": "It asks for payment to a personal account. Real organisations are paid into accounts in their own name.",
+        "ur": "یہ ذاتی اکاؤنٹ میں رقم مانگتا ہے۔ اصلی ادارے اپنے نام کے اکاؤنٹ میں رقم لیتے ہیں۔",
+    },
+    "visa_offer": {
+        "ar": "يعد بتأشيرة أو إقامة «مضمونة» أو سريعة. التأشيرات تُصدر فقط عبر القنوات الحكومية الرسمية.",
+        "en": "It promises a 'guaranteed' or fast visa or residency. Visas are only issued through official government channels.",
+        "ur": "یہ 'یقینی' یا فوری ویزا یا اقامہ کا وعدہ کرتا ہے۔ ویزا صرف سرکاری ذرائع سے جاری ہوتا ہے۔",
+    },
     "romance_money": {
         "ar": "كلام عاطفي مع طلب مال أو تذاكر أو رسوم. هذا أسلوب الاحتيال العاطفي المعروف.",
         "en": "Affectionate words together with a request for money, tickets or fees. This is the classic romance scam.",
@@ -269,6 +302,21 @@ ADVICE = {
         "ar": ["لا تثبّت أي تطبيق تحكم عن بعد بطلب من شخص اتصل بك."],
         "en": ["Never install a remote-control app because a caller asked you to."],
         "ur": ["کسی کال کرنے والے کے کہنے پر ریموٹ کنٹرول ایپ کبھی انسٹال نہ کریں۔"],
+    },
+    "shopping_scam": {
+        "ar": ["لا تدفع عربوناً قبل معاينة الشقة أو السلعة بنفسك، وتأكد من هوية المالك وعقد الإيجار الموثّق.", "تسوّق من المتاجر المعروفة، وفضّل الدفع عند الاستلام أو بطاقة تتيح استرجاع المبلغ."],
+        "en": ["Never pay a deposit before seeing the flat or item yourself, and check the owner's identity and a registered tenancy contract.", "Shop at known stores, and prefer cash on delivery or a card that lets you dispute the charge."],
+        "ur": ["فلیٹ یا چیز خود دیکھے بغیر کبھی ایڈوانس نہ دیں، اور مالک کی شناخت اور رجسٹرڈ کرایہ نامہ چیک کریں۔", "معروف دکانوں سے خریدیں، اور ڈیلیوری پر ادائیگی یا ایسا کارڈ استعمال کریں جس سے رقم واپس مانگی جا سکے۔"],
+    },
+    "charity_scam": {
+        "ar": ["تبرّع عبر الجمعيات المرخّصة في الدولة وتطبيقاتها ومواقعها الرسمية فقط، لا لحسابات شخصية."],
+        "en": ["Donate only through charities licensed in the UAE and their official apps and websites, never to personal accounts."],
+        "ur": ["صرف متحدہ عرب امارات میں لائسنس یافتہ اداروں اور ان کی سرکاری ایپس یا ویب سائٹس سے عطیہ دیں، ذاتی اکاؤنٹس میں نہیں۔"],
+    },
+    "visa_scam": {
+        "ar": ["تحقق من أي تأشيرة أو إقامة عبر المواقع والتطبيقات الحكومية الرسمية، ولا تدفع رسوماً لوسيط يعدك بها مضمونة."],
+        "en": ["Check any visa or residency on official government websites and apps, and never pay an agent who promises it is guaranteed."],
+        "ur": ["کسی بھی ویزا یا اقامہ کی تصدیق سرکاری ویب سائٹس اور ایپس سے کریں، اور 'یقینی ویزا' کا وعدہ کرنے والے ایجنٹ کو فیس نہ دیں۔"],
     },
     "romance_scam": {
         "ar": ["لا ترسل مالاً لشخص لم تقابله وجهاً لوجه، مهما كانت القصة مؤثرة.", "اطلب مكالمة فيديو مباشرة، وتحدث مع شخص تثق به قبل أي قرار."],

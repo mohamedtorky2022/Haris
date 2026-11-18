@@ -30,6 +30,8 @@ REQUIRED = {
     "identity_shared": ("occurred_at",),
     "harassment": ("occurred_at",),
     "impersonation": ("occurred_at",),
+    "privacy_violation": ("occurred_at",),
+    "device_hacked": ("occurred_at", "steps_taken"),
     "business_fraud": ("occurred_at", "amount", "payment_method", "steps_taken"),
     "suspicious_only": (),
 }
@@ -39,6 +41,14 @@ INCIDENT_HINTS = {
                       "انتحل شخصيتي", "يستخدم اسمي", "يستخدم صوري", "fake account in my name", "fake account with my",
                       "fake profile", "impersonating me", "pretending to be me", "using my photos", "using my name",
                       "میرے نام سے جعلی", "میرے نام کا جعلی", "میری تصویر استعمال"),
+    "privacy_violation": ("صورني دون", "صورني بدون", "صوروني دون", "صوروني بدون", "صورني من غير", "نشر صوري دون", "نشر صوري بدون", "نشر صورتي دون",
+                          "نشر صورتي بدون", "نشر عنواني", "نشر بياناتي", "نشر رقمي", "دون اذني", "بدون اذني", "بدون علمي",
+                          "filmed me", "recorded me without", "posted my photo", "posted my address", "shared my photos without",
+                          "without my permission", "without my consent", "اجازت کے بغیر", "میری ویڈیو بنائی"),
+    "device_hacked": ("فدية", "ملفاتي مشفرة", "الملفات مشفرة", "فيروس", "برنامج خبيث", "هاتفي مخترق", "جهازي مخترق",
+                      "اللابتوب مخترق", "فقدت الشبكة فجأة", "نقلوا شريحتي", "ransomware", "ransom", "files are encrypted",
+                      "files encrypted", "virus", "malware", "my phone is hacked", "my laptop is hacked", "computer is hacked",
+                      "sim swap", "lost signal", "وائرس", "تاوان", "فون ہیک"),
     "extortion": ("ابتزاز", "يبتزني", "يهددني", "سينشر", "صوري", "فضيحة", "blackmail", "extort", "threaten",
                   "my photos", "my video", "بلیک میل", "دھمکی"),
     "account_hacked": ("اختراق", "اخترق", "سرق حسابي", "سرقة حسابي", "لا أستطيع الدخول", "hacked", "lost access",
@@ -55,6 +65,9 @@ INCIDENT_HINTS = {
                    "debited", "charged", "card details", "otp", "رقم دی", "پیسے بھیجے", "ادائیگی کی", "کٹ گئے",
                    "ٹرانسفر کیے", "بھیج دیے", "ادا کیے"),
 }
+
+EXTORTION_THREATS = ("ابتزاز", "يبتزني", "يهددني بنشر", "يهدد بنشر", "سينشر", "blackmail", "extort", "threatening to post",
+                     "threatening to share", "threatening to publish", "بلیک میل")
 
 PAYMENT_HINTS = {
     "gift_cards": ("بطاقات هدايا", "بطاقة هدايا", "gift card", "itunes", "google play", "گفٹ کارڈ"),
@@ -83,6 +96,9 @@ STEP_HINTS = {
     "password": (("غيرت كلمة المرور", "غيرت الباسورد", "changed my password", "changed the password",
                   "پاس ورڈ بدل"),
                  {"ar": "غيّرت كلمة المرور", "en": "Changed the password", "ur": "پاس ورڈ بدلا"}),
+    "offline": (("فصلت الانترنت", "فصلت الجهاز", "اطفأت الواي فاي", "disconnected", "turned off wi-fi", "turned off the wifi",
+                 "انٹرنیٹ بند"),
+                {"ar": "فصلت الجهاز عن الإنترنت", "en": "Took the device offline", "ur": "ڈیوائس انٹرنیٹ سے الگ کی"}),
     "blocked": (("حظرت الرقم", "حظرته", "blocked the number", "blocked him", "blocked them", "نمبر بلاک"),
                 {"ar": "حظرت رقم المحتال", "en": "Blocked the scammer", "ur": "نمبر بلاک کیا"}),
 }
@@ -124,10 +140,14 @@ def rules_extract(story: str, lang: str) -> dict:
     norm = normalize(story)
     out: dict = {}
 
-    for incident, phrases in INCIDENT_HINTS.items():  # ordered: most specific first
-        if _has(norm, phrases):
-            out["incident_type"] = incident
-            break
+    # A threat to publish is extortion even when the story also says "without my permission".
+    if _has(norm, EXTORTION_THREATS):
+        out["incident_type"] = "extortion"
+    else:
+        for incident, phrases in INCIDENT_HINTS.items():  # ordered: most specific first
+            if _has(norm, phrases):
+                out["incident_type"] = incident
+                break
 
     money = AMOUNT.search(normalize_digits(story))
     if money:

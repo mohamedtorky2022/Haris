@@ -25,8 +25,8 @@ from haris.report import build_report
 from haris.text import pick_language
 
 Lang = Literal["ar", "en", "ur"]
-Incident = Literal["money_sent", "account_hacked", "extortion", "harassment", "impersonation", "identity_shared",
-                   "business_fraud", "suspicious_only"]
+Incident = Literal["money_sent", "account_hacked", "extortion", "harassment", "impersonation", "privacy_violation",
+                   "device_hacked", "identity_shared", "business_fraud", "suspicious_only"]
 ImageDataUrl = Annotated[str, Field(max_length=6_000_000)]  # a 4 MB image as a base64 data: URL
 FRONTEND_DIR = Path(__file__).resolve().parents[2] / "frontend"
 RATE_LIMIT = int(os.getenv("HARIS_RATE_LIMIT", "30"))  # requests per minute per client
