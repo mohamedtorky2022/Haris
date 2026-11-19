@@ -170,6 +170,18 @@ A message nobody fell for is still evidence. The radar turns many such reports i
 
 **Safeguards.** Reports alone never block anyone: people can report an innocent number on purpose, and scammers spoof real numbers. The radar's wording counts reports ("reported by 12 people") and never says "this number is a scammer". The authority dashboard (`/authority.html`) opens only on the computer running Haris unless `HARIS_AUTHORITY_TOKEN` is set, and decisions use a two-click confirm with no browser dialogs.
 
+### WhatsApp channel: `/webhook/whatsapp`
+
+`whatsapp.py` puts the same engine behind WhatsApp's Cloud API, with no new dependency.
+
+1. **Set-up check.** Meta calls `GET /webhook/whatsapp` once with `hub.verify_token`; Haris answers with `hub.challenge` only if the token matches `WHATSAPP_VERIFY_TOKEN`.
+2. **Incoming message.** Meta posts every message to `POST /webhook/whatsapp` with an `X-Hub-Signature-256` header: an HMAC-SHA256 of the raw body with the app secret. Haris refuses any call whose signature does not match, answers `200` at once, and builds the reply in the background so Meta does not retry.
+3. **Replies.** A greeting opens the menu (three buttons). Any other text is checked with `detector.analyze` and `radar.annotate`, exactly like the web chat, and the result comes back in one message: risk, reasons, advice, the radar count or the official warning, and three buttons. "I've been scammed" opens a list of the 10 situations; each one returns its steps and the official contacts. Wording comes from the `whatsapp` section of `locales/<lang>.json`, and the language follows the script the user writes in.
+4. **WhatsApp limits.** Buttons have at most 20 characters, list rows 24, a body with buttons 1,024; when a plan is longer, the text goes first and the buttons follow in a second message. `tests/test_whatsapp.py` checks every label and every plan in all four languages against these limits.
+5. **Protecting the service.** Meta retries deliveries, so message ids are remembered for a day and answered once. Each sender may send 20 messages a minute; the first message over the limit gets a polite notice, and the rest are ignored.
+
+**Privacy.** Message text is never logged or written to disk. When a message is rated medium or high, its text stays in memory for 30 minutes under a random token, so "Report to protect" can send it to the radar; the token is used once and then dropped. The reporter is counted by a hash of their WhatsApp number, which the radar hashes again with its own key. WhatsApp messages pass through Meta's servers; a partner deployment would review Meta's local storage option for the UAE.
+
 ## 4. Privacy design
 
 ### Principles
@@ -240,14 +252,15 @@ The design follows the data-minimisation and purpose-limitation principles of UA
 - **Add a scam pattern:** add a `Signal` in `rules.py` and its reason sentence under `reasons` in every `locales/<lang>.json`, then add sample messages to `data/samples/messages.json` and run `pytest` and `scripts/evaluate.py`.
 - **Fix a new mishearing:** add the spoken variants and the written form to `GLOSSARY` in `polish.py`, with a test in `tests/test_polish.py`.
 - **Train speech recognition for the pilot:** move transcription to a server-side service such as Azure Speech with Custom Speech, hosted in a UAE region. Train it on the glossary terms (plain-text data) and on anonymised recordings with transcripts from the partner authority. `/api/polish` stays as the safety net.
-- **Add a channel (for example WhatsApp):** a webhook receives the message, calls `detector.analyze(text)`, and formats `risk_label`, `summary`, `reasons` and `advice` as a reply. No change to the core is needed.
+- **Add another channel (a voice line, Telegram):** follow `whatsapp.py`: check the sender's signature, call `detector.analyze` and `radar.annotate`, and format `risk_label`, `summary`, `reasons` and `advice` for that channel. No change to the core is needed.
 - **Go live with the campaign poster:** once the WhatsApp number is approved, regenerate `docs/poster/qr.svg` with `https://wa.me/<number>?text=مرحباً حارس` (same size and colour), check that it scans, and render `poster.html` to `haris-poster.png` (for example with headless Chrome at 2x).
 
 ## 7. Known limitations
 
 - The radar demo counts one browser as one person; a determined person could report many times from many browsers. Production should verify reporters (for example UAE PASS) and rate-limit per person.
 - Rules only catch wording someone wrote down; new scams need the AI layer or a new rule.
-- Screenshots are read only when the AI is on; voice notes sent as audio files are not analysed yet.
+- Screenshots are read only when the AI is on; voice notes sent as audio files are not analysed yet. On WhatsApp, images and voice notes get a polite answer pointing to the app.
+- The WhatsApp demo runs on Meta's test number, which reaches only 5 verified phones. Its short-term memory (retries, rate limit, report tokens) lives in one server process; several servers would need a shared store such as Redis.
 - Dictation accuracy depends on the browser's speech service; Haris can fix misheard words but not words the service didn't hear at all.
 - Link analysis is offline and structural; it has no live reputation data.
 - The Urdu, Hindi and dialect wording has not yet been reviewed by native speakers; the Hindi was drafted with AI help.

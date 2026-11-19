@@ -56,9 +56,9 @@ The same engine serves every group; the scam patterns and advice cover parcel an
 ## 3. How it works
 
 ```
- Browser (web chat, AR / EN / UR)
-        │  /api/check, /api/playbooks, /api/extract, /api/polish, /api/report
-        ▼
+ Browser (web chat, AR / EN / UR / HI)        WhatsApp (Cloud API)
+        │  /api/check, /api/playbooks, …          │  /webhook/whatsapp (signed by Meta)
+        ▼                                         ▼
  FastAPI app ── rate limit, security headers, input limits, no logging of content
         │
         ▼
@@ -72,6 +72,7 @@ The same engine serves every group; the scam patterns and advice cover parcel an
    ├─ intake.py     turns a free story and screenshots into report fields
    ├─ polish.py     fixes misheard words in dictated text (glossary + optional AI), never digits
    ├─ radar.py      campaign radar: groups reports, warns, escalates; the authority confirms (SQLite)
+   ├─ whatsapp.py   WhatsApp channel: checks Meta's signature, replies with buttons and lists
    ├─ translations.py  loads all wording from locales/<lang>.json (one file per language)
    ├─ playbooks.py  emergency plans + official contacts
    └─ report.py     builds the police report in memory
@@ -113,6 +114,16 @@ python scripts/radar_demo.py          # 10 people report the same fake-parcel ca
 
 Open <http://127.0.0.1:8000/authority.html> (the authority dashboard), approve the warning, then reload the chat: every user now sees the official warning, and any message from those numbers or links is rated high risk.
 
+**Connect WhatsApp** (free, with Meta's test number):
+
+1. In [Meta for Developers](https://developers.facebook.com), create an app and add the WhatsApp product. Meta gives you a free test number that can message up to 5 phone numbers you verify.
+2. Put the access token, the Phone number ID and the app secret in `.env`, and choose any long random `WHATSAPP_VERIFY_TOKEN` (see `.env.example`). Restart the server with `--env-file ../.env`.
+3. Give the server a public HTTPS address, for example with a free Cloudflare quick tunnel: `cloudflared tunnel --url http://localhost:8000`.
+4. In Meta's WhatsApp > Configuration, set the callback URL to `https://<tunnel address>/webhook/whatsapp`, type the same verify token, and subscribe to the `messages` field.
+5. Send "مرحباً" or "hi" to the test number from a verified phone. Haris answers with buttons: check a message, I've been scammed, how to use it.
+
+The test number cannot receive messages from the public. For the poster's QR code, Haris needs its own WhatsApp Business number.
+
 ### Tests and evaluation
 
 ```bash
@@ -137,7 +148,9 @@ On the 59 labelled samples in `data/samples/messages.json` (37 scams, 22 legitim
 | `GET` | `/api/authority/campaigns` | campaigns for the authority dashboard (this computer only, or with `X-Authority-Token`) |
 | `POST` | `/api/authority/campaigns/{id}` | `{"status": "confirmed" \| "dismissed"}`: approve the public warning and block request, or dismiss |
 | `POST` | `/api/report` | build a police report (HTML + Markdown), nothing stored |
-| `GET` | `/api/health` | status, and whether the AI second opinion is on |
+| `GET` | `/api/health` | status, and whether the AI second opinion and WhatsApp are on |
+| `GET` | `/webhook/whatsapp` | Meta's one-time check of the verify token |
+| `POST` | `/webhook/whatsapp` | incoming WhatsApp messages (refused unless signed with the app secret) |
 
 ## 5. Technical choices and trade-offs
 
@@ -151,7 +164,7 @@ On the 59 labelled samples in `data/samples/messages.json` (37 scams, 22 legitim
 
 **No AI SDK dependency.** `llm.py` calls the Claude API with the Python standard library, so the core installs with no third-party packages and the AI layer can be swapped without touching the rest.
 
-**Web chat instead of WhatsApp for the MVP.** WhatsApp Business API approval takes weeks, so the demo runs as a WhatsApp-style web chat. The backend is channel-agnostic: a WhatsApp webhook would call the same `/api/check`.
+**Web chat first, WhatsApp on the test number.** A public WhatsApp Business number needs Meta's approval, so the main demo is a WhatsApp-style web chat. The WhatsApp channel is built and runs on Meta's free test number, which reaches up to 5 verified phones: it calls the same engine, so a check gives the same answer on both channels.
 
 **Stateless for users, one small store for scammers.** Checks, police reports, screenshots and dictation are never stored. The only stored data is the campaign radar: the sender's numbers, links and the redacted message text, sent only when the user taps "Report it". Nothing about the reporter is kept except a keyed hash of a random device id, so one device counts once. Reports are deleted after 30 days.
 - *Trade-off:* this is the first data Haris keeps, so a real launch needs a data-sharing agreement, UAE hosting and verified reporters (for example UAE PASS).
@@ -188,6 +201,7 @@ On the 59 labelled samples in `data/samples/messages.json` (37 scams, 22 legitim
 - Nothing users send is stored or logged, except a report the user chooses to send to the campaign radar: the sender's numbers and links and the redacted text, kept 30 days, with no data about the reporter. API responses carry `Cache-Control: no-store`.
 - The authority dashboard opens only on the computer running Haris, or anywhere with the `HARIS_AUTHORITY_TOKEN` set. Behind a tunnel or proxy (requests carrying `X-Forwarded-For` or `CF-Connecting-IP`) the token is always required.
 - Personal data is redacted from text before any AI call; link query strings are dropped.
+- WhatsApp webhooks are accepted only when signed with the app secret. Message text is never logged; a risky message is kept in memory for 30 minutes only, so the user can still tap "Report to protect".
 - Screenshots are resized in the browser, which also drops photo metadata such as location. They are sent to the AI only when it is switched on, are not stored, and go into the report file on the user's own device.
 - Dictation uses the browser's built-in speech service (in Chrome this is Google's, in Safari Apple's); the user sees and can correct the text before it is sent.
 - The model prompt treats the message strictly as data, so instructions hidden inside a scam message are ignored.
@@ -207,7 +221,7 @@ haris/
 ├── .env.example                optional AI settings (no real keys)
 ├── backend/
 │   ├── app/main.py             FastAPI routes, middleware, static front end
-│   └── haris/                 the core engine (pure Python)
+│   └── haris/                 the core engine (pure Python), including the WhatsApp channel
 ├── frontend/                   index.html, styles.css, app.js
 ├── data/samples/messages.json  labelled synthetic test messages
 ├── scripts/evaluate.py         accuracy on the samples

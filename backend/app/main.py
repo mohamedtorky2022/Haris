@@ -6,18 +6,19 @@ Run from the backend folder:  uvicorn app.main:app --reload
 from __future__ import annotations
 
 import hmac
+import json
 import os
 import time
 from collections import defaultdict, deque
 from pathlib import Path
 from typing import Annotated, List, Literal, Optional
 
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Query, Request
+from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from haris import __version__, llm, radar
+from haris import __version__, llm, radar, whatsapp
 from haris.detector import analyze
 from haris.intake import MAX_IMAGES, extract
 from haris.playbooks import get_playbook, list_playbooks
@@ -118,7 +119,7 @@ async def protect(request: Request, call_next):
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "version": __version__, "ai_enabled": llm.enabled()}
+    return {"status": "ok", "version": __version__, "ai_enabled": llm.enabled(), "whatsapp_enabled": whatsapp.enabled()}
 
 
 @app.post("/api/check")
@@ -201,6 +202,38 @@ def polish_text(body: PolishRequest):
 def report(body: ReportRequest):
     return build_report(body.model_dump(), body.lang)
 
+
+
+# --- WhatsApp channel (Cloud API webhook) ------------------------------------
+
+@app.get("/webhook/whatsapp")
+def whatsapp_verify(
+    mode: Optional[str] = Query(None, alias="hub.mode"),
+    token: Optional[str] = Query(None, alias="hub.verify_token"),
+    challenge: Optional[str] = Query(None, alias="hub.challenge"),
+):
+    """Meta calls this once when the webhook is set up, to check our verify token."""
+    answer = whatsapp.verify_subscription(mode, token, challenge)
+    if answer is None:
+        raise HTTPException(403, "Verification failed")
+    return PlainTextResponse(answer)
+
+
+@app.post("/webhook/whatsapp")
+async def whatsapp_webhook(request: Request, background: BackgroundTasks):
+    """Incoming WhatsApp messages. Signed by Meta; we answer at once and reply in the background."""
+    body = await request.body()
+    if len(body) > 1_000_000:
+        raise HTTPException(413, "Payload too large")
+    if not whatsapp.valid_signature(body, request.headers.get("x-hub-signature-256")):
+        raise HTTPException(401, "Invalid signature")
+    try:
+        payload = json.loads(body)
+    except ValueError:
+        raise HTTPException(400, "Invalid JSON") from None
+    if whatsapp.enabled() and isinstance(payload, dict):
+        background.add_task(whatsapp.process, payload)
+    return {"received": True}
 
 if FRONTEND_DIR.is_dir():
     app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")

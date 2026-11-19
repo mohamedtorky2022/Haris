@@ -288,5 +288,43 @@
   "password": "Changed the password",
   "offline": "Took the device offline",
   "blocked": "Blocked the scammer"
+ },
+ "whatsapp": {
+  "welcome": "Hello, I'm Haris 🛡️\nForward me any suspicious message, or paste its text or link here, and I'll tell you how risky it is and what to do.\n\nI don't keep your messages, and I hide your personal details before checking.",
+  "footer": "An AI assistant, not an official body · Emergency 999",
+  "buttons": {
+   "check": "Check a message",
+   "again": "Check another",
+   "scammed": "I've been scammed",
+   "guide": "How to use Haris",
+   "report": "Report to protect"
+  },
+  "ask_check": "Send the suspicious message or link here, or forward it to me from the chat where you got it.",
+  "reasons_heading": "Why:",
+  "advice_heading": "What to do:",
+  "next": "What would you like to do now?",
+  "scammed_intro": "Don't worry, we'll go step by step. Choose what happened:",
+  "list_button": "Choose your case",
+  "list_section": "What happened?",
+  "playbooks": {
+   "money_sent": "I paid or gave a code",
+   "account_hacked": "My account was hacked",
+   "extortion": "Blackmail or threats",
+   "harassment": "Bullying or harassment",
+   "impersonation": "Fake account of me",
+   "privacy_violation": "My photos or data leaked",
+   "device_hacked": "Hacked device or ransom",
+   "identity_shared": "I sent my ID or passport",
+   "business_fraud": "My company paid a scam",
+   "suspicious_only": "Suspicious message only"
+  },
+  "steps_heading": "Do this now:",
+  "contacts_heading": "Contacts and reporting:",
+  "report_app": "To prepare a full report with voice or screenshots, use the Haris app.",
+  "guide": "Haris in three steps:\n1. *Check before you reply:* forward me the suspicious message and I'll tell you the risk, why, and what to do.\n2. *Something went wrong?* Tap \"I've been scammed\" and choose your case for the first steps and the official reporting numbers.\n3. *Protect others:* if it was a scam and you didn't reply, tap \"Report to protect\".",
+  "reported": "Thank you, your report was received 🙏\nEvery report helps spot a campaign early, and the authority decides on any official warning.",
+  "report_expired": "This report has expired. Send the suspicious message again, then tap \"Report to protect\".",
+  "unsupported": "On WhatsApp I can check text messages and links for now. Copy the message text and send it here. To report with screenshots or voice, use the Haris app.",
+  "too_many": "I got a lot of messages in one minute. Please wait a little and send again."
  }
 }
