@@ -202,8 +202,14 @@ def extract(story: str, image_urls: list[str], lang: str | None, incident_type: 
     story = (story or "").strip()
     images = decode_images(image_urls or [])
     fields = rules_extract(story, lang) if story else {}
+    told = fields.get("incident_type")
+    if not told and fields.get("amount") and fields.get("payment_method"):
+        told = "money_sent"  # an amount paid by a named method means money was lost
     if incident_type in REQUIRED:
-        fields["incident_type"] = incident_type
+        # The situation picked before the story is only a starting point: when the story
+        # clearly describes another one (money taken from a card after opening "harassment"),
+        # the story wins. The user can still change the type on the summary card.
+        fields["incident_type"] = told or incident_type
 
     engine = "rules"
     ai = llm.extract(redact(story).text if story else "", images, lang)

@@ -124,6 +124,16 @@ Open <http://127.0.0.1:8000/authority.html> (the authority dashboard), approve t
 
 The test number cannot receive messages from the public. For the poster's QR code, Haris needs its own WhatsApp Business number.
 
+**Explainer videos** (one per language). Cartoon Haris explains what he does: he blinks, his mouth follows his voice, and he points to each part of the app. The Arabic script is in the Emirati dialect.
+
+```bash
+bash docs/video/build_voice.sh        # on a Mac: records the lines with the system voices
+bash docs/video/fetch_fonts.sh        # IBM Plex Arabic and Devanagari (Open Font License)
+python3 docs/video/render.py all      # needs ffmpeg and Playwright's Chromium; writes docs/video/out/Haris-<lang>.mp4
+```
+
+The scripts are in `docs/video/scripts.json` (`show` is the text on screen, `say` what the voice reads, for example digits spelled out). The voices are the macOS system voices: Majed (Arabic, standard accent), Daniel (English), Lekha (Hindi, female). macOS has no Urdu voice, so the Urdu video uses the Hindi voice reading a Devanagari spelling of the Urdu script. A recorded human voice can replace any clip in `docs/video/voice/<lang>/`.
+
 ### Tests and evaluation
 
 ```bash
@@ -230,6 +240,7 @@ haris/
 └── docs/
     ├── TECHNICAL.md            architecture, model choices, privacy design
     ├── poster/                 campaign poster (HTML source, QR, UAE map, rendered PNG)
+    ├── video/                  explainer videos: scripts in 4 languages, voices, renderer
     ├── Haris-presentation.pptx     presentation (English)
     └── Haris-presentation-ar.pptx  presentation (Arabic)
 ```

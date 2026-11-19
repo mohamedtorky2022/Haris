@@ -50,6 +50,14 @@ def test_chosen_incident_type_wins():
     assert "occurred_at" in r["missing"]
 
 
+def test_story_overrides_an_earlier_choice_when_it_clearly_differs():
+    # Opened from the "harassment" plan, but the story is about money taken from a card.
+    story = "انسحب من بطاقتي 1000 درهم اليوم الساعة 8 بعد ما دخلت بياناتي في رابط"
+    r = extract(story, [], "ar", incident_type="harassment")
+    assert r["fields"]["incident_type"] == "money_sent"
+    assert r["fields"]["amount"] == "1000"
+
+
 def test_empty_story_asks_for_description():
     assert extract("", [], "ar")["missing"][0] == "description"
 

@@ -12,6 +12,6 @@ for lang, spec in S.items():
         out = f"voice/{lang}/{i:02d}.m4a"
         text = line.get("say", line["show"])
         subprocess.run(["say", "-v", spec["voice"], "-r", str(spec["rate"]), "-o", out,
-                        "--file-format=m4af", "--data-format=aac", text], check=True)
+                        "--file-format=m4af", "--data-format=aac", "--bit-rate=128000", text], check=True)
         print(out)
 PY
