@@ -27,10 +27,18 @@ def pcm(path: Path) -> np.ndarray:
     return np.frombuffer(raw, dtype=np.int16).astype(np.float32) / 32768
 
 
+def prepare(src: Path, dst: Path, tempo: float) -> Path:
+    """A clean copy of one voice clip: slightly faster if asked, low rumble removed."""
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(src), "-af", f"atempo={tempo},highpass=f=70",
+                    "-ar", "44100", str(dst)], check=True)
+    return dst
+
+
 def timeline(lang: str, spec: dict) -> dict:
     t, lines, track = LEAD, [], []
     for i, line in enumerate(spec["lines"], 1):
-        clip = HERE / "voice" / lang / f"{i:02d}.m4a"
+        clip = prepare(HERE / "voice" / lang / f"{i:02d}.m4a", OUT / "clips" / lang / f"{i:02d}.wav", spec.get("tempo", 1.0))
         audio = pcm(clip)
         dur = len(audio) / RATE
         lines.append({**line, "t0": round(t, 3), "t1": round(t + dur, 3), "clip": str(clip)})
@@ -108,9 +116,9 @@ def render(lang: str) -> Path:
     for i, l in enumerate(tl["lines"]):
         inputs += ["-i", l["clip"]]
         ms = int(l["t0"] * 1000)
-        filters.append(f"[{i + 1}:a]aresample=44100,adelay={ms}|{ms}[a{i}]")
+        filters.append(f"[{i + 1}:a]adelay={ms}|{ms}[a{i}]")
     mix = "".join(f"[a{i}]" for i in range(len(tl["lines"])))
-    filters.append(f"{mix}amix=inputs={len(tl['lines'])}:normalize=0,apad[aout]")
+    filters.append(f"{mix}amix=inputs={len(tl['lines'])}:normalize=0,loudnorm=I=-16:TP=-1.5,apad[aout]")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(video_tmp), *inputs, "-filter_complex", ";".join(filters),
                     "-map", "0:v", "-map", "[aout]", "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-ac", "2",
                     "-shortest", "-movflags", "+faststart", str(tmp)], check=True)

@@ -1,7 +1,7 @@
 {
  "ar": {
   "voice": "Majed",
-  "rate": 195,
+  "rate": 230,
   "dir": "rtl",
   "font": "IBM Plex Sans Arabic",
   "lines": [
@@ -94,11 +94,12 @@
    "slogan1": "«حارس»",
    "slogan2": "إماراتي وأفتخر",
    "soon": "قريباً على واتساب"
-  }
+  },
+  "tempo": 1.08
  },
  "en": {
   "voice": "Daniel",
-  "rate": 185,
+  "rate": 200,
   "dir": "ltr",
   "font": "IBM Plex Sans Arabic",
   "lines": [
@@ -190,11 +191,12 @@
    "slogan1": "Haris",
    "slogan2": "Emirati and proud",
    "soon": "Soon on WhatsApp"
-  }
+  },
+  "tempo": 1.0
  },
  "hi": {
   "voice": "Lekha",
-  "rate": 180,
+  "rate": 195,
   "dir": "ltr",
   "font": "IBM Plex Sans Devanagari",
   "lines": [
@@ -287,11 +289,12 @@
    "slogan1": "हारिस",
    "slogan2": "अमीराती, और इस पर गर्व है",
    "soon": "जल्द ही WhatsApp पर"
-  }
+  },
+  "tempo": 1.0
  },
  "ur": {
   "voice": "Lekha",
-  "rate": 175,
+  "rate": 190,
   "dir": "rtl",
   "font": "IBM Plex Sans Arabic",
   "voice_note": "macOS has no Urdu voice; the Hindi voice reads a Devanagari reading of the Urdu script.",
@@ -388,6 +391,7 @@
    "slogan1": "«حارس»",
    "slogan2": "اماراتی، اور اس پر فخر ہے",
    "soon": "جلد ہی واٹس ایپ پر"
-  }
+  },
+  "tempo": 1.0
  }
 }
