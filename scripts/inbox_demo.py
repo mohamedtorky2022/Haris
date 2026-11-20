@@ -90,6 +90,9 @@ EXTRA = [
     ("en", "impersonation", "this week", "A fake account with my name and photos is asking my friends for money.", "", ["@my_name_fake{n}"]),
     ("ar", "suspicious_only", "اليوم", "رسالة تقول إن حسابي في «الإقامة» سيُوقف وفيها رابط، لم أضغط عليه.", "", ["https://icp-update-demo{n}.top"]),
     ("en", "suspicious_only", "today", "A text about a parcel at the post office with a link. I didn't open it.", "", ["https://emirates-post-demo{n}.top"]),
+    ("ru", "money_sent", "сегодня утром", "Пришло сообщение, что бронь отеля отменят, если не оплатить {amount} дирхамов по ссылке. Я оплатил картой своего банка.", "банковская карта", ["https://booking-confirm-dxb{n}.top"]),
+    ("ru", "account_hacked", "вчера", "Взломали мой Telegram и от моего имени просят деньги у друзей.", "", ["@ru_hacked_demo{n}"]),
+    ("ru", "suspicious_only", "сегодня", "Пришло сообщение о штрафе за парковку со ссылкой, я не переходил.", "", ["https://dubai-fine-pay{n}.top"]),
 ]
 # The officer writes in Arabic; Haris translates for a victim who wrote in another language.
 NOTES = {
@@ -103,6 +106,7 @@ REPLIES = {
     "en": ["Demo Bank, card ending 0000, at 8:12 pm.", "The last message came yesterday at 11 pm."],
     "ur": ["ڈیمو بینک، کارڈ کے آخری نمبر 0000، رات 8:12 بجے۔", "آخری پیغام کل رات 11 بجے آیا۔"],
     "hi": ["डेमो बैंक, कार्ड के आख़िरी अंक 0000, रात 8:12 बजे।", "आख़िरी मैसेज कल रात 11 बजे आया।"],
+    "ru": ["Демо-банк, карта заканчивается на 0000, в 20:12.", "Последнее сообщение пришло вчера в 23:00."],
 }
 PACE = float(os.getenv("HARIS_DEMO_PACE", "4.5"))  # seconds per AI call: Gemini's free tier allows about 15 a minute
 

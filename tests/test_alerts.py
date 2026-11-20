@@ -127,7 +127,7 @@ def test_the_subscriber_picks_the_language_of_the_warnings():
     menu = wa.handle(text_msg("alerts", sender="971500000009"))[0]["interactive"]
     assert menu["type"] == "list" and len(menu["body"]["text"]) <= wa.BODY_LIMIT
     rows = menu["action"]["sections"][0]["rows"]
-    assert [r["id"] for r in rows] == ["alang:en:ar", "alang:en:en", "alang:en:ur", "alang:en:hi"]
+    assert [r["id"] for r in rows] == [f"alang:en:{code}" for code in SUPPORTED_LANGS]
     assert all(len(r["title"]) <= 24 for r in rows) and len(menu["action"]["button"]) <= 20
     done = wa.handle({"id": "l", "from": "971500000009", "type": "interactive", "text": "", "reply_id": "alang:en:ur"})[0]
     assert done["interactive"]["body"]["text"] == alerts.TEXT["ur"]["lang_set"]

@@ -41,7 +41,7 @@
     return `قبل ${count(Math.round(h / 24), ["يوم", "يومين", "أيام", "يوماً"])}`;
   };
   const num = (n) => n.toLocaleString("ar-AE");
-  const LANG = { ar: "العربية", en: "الإنجليزية", ur: "الأردية", hi: "الهندية" };
+  const LANG = { ar: "العربية", en: "الإنجليزية", ur: "الأردية", hi: "الهندية", ru: "الروسية" };
   const MODE = { simulated: "إرسال محاكى: واتساب غير مربوط", text: "واتساب مربوط: رسالة نصية", template: "واتساب مربوط: قالب معتمد من Meta" };
   const shown = (i) => (i.kind === "phone" ? `+${i.value}` : i.value);
 
@@ -93,7 +93,7 @@
   }
 
   // The warning, in every language, is seen by the officer before it goes out.
-  const LANGS = [["ar", "العربية"], ["en", "الإنجليزية"], ["ur", "الأردية"], ["hi", "الهندية"]];
+  const LANGS = [["ar", "العربية"], ["en", "الإنجليزية"], ["ur", "الأردية"], ["hi", "الهندية"], ["ru", "الروسية"]];
   function composer(c) {
     const d = (drafts[c.id] = drafts[c.id] || {});
     const box = el("div", { class: "composer" });

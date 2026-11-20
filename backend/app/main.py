@@ -24,10 +24,10 @@ from haris.intake import MAX_IMAGES, extract
 from haris.playbooks import get_playbook, list_playbooks
 from haris.polish import polish
 from haris.report import build_report
-from haris.text import detect_language, pick_language
+from haris.text import SUPPORTED_LANGS, detect_language, pick_language
 from haris.translate import translate
 
-Lang = Literal["ar", "en", "ur", "hi"]
+Lang = Literal["ar", "en", "ur", "hi", "ru"]
 Incident = Literal["money_sent", "account_hacked", "extortion", "harassment", "impersonation", "privacy_violation",
                    "device_hacked", "identity_shared", "business_fraud", "suspicious_only"]
 ImageDataUrl = Annotated[str, Field(max_length=6_000_000)]  # a 4 MB image as a base64 data: URL
@@ -213,7 +213,7 @@ def authority_preview(campaign_id: str, body: PreviewRequest, request: Request):
     if text:
         source = detect_language(text)
         custom = {source: text}
-        for lang in ("ar", "en", "ur", "hi"):
+        for lang in SUPPORTED_LANGS:
             if lang != source:
                 tr = translate(text, source, lang)
                 translated[lang] = tr["ok"]

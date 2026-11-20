@@ -12,7 +12,7 @@
                      harassment: "تحرّش أو تهديد", impersonation: "انتحال شخصية", privacy_violation: "انتهاك خصوصية أو تشهير",
                      device_hacked: "اختراق جهاز", identity_shared: "مشاركة بيانات الهوية", business_fraud: "احتيال على منشأة",
                      suspicious_only: "رسالة مشبوهة دون ضرر" };
-  const LANG = { ar: "العربية", en: "الإنجليزية", ur: "الأردية", hi: "الهندية" };
+  const LANG = { ar: "العربية", en: "الإنجليزية", ur: "الأردية", hi: "الهندية", ru: "الروسية" };
   const DEPARTURE = { within_3_days: "يغادر الدولة خلال 3 أيام", within_week: "يغادر خلال أسبوع", later: "يغادر بعد أكثر من أسبوع", unknown: "موعد المغادرة غير معروف" };
   const HINT = {
     critical: "حالة حرجة: تواصل فوراً مع غرفة العمليات، واطلب من المُبلّغ الاتصال بـ 999 إن كان في خطر.",

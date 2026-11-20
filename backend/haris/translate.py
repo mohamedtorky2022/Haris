@@ -39,6 +39,7 @@ STYLE = {
     "en": "Write simple English.",
     "ur": "Write simple Urdu in Urdu script.",
     "hi": "Write simple Hindi in Devanagari script.",
+    "ru": "Write simple, neutral Russian.",
 }
 
 

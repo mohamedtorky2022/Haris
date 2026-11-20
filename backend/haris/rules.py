@@ -1,4 +1,4 @@
-"""Scam signals in Arabic, English and Urdu.
+"""Scam signals in Arabic, English, Urdu, Hindi and Russian.
 
 Each signal is a set of phrase groups. A signal fires when every group has a
 match and no `unless` phrase is present (so "never share this code" does not
@@ -214,18 +214,65 @@ HINDI_UNLESS = {
     "otp_request": ("शेयर न करें", "किसी को न बताएं", "किसी को न बताएँ", "कभी नहीं मांग", "कभी नहीं माँग"),
     "payment_request": ("डिलीवरी पर भुगतान", "कैश ऑन डिलीवरी"),
 }
-SIGNALS = tuple(
-    replace(
-        signal,
-        groups=tuple(group + (HINDI.get(signal.code, ())[i] if i < len(HINDI.get(signal.code, ())) else ())
-                     for i, group in enumerate(signal.groups)),
-        unless=signal.unless + HINDI_UNLESS.get(signal.code, ()),
-    )
-    for signal in SIGNALS
-)
+# Russian phrases, kept together for review by a native speaker. Matching is on substrings, so a stem
+# ("посылк") covers every ending (посылка, посылку, посылки).
+RUSSIAN: dict[str, tuple[tuple[str, ...], ...]] = {
+    "otp_request": (("код", "смс-код", "пароль из смс", "одноразов"),
+                    ("отправьте", "отправь", "сообщите", "назовите", "продиктуйте", "пришлите", "скажите", "введите код")),
+    "card_details": (("номер карты", "данные карты", "реквизиты карты", "срок действия", "cvv", "cvc"),),
+    "account_suspended": (("ваш счет", "ваша карта", "ваш аккаунт"), ("заблокир", "приостанов", "заморож", "будет закрыт")),
+    "bank_mention": (("банк",),),
+    "delivery": (("посылк", "доставк", "курьер", "отправлени", "почта"),),
+    "gov_impersonation": (("полиция", "штраф", "таможн", "суд", "министерств", "прокуратур"),),
+    "payment_request": (("оплат", "заплат", "перевед", "переведите", "пошлин", "сбор"),),
+    "urgency": (("срочно", "немедленно", "в течение 24 часов", "последний шанс", "сегодня же", "успейте"),),
+    "prize": (("поздравляем", "вы выиграли", "выигрыш", "приз", "розыгрыш", "победител"),),
+    "job_offer": (("работа на дому", "подработк", "удаленная работа", "зарплата", "доход в день", "заработок"),),
+    "upfront_fee": (("визовый сбор", "оплата визы", "регистрационный взнос", "страховой депозит", "оплата оформления"),),
+    "investment": (("инвестиц", "прибыль", "трейдинг", "доходность", "вложени"),),
+    "guaranteed": (("гарантированн", "без риска", "удвоить деньги", "100% прибыль"),),
+    "extortion_threat": (("фото", "видео", "переписк", "интимн"),
+                         ("опубликую", "разошлю", "отправлю родным", "отправлю семье", "выложу", "все узнают")),
+    "secrecy": (("никому не говорите", "никому не рассказывайте", "держите в секрете"),),
+    "gift_cards": (("подарочн карт", "подарочные карты", "подарочную карту"),),
+    "crypto_payment": (("биткоин", "криптокошел", "usdt"),),
+    "personal_info_request": (("паспорт", "удостоверение личности", "emirates id", "id карт"),
+                              ("отправьте", "пришлите", "обновите", "подтвердите", "верифиц")),
+    "link_click": (("перейдите по ссылке", "нажмите на ссылку", "по ссылке ниже"),),
+    "romance_money": (("любимая", "любимый", "дорогая", "люблю тебя", "милая"),
+                      ("пришли деньги", "отправь деньги", "нужны деньги", "билет", "больниц", "таможенный сбор")),
+    "romance_profile": (("познакомились онлайн", "никогда не виделись", "сайт знакомств"),),
+    "recovery_offer": (("вернем ваши деньги", "вернуть деньги", "возврат средств", "агент по возврату"),),
+    "deposit_to_reserve": (("предоплата до просмотра", "без просмотра", "залог для брони"),),
+    "owner_abroad": (("владелец за границей", "я сейчас за границей", "хозяин уехал"),),
+    "transfer_only": (("только перевод", "только предоплата", "без наложенного платежа"),),
+    "charity_appeal": (("пожертв", "благотворител", "закят"), ("отправьте", "переведите", "номер счета", "ссылк")),
+    "personal_account": (("личный счет", "на мою карту", "на мой счет"),),
+    "visa_offer": (("виза", "визу", "резидентств", "разрешение на работу"), ("гарант", "без условий", "за 24 часа", "за 48 часов")),
+}
+RUSSIAN_UNLESS = {
+    "otp_request": ("никому не сообщайте", "не сообщайте код", "никогда не спрашива", "не передавайте код",
+                    "код отслеживания", "трек-код", "трек код"),
+    "payment_request": ("оплата при получении", "наложенный платеж"),
+}
+_EXTRA = (HINDI, RUSSIAN)
+_EXTRA_UNLESS = (HINDI_UNLESS, RUSSIAN_UNLESS)
+
+
+def _with(signal: Signal) -> Signal:
+    groups = list(signal.groups)
+    for table in _EXTRA:
+        for i, more in enumerate(table.get(signal.code, ())):
+            if i < len(groups):
+                groups[i] = groups[i] + more
+    unless = signal.unless + tuple(p for table in _EXTRA_UNLESS for p in table.get(signal.code, ()))
+    return replace(signal, groups=tuple(groups), unless=unless)
+
+
+SIGNALS = tuple(_with(signal) for signal in SIGNALS)
 
 SMALL_AMOUNT = re.compile(
-    r"(?<![\d.,])\d{1,2}(?:[.,]\d{1,2})?\s?(?:درهم|دراهم|درہم|दिरहम|aed|dhs|dh)\b"
+    r"(?<![\d.,])\d{1,2}(?:[.,]\d{1,2})?\s?(?:درهم|دراهم|درہم|दिरहम|дирхам(?:ов|а|ы)?|aed|dhs|dh)\b"
     r"|\b(?:aed|dhs)\s?\d{1,2}(?:[.,]\d{1,2})?(?!\d|[.,]\d)",
     re.IGNORECASE,
 )

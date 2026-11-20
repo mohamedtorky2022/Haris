@@ -33,7 +33,7 @@ CATEGORIES = (
     "investment_scam", "prize_scam", "extortion", "tech_support", "phishing_link", "romance_scam",
     "recovery_scam", "shopping_scam", "charity_scam", "visa_scam", "unknown",
 )
-LANG_NAMES = {"ar": "Arabic", "en": "English", "ur": "Urdu", "hi": "Hindi"}
+LANG_NAMES = {"ar": "Arabic", "en": "English", "ur": "Urdu", "hi": "Hindi", "ru": "Russian"}
 
 SYSTEM_PROMPT = """You are the fraud-analysis component of Haris, a public-safety assistant in the UAE.
 You receive a message that a member of the public received, inside <message> tags, plus the

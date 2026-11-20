@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 import unicodedata
 
-SUPPORTED_LANGS = ("ar", "en", "ur", "hi")
+SUPPORTED_LANGS = ("ar", "en", "ur", "hi", "ru")
 
 _DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹", "01234567890123456789")
 _ARABIC_DIACRITICS = re.compile(r"[ؐ-ًؚ-ٰٟۖ-ۭـ]")
@@ -21,6 +21,7 @@ _ARABIC_LETTERS = str.maketrans({"أ": "ا", "إ": "ا", "آ": "ا", "ٱ": "ا",
 _URDU_ONLY = re.compile(r"[ٹڈڑںےۓھہ]")
 _ARABIC_SCRIPT = re.compile(r"[؀-ۿ]")
 _DEVANAGARI = re.compile(r"[\u0900-\u097F]")
+_CYRILLIC = re.compile(r"[\u0400-\u04FF]")
 
 
 def normalize_digits(text: str) -> str:
@@ -33,13 +34,15 @@ def normalize(text: str) -> str:
     text = normalize_digits(text)
     text = _ARABIC_DIACRITICS.sub("", text)
     text = text.translate(_ARABIC_LETTERS)
-    return text.lower()
+    return text.lower().replace("ё", "е")  # Russian writes ё and е interchangeably
 
 
 def detect_language(text: str) -> str:
-    """Return 'ur', 'ar', 'hi' or 'en' from the script the text is written in."""
+    """Return 'ur', 'ar', 'hi', 'ru' or 'en' from the script the text is written in."""
     if _DEVANAGARI.search(text):
         return "hi"
+    if _CYRILLIC.search(text):
+        return "ru"
     if _URDU_ONLY.search(text):
         return "ur"
     if _ARABIC_SCRIPT.search(text):

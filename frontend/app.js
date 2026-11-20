@@ -4,7 +4,7 @@
   "use strict";
 
   // All wording lives in locales/<lang>.json, one file per language, loaded at start.
-  const LANGS = ["ar", "en", "ur", "hi"];
+  const LANGS = ["ar", "en", "ur", "hi", "ru"];
   const RTL = new Set(["ar", "ur"]);
   const UI = {};
   async function loadLocales() {

@@ -49,6 +49,7 @@ GREETINGS = {
     "hi", "hello", "hey", "salam", "salaam", "start", "menu", "help",
     "السلام علیکم", "ہیلو", "سلام علیکم",
     "नमस्ते", "हेलो", "हाय",
+    "привет", "здравствуйте", "добрый день", "меню", "начать",
 }
 _NAME = re.compile(r"\b(?:haris|حارس|हारिस)\b", re.IGNORECASE)
 _PUNCT = re.compile(r"[^\w\s]", re.UNICODE)
@@ -270,7 +271,7 @@ def report(token: str, sender: str, lang: str) -> list[dict]:
     return _with_buttons(body, buttons + [_button("guide", lang)], lang)
 
 
-LANG_NAMES = {"ar": "العربية", "en": "English", "ur": "اردو", "hi": "हिन्दी"}
+LANG_NAMES = {"ar": "العربية", "en": "English", "ur": "اردو", "hi": "हिन्दी", "ru": "Русский"}
 
 
 def alerts_on(sender: str, lang: str) -> list[dict]:

@@ -39,9 +39,11 @@ def _clean(text: str) -> str:
 
 # Whole-message commands. Anything longer is checked as a message, so a scam that contains "stop" is still checked.
 SUBSCRIBE = {_clean(w) for w in ("تنبيهات", "التنبيهات", "اشتراك", "اشترك", "alerts", "alert", "subscribe",
-                                  "الرٹس", "الرٹ", "اطلاعات", "अलर्ट", "सब्सक्राइब")}
+                                  "الرٹس", "الرٹ", "اطلاعات", "अलर्ट", "सब्सक्राइब",
+                                  "оповещения", "оповещение", "подписаться", "подписка")}
 STOP = {_clean(w) for w in ("إيقاف", "ايقاف", "أوقف", "الغاء", "إلغاء الاشتراك", "stop", "unsubscribe",
-                             "بند", "بند کریں", "रोकें", "बंद")}
+                             "بند", "بند کریں", "रोकें", "बंद",
+                             "стоп", "отписаться", "отменить подписку")}
 
 
 def _settings() -> dict:
@@ -189,7 +191,7 @@ def history(limit: int = 10) -> list[dict]:
 
 def add_demo_subscribers(n: int, langs: dict | None = None) -> int:
     """Fictional subscribers for a demo. Their ids are not phone numbers, so nothing is ever sent to them."""
-    share = langs or {"ar": 0.45, "en": 0.25, "hi": 0.17, "ur": 0.13}
+    share = langs or {"ar": 0.42, "en": 0.23, "hi": 0.15, "ur": 0.12, "ru": 0.08}
     now = time.time()
     rows, k = [], 0
     sizes = {lang: int(n * part) for lang, part in share.items()}

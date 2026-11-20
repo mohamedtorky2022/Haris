@@ -118,19 +118,45 @@ for _key, _extra in {
     STEP_PHRASES[_key] = STEP_PHRASES[_key] + _extra
 EXTORTION_THREATS = EXTORTION_THREATS + ("ब्लैकमेल", "धमकी दे रहा")
 
+# Russian phrases, kept together for review by a native speaker. Stems, so one phrase covers its endings.
+for _key, _extra in {
+    "money_sent": ("заплатил", "заплатила", "перевел", "перевела", "списали", "сняли с карты", "данные карты", "сообщил код", "назвал код"),
+    "extortion": ("шантаж", "вымога", "угрожает опубликовать", "угрожают опубликовать"),
+    "account_hacked": ("взломали", "взлом", "украли аккаунт", "не могу войти"),
+    "harassment": ("травл", "оскорбля", "преследует", "унижа", "клевет"),
+    "impersonation": ("фейковый аккаунт", "фальшивый аккаунт", "от моего имени", "с моими фото"),
+    "privacy_violation": ("без разрешения", "без согласия", "снял меня", "опубликовал мои"),
+    "device_hacked": ("выкуп", "вирус", "файлы зашифрованы", "телефон взломан", "пропала сеть"),
+    "identity_shared": ("отправил паспорт", "отправила паспорт", "фото паспорта", "удостоверение личности"),
+    "business_fraud": ("счет поставщика", "поставщик", "инвойс", "директор попросил", "новые реквизиты"),
+}.items():
+    INCIDENT_HINTS[_key] = INCIDENT_HINTS[_key] + _extra
+for _key, _extra in {
+    "gift_cards": ("подарочн",), "crypto": ("крипт", "биткоин", "usdt"),
+    "transfer": ("перевод", "перевел", "перевела"), "card": ("карт",), "cash": ("наличн",),
+}.items():
+    PAYMENT_HINTS[_key] = PAYMENT_HINTS[_key] + _extra
+for _key, _extra in {
+    "bank": ("позвонил в банк", "позвонила в банк", "сообщил в банк"), "card": ("заблокировал карту", "заблокировала карту"),
+    "password": ("сменил пароль", "сменила пароль"), "offline": ("отключил интернет", "отключила интернет", "выключил wi-fi"),
+    "blocked": ("заблокировал номер", "заблокировала номер", "заблокировал его"),
+}.items():
+    STEP_PHRASES[_key] = STEP_PHRASES[_key] + _extra
+EXTORTION_THREATS = EXTORTION_THREATS + ("шантаж", "угрожает опубликовать", "угрожают опубликовать")
+
 STEP_LABELS = table("step_labels")
 STEP_HINTS = {key: (phrases, STEP_LABELS[key]) for key, phrases in STEP_PHRASES.items()}
 
 AMOUNT = re.compile(
-    r"(\d[\d,]*(?:\.\d{1,2})?)\s?(درهم|دراهم|درہم|दिरहम|रुपये|aed|dhs|dh|usdt|usd|\$|دولار|ريال|sar)"
+    r"(\d[\d,]*(?:\.\d{1,2})?)\s?(درهم|دراهم|درہم|दिरहम|रुपये|дирхам(?:ов|а|ы)?|aed|dhs|dh|usdt|usd|\$|دولار|ريال|sar)"
     r"|(aed|dhs|usdt|usd|\$)\s?(\d[\d,]*(?:\.\d{1,2})?)",
     re.IGNORECASE,
 )
-CURRENCY = {"दिरहम": "AED", "रुपये": "INR", "درهم": "AED", "دراهم": "AED", "درہم": "AED", "aed": "AED", "dhs": "AED", "dh": "AED", "usd": "USD",
+CURRENCY = {"дирхам": "AED", "дирхамов": "AED", "дирхама": "AED", "дирхамы": "AED", "दिरहम": "AED", "रुपये": "INR", "درهم": "AED", "دراهم": "AED", "درہم": "AED", "aed": "AED", "dhs": "AED", "dh": "AED", "usd": "USD",
             "$": "USD", "دولار": "USD", "usdt": "USDT", "ريال": "SAR", "sar": "SAR"}
 DAY_WORDS = re.compile(r"(आज|कल रात|कल|एक घंटे पहले|اليوم|امس|أمس|البارحة|قبل ساعة|قبل ساعتين|قبل قليل|today|yesterday|this morning|tonight|"
-                       r"an hour ago|آج|کل|ابھی)", re.IGNORECASE)
-CLOCK = re.compile(r"(?:الساعة\s?)?\b\d{1,2}(?::\d{2})?\s?(?:صباحاً|صباحا|مساءً|مساء|ظهراً|عصراً|am|pm|بجے)?",
+                       r"an hour ago|آج|کل|ابھی|сегодня утром|сегодня вечером|сегодня|вчера вечером|вчера|час назад|только что)", re.IGNORECASE)
+CLOCK = re.compile(r"(?:الساعة\s?)?\b\d{1,2}(?::\d{2})?\s?(?:صباحاً|صباحا|مساءً|مساء|ظهراً|عصراً|am|pm|بجے|утра|вечера|дня)?",
                    re.IGNORECASE)
 
 
