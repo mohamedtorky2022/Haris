@@ -26,6 +26,7 @@ and the authority that handles their report. Translate the text inside <text> fr
 Rules:
 - Translate faithfully and completely, in plain, neutral words. Do not summarise, explain, soften,
   add or remove anything. Keep names of people, companies, apps and places as they are.
+- Write every other word in {target}: no English or other words left untranslated.
 - {style}
 - Tokens like [#1] stand for numbers, amounts, links and contact details. Copy every token exactly
   once, unchanged. Never write any digit yourself.
@@ -51,9 +52,25 @@ def translate(text: str, source: str, target: str) -> dict:
     masked, kept = mask(text)
     system = PROMPT.format(source=llm.LANG_NAMES.get(source, source), target=llm.LANG_NAMES.get(target, target),
                            style=STYLE.get(target, ""))
-    reply = llm._call(system, f"<text>\n{masked}\n</text>", 1600, float(os.getenv("HARIS_LLM_TIMEOUT", "12")))
-    out = _read(reply, masked, kept)
+    timeout = float(os.getenv("HARIS_LLM_TIMEOUT", "12"))
+    out = _read(llm._call(system, f"<text>\n{masked}\n</text>", 1600, timeout), masked, kept)
+    if out and _foreign_words(out, text, target):  # one more try, telling the model what went wrong
+        again = system + f"\n\nYour last answer left words untranslated ({', '.join(_foreign_words(out, text, target))}). Translate them too."
+        out = _read(llm._call(again, f"<text>\n{masked}\n</text>", 1600, timeout), masked, kept)
+        if out and _foreign_words(out, text, target):
+            out = None
     return {"text": out or "", "ok": bool(out), "engine": llm.model_name() if out else None}
+
+
+LATIN = re.compile(r"[A-Za-z]{3,}")
+
+
+def _foreign_words(out: str, source: str, target: str) -> list[str]:
+    """Latin-script words in an Arabic, Urdu or Hindi translation that were not in the source (names are)."""
+    if target == "en":
+        return []
+    seen = {w.lower() for w in LATIN.findall(source)}
+    return [w for w in LATIN.findall(out) if w.lower() not in seen][:5]
 
 
 def _read(reply: str | None, masked: str, kept: list[str]) -> str | None:

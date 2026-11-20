@@ -85,3 +85,16 @@ def test_when_translation_fails_the_case_is_flagged(monkeypatch):
     inbox.submit({"incident_type": "money_sent", "description": "خُصم من بطاقتي"}, "ar", "dubai", True)
     q = inbox.queue()
     assert q["stats"]["needs_translator"] == 1 and q["stats"]["by_lang"]["en"] == 1 and q["stats"]["by_lang"]["ar"] == 1
+
+
+def test_an_untranslated_english_word_gets_one_more_try(monkeypatch):
+    answers = iter(["أخذوا المال تحت pretext الوظيفة", "أخذوا المال بحجة الوظيفة"])
+    calls = fake_model(monkeypatch, lambda s, m: next(answers))
+    out = translate.translate("They took the money with the job as a pretext on WhatsApp", "en", "ar")
+    assert out["ok"] and out["text"] == "أخذوا المال بحجة الوظيفة" and len(calls) == 2
+    assert "pretext" in calls[1][0]
+
+
+def test_names_in_latin_letters_are_fine(monkeypatch):
+    fake_model(monkeypatch, lambda s, m: "اخترقوا حسابي على Instagram")
+    assert translate.translate("मेरा Instagram अकाउंट हैक हो गया", "hi", "ar")["ok"]
