@@ -332,7 +332,12 @@
    "already": "You're already subscribed 🔔\nTo stop, send: STOP",
    "stopped": "Alerts stopped, and your number was removed from the list. To start again, send: ALERTS",
    "not_subscribed": "You're not subscribed. To get official warnings, send: ALERTS",
-   "stop_line": "To stop alerts, send: STOP"
+   "stop_line": "To stop alerts, send: STOP",
+   "pick_lang": "Which language do you want the warnings in? Pick from the list.",
+   "lang_button": "Choose language",
+   "lang_section": "Warning language",
+   "lang_row": "Current language",
+   "lang_set": "Done ✅ Warnings will reach you in English. To stop them, send: STOP"
   }
  },
  "inbox": {

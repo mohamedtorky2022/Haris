@@ -112,9 +112,14 @@ def counts() -> dict:
     return {"total": real + demo, "real": real, "demo": demo, "by_lang": by_lang}
 
 
-def message_text(view: dict, lang: str) -> str:
+def message_text(view: dict, lang: str, arabic_title: str = "") -> str:
+    """The warning in the subscriber's language. Others also get the Arabic title, so anyone beside them
+    (a colleague, an employer, a family member) can see at a glance that it is an official warning."""
     t = TEXT[lang]
-    return f"🚨 *{view['title']}*\n\n{view['body']}\n\n{t['stop_line']}\n_{view['demo']}_"
+    lines = [f"🚨 *{view['title']}*", view["body"]]
+    if lang != "ar" and arabic_title:
+        lines.append(f"🇦🇪 {arabic_title}")
+    return "\n\n".join(lines) + f"\n\n{t['stop_line']}\n_{view['demo']}_"
 
 
 def _live() -> bool:
@@ -157,7 +162,8 @@ def deliver(broadcast_id: int, pace: float = 0.05) -> dict:
             simulated += 1
         else:
             message = (_template_message(views[lang], lang) if how == "template"
-                       else {"type": "text", "text": {"body": message_text(views[lang], lang), "preview_url": False}})
+                       else {"type": "text", "text": {"body": message_text(views[lang], lang, views["ar"]["title"]),
+                                                       "preview_url": False}})
             if whatsapp.send(sub["wa_id"], message):
                 sent += 1
             else:

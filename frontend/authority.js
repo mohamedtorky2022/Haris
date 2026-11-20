@@ -17,6 +17,7 @@
   let token = "";
   try { token = sessionStorage.getItem("haris.authority") || ""; } catch { /* storage blocked */ }
   const results = {}; // campaign id -> block requests sent, shown after confirming
+  const drafts = {};  // campaign id -> the warning being prepared: { node, versions, custom, edited }
 
   function el(tag, attrs = {}, children = []) {
     const node = document.createElement(tag);
@@ -78,12 +79,78 @@
       if (r.wa) node.append(el("p", { class: "done", text: `📲 بدأ إرسال التحذير على واتساب إلى ${num(r.wa.total)} مشتركاً بلغاتهم. التقدّم في «تنبيهات واتساب» أعلاه.` }));
     }
     if (c.status !== "confirmed" && c.status !== "dismissed") {
+      node.append(composer(c));
       const actions = el("div", { class: "actions" });
-      actions.append(twoStep("اعتماد التعميم وطلب الحظر", "اضغط مرة أخرى للتأكيد", "primary", () => decide(c.id, "confirmed")));
+      const approve = twoStep("اعتماد التعميم وطلب الحظر", "اضغط مرة أخرى للتأكيد", "primary", () => decide(c.id, "confirmed"));
+      approve.disabled = !drafts[c.id] || !drafts[c.id].versions;
+      approve.title = approve.disabled ? "عاين التحذير بكل اللغات أولاً" : "";
+      approve.dataset.approve = c.id;
+      actions.append(approve);
       actions.append(twoStep("ليست احتيالاً", "اضغط مرة أخرى للتأكيد", "", () => decide(c.id, "dismissed")));
       node.append(actions);
     }
     return node;
+  }
+
+  // The warning, in every language, is seen by the officer before it goes out.
+  const LANGS = [["ar", "العربية"], ["en", "الإنجليزية"], ["ur", "الأردية"], ["hi", "الهندية"]];
+  function composer(c) {
+    const d = (drafts[c.id] = drafts[c.id] || {});
+    const box = el("div", { class: "composer" });
+    const own = el("textarea", { class: "own", rows: "2", placeholder: "اختياري: اكتب نص التحذير بأسلوبكم، ويترجمه «حارس» إلى اللغات الأخرى. اتركه فارغاً لاستخدام النص الرسمي القياسي." });
+    own.value = d.text || "";
+    own.addEventListener("input", () => { d.text = own.value; });
+    const show = el("button", { type: "button", text: d.versions ? "حدّث المعاينة" : "1. عاين التحذير بكل اللغات" });
+    const out = el("div", { class: "versions" });
+    const err = el("p", { class: "err", role: "alert" });
+    show.addEventListener("click", async () => {
+      show.disabled = true;
+      err.textContent = "";
+      show.textContent = d.text && d.text.trim() ? "يترجم «حارس» النص…" : "جارٍ التحضير…";
+      try {
+        const r = await call(`/api/authority/campaigns/${encodeURIComponent(c.id)}/preview`, { text: (d.text || "").trim() });
+        Object.assign(d, { versions: r.versions, custom: r.custom, translated: r.translated, edited: {} });
+        renderVersions(d, out);
+        const approve = box.parentNode && box.parentNode.querySelector(`[data-approve="${c.id}"]`);
+        if (approve) { approve.disabled = false; approve.title = ""; }
+      } catch { err.textContent = "تعذّرت المعاينة، حاول مرة أخرى."; }
+      show.disabled = false;
+      show.textContent = "حدّث المعاينة";
+    });
+    if (d.versions) renderVersions(d, out);
+    box.append(el("h3", { text: "📢 نص التحذير الذي سيصل للجميع" }), own, show, err, out);
+    d.node = box;
+    return box;
+  }
+
+  function renderVersions(d, out) {
+    out.replaceChildren(...LANGS.map(([code, name]) => {
+      const v = d.versions[code];
+      const mine = d.custom && d.custom[code];
+      const how = !d.custom ? "النص الرسمي القياسي"
+        : d.translated[code] === false ? "⚠️ تعذّرت الترجمة: يظهر النص القياسي، ويمكنك كتابة نص هنا"
+        : d.translated[code] ? "ترجمة آلية: راجعها وعدّلها إن لزم" : "نصك";
+      const area = el("textarea", { dir: "auto", rows: "3" });
+      area.value = (d.edited && d.edited[code]) ?? v.body;
+      area.addEventListener("input", () => { d.edited[code] = area.value; });
+      return el("div", { class: `version${mine ? "" : " standard"}` }, [
+        el("div", { class: "vhead" }, [el("b", { text: name }), el("span", { text: how })]),
+        el("strong", { dir: "auto", text: v.title }), area,
+      ]);
+    }));
+  }
+
+  // The text per language that goes out: the officer's edits win, then their own wording, then nothing (standard).
+  function customOf(id) {
+    const d = drafts[id];
+    if (!d || !d.versions) return null;
+    const own = {};
+    for (const [code] of LANGS) {
+      const edited = d.edited && d.edited[code] !== undefined && d.edited[code].trim() !== d.versions[code].body;
+      if (edited) own[code] = d.edited[code].trim();
+      else if (d.custom && d.custom[code]) own[code] = d.custom[code];
+    }
+    return Object.keys(own).length ? own : null;
   }
 
   // A second click within 4 seconds confirms: no browser dialogs.
@@ -101,7 +168,9 @@
 
   async function decide(id, status) {
     try {
-      const r = await call(`/api/authority/campaigns/${encodeURIComponent(id)}`, { status });
+      const custom = status === "confirmed" ? customOf(id) : null;
+      const r = await call(`/api/authority/campaigns/${encodeURIComponent(id)}`, { status, ...(custom ? { custom } : {}) });
+      delete drafts[id];
       if (status === "confirmed") results[id] = { blocks: r.block_requests, wa: r.whatsapp_alert };
     } catch { /* shown on next refresh */ }
     refresh();
@@ -114,6 +183,9 @@
       const n = document.getElementById(`n-${k}`);
       if (n) n.textContent = items.filter((c) => c.status === k).length;
     }
+    // A card with a warning being prepared is kept as it is, so a refresh never wipes what the officer is typing.
+    const typing = document.activeElement && document.activeElement.closest && document.activeElement.closest(".campaign");
+    if (typing && list.contains(typing)) { showAlerts(); return; }
     list.replaceChildren(...(items.length ? items.map(card) : [el("p", { class: "empty", text: "لا توجد بلاغات خلال آخر 24 ساعة." })]));
     showAlerts();
     document.getElementById("updated").textContent = `آخر تحديث: ${new Date().toLocaleTimeString("ar-AE")} · يتحدّث تلقائياً كل 5 ثوانٍ`;

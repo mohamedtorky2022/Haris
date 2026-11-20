@@ -47,10 +47,10 @@ def test_only_whole_message_commands():
 
 def test_subscribe_and_stop_on_whatsapp():
     reply = wa.handle(text_msg("تنبيهات"))[0]
-    assert reply["interactive"]["body"]["text"] == alerts.TEXT["ar"]["subscribed"]
+    assert reply["interactive"]["body"]["text"].startswith(alerts.TEXT["ar"]["subscribed"])
     assert alerts.is_subscribed("971500000001")
     again = wa.handle(text_msg("تنبيهات"))[0]
-    assert again["interactive"]["body"]["text"] == alerts.TEXT["ar"]["already"]
+    assert again["interactive"]["body"]["text"].startswith(alerts.TEXT["ar"]["already"])
     wa.handle(text_msg("STOP"))
     assert not alerts.is_subscribed("971500000001") and alerts.counts()["total"] == 0
 
@@ -121,3 +121,59 @@ def test_approval_on_the_dashboard_sends_the_alert(monkeypatch):
     assert r["whatsapp_alert"]["total"] == 1000 and r["whatsapp_alert"]["mode"] == "simulated"
     a = client.get("/api/authority/alerts").json()
     assert a["sends"][0]["simulated"] == 1000 and a["sends"][0]["done"] == 1
+
+
+def test_the_subscriber_picks_the_language_of_the_warnings():
+    menu = wa.handle(text_msg("alerts", sender="971500000009"))[0]["interactive"]
+    assert menu["type"] == "list" and len(menu["body"]["text"]) <= wa.BODY_LIMIT
+    rows = menu["action"]["sections"][0]["rows"]
+    assert [r["id"] for r in rows] == ["alang:en:ar", "alang:en:en", "alang:en:ur", "alang:en:hi"]
+    assert all(len(r["title"]) <= 24 for r in rows) and len(menu["action"]["button"]) <= 20
+    done = wa.handle({"id": "l", "from": "971500000009", "type": "interactive", "text": "", "reply_id": "alang:en:ur"})[0]
+    assert done["interactive"]["body"]["text"] == alerts.TEXT["ur"]["lang_set"]
+    assert alerts.counts()["by_lang"]["ur"] == 1 and alerts.counts()["by_lang"]["en"] == 0
+
+
+def test_a_warning_in_another_language_carries_the_arabic_title(monkeypatch):
+    sent = live(monkeypatch)
+    alerts.subscribe("971500000010", "hi")
+    alerts.subscribe("971500000011", "ar")
+    alerts.deliver(approved_campaign(), pace=0)
+    bodies = {to: m["text"]["body"] for to, m in sent}
+    assert "🇦🇪 تحذير رسمي" in bodies["971500000010"]
+    assert "🇦🇪" not in bodies["971500000011"]
+
+
+def test_the_authority_can_use_its_own_wording_in_every_language():
+    for i in range(10):
+        radar.report(SCAM, f"device-{i}", "ar")
+    camp = radar.campaigns()[0]
+    standard = radar.preview(camp["id"])
+    assert set(standard) == set(SUPPORTED_LANGS) and "تحذير رسمي" in standard["ar"]["title"]
+    own = {"ar": "لا تدفع أي رسوم لطرد عبر رابط في رسالة.", "en": "Never pay a parcel fee through a link in a message."}
+    seen = radar.preview(camp["id"], own)
+    assert seen["ar"]["body"] == own["ar"] and seen["en"]["body"] == own["en"]
+    assert seen["ur"]["body"] == standard["ur"]["body"]  # a language without its own text keeps the standard one
+    bid = radar.decide(camp["id"], "confirmed", own)["broadcast_id"]
+    assert radar.broadcast_view(bid, "en")["body"] == own["en"]
+    assert radar.broadcasts("ar")[0]["body"] == own["ar"]
+
+
+def test_preview_route_translates_the_authoritys_text(monkeypatch):
+    pytest.importorskip("fastapi")
+    pytest.importorskip("httpx")
+    from fastapi.testclient import TestClient
+
+    from app import main
+
+    monkeypatch.setattr(main, "_hits", main.defaultdict(main.deque))
+    monkeypatch.setattr(main, "translate", lambda text, src, dst: {"text": f"[{dst}] {text}", "ok": dst != "hi", "engine": "t"})
+    client = TestClient(main.app)
+    for i in range(10):
+        radar.report(SCAM, f"device-{i}", "ar")
+    camp = client.get("/api/authority/campaigns").json()[0]
+    r = client.post(f"/api/authority/campaigns/{camp['id']}/preview", json={"text": "لا تدفع رسوم الطرود عبر الروابط"}).json()
+    assert r["versions"]["en"]["body"].startswith("[en]") and r["translated"] == {"en": True, "ur": True, "hi": False}
+    assert "hi" not in r["custom"]  # not translated: the officer sees the standard text there and can write one
+    ok = client.post(f"/api/authority/campaigns/{camp['id']}", json={"status": "confirmed", "custom": r["custom"]}).json()
+    assert radar.broadcast_view(ok["broadcast_id"], "ur")["body"].startswith("[ur]")

@@ -11,7 +11,7 @@ import os
 import time
 from collections import defaultdict, deque
 from pathlib import Path
-from typing import Annotated, List, Literal, Optional
+from typing import Annotated, Dict, List, Literal, Optional
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Query, Request
 from fastapi.responses import JSONResponse, PlainTextResponse
@@ -24,7 +24,8 @@ from haris.intake import MAX_IMAGES, extract
 from haris.playbooks import get_playbook, list_playbooks
 from haris.polish import polish
 from haris.report import build_report
-from haris.text import pick_language
+from haris.text import detect_language, pick_language
+from haris.translate import translate
 
 Lang = Literal["ar", "en", "ur", "hi"]
 Incident = Literal["money_sent", "account_hacked", "extortion", "harassment", "impersonation", "privacy_violation",
@@ -69,8 +70,17 @@ class RadarReport(BaseModel):
                              description="A random id the browser made; stored only as a keyed hash")
 
 
+WarningText = Annotated[str, Field(min_length=1, max_length=600)]
+
+
 class Decision(BaseModel):
     status: Literal["confirmed", "dismissed"]
+    # The authority's own wording, one text per language, as it approved it in the preview.
+    custom: Optional[Dict[Lang, WarningText]] = None
+
+
+class PreviewRequest(BaseModel):
+    text: str = Field("", max_length=600)  # empty: the standard wording
 
 
 Emirate = Literal["abu_dhabi", "dubai", "sharjah", "ajman", "umm_al_quwain", "ras_al_khaimah", "fujairah"]
@@ -184,7 +194,7 @@ def authority_campaigns(request: Request):
 @app.post("/api/authority/campaigns/{campaign_id}")
 def authority_decide(campaign_id: str, body: Decision, request: Request, background: BackgroundTasks):
     require_authority(request)
-    result = radar.decide(campaign_id, body.status)
+    result = radar.decide(campaign_id, body.status, body.custom if body.status == "confirmed" else None)
     if not result:
         raise HTTPException(status_code=404, detail="Unknown campaign")
     if result.get("broadcast_id"):
@@ -192,6 +202,27 @@ def authority_decide(campaign_id: str, body: Decision, request: Request, backgro
         background.add_task(alerts.deliver, result["broadcast_id"])
         result["whatsapp_alert"] = {**alerts.counts(), "mode": alerts.mode()}
     return result
+
+
+@app.post("/api/authority/campaigns/{campaign_id}/preview")
+def authority_preview(campaign_id: str, body: PreviewRequest, request: Request):
+    """The warning in every language before approval. Own wording is translated from the language it is written in."""
+    require_authority(request)
+    custom, translated = None, {}
+    text = body.text.strip()
+    if text:
+        source = detect_language(text)
+        custom = {source: text}
+        for lang in ("ar", "en", "ur", "hi"):
+            if lang != source:
+                tr = translate(text, source, lang)
+                translated[lang] = tr["ok"]
+                if tr["ok"]:
+                    custom[lang] = tr["text"]
+    versions = radar.preview(campaign_id, custom)
+    if not versions:
+        raise HTTPException(status_code=404, detail="Unknown campaign")
+    return {"versions": versions, "custom": custom, "translated": translated}
 
 
 @app.get("/api/authority/alerts")

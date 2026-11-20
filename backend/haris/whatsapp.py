@@ -270,11 +270,32 @@ def report(token: str, sender: str, lang: str) -> list[dict]:
     return _with_buttons(body, buttons + [_button("guide", lang)], lang)
 
 
+LANG_NAMES = {"ar": "العربية", "en": "English", "ur": "اردو", "hi": "हिन्दी"}
+
+
 def alerts_on(sender: str, lang: str) -> list[dict]:
-    """The user asked for official warnings: keep their number until they send «إيقاف»."""
+    """The user asked for official warnings: keep their number until they send «إيقاف».
+
+    The language is first guessed from how they wrote, then they pick it: someone who types "alerts"
+    may read Urdu better than English."""
     t = alerts.TEXT[lang]
     new = alerts.subscribe(sender, lang)
-    return _with_buttons(t["subscribed"] if new else t["already"], [_button("check", lang), _button("guide", lang)], lang)
+    rows = [{"id": f"alang:{lang}:{code}", "title": name, "description": t["lang_row"] if code == lang else ""}
+            for code, name in LANG_NAMES.items()]
+    for r in rows:
+        if not r["description"]:
+            del r["description"]
+    return [{"type": "interactive", "interactive": {
+        "type": "list", "body": {"text": (t["subscribed"] if new else t["already"]) + "\n\n" + t["pick_lang"]},
+        "footer": {"text": TEXT[lang]["footer"]},
+        "action": {"button": t["lang_button"], "sections": [{"title": t["lang_section"], "rows": rows}]}}}]
+
+
+def alerts_lang(sender: str, code: str) -> list[dict]:
+    if code not in SUPPORTED_LANGS:
+        code = "ar"
+    alerts.subscribe(sender, code)
+    return _with_buttons(alerts.TEXT[code]["lang_set"], [_button("check", code), _button("guide", code)], code)
 
 
 def alerts_off(sender: str, lang: str) -> list[dict]:
@@ -311,6 +332,8 @@ def handle(msg: dict) -> list[dict]:
             return alerts_on(msg["from"], lang)
         if action == "stop":
             return alerts_off(msg["from"], lang)
+        if action == "alang":
+            return alerts_lang(msg["from"], arg)
         if action == "pb":
             return playbook(arg, lang)
         if action == "report":

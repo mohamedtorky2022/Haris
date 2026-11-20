@@ -82,6 +82,9 @@ def _connect(path: Path) -> sqlite3.Connection:
             keys TEXT, active INTEGER DEFAULT 1);
         """
     )
+    # The authority's own wording, one text per language (added after the first release of the radar).
+    if "custom" not in {r[1] for r in con.execute("PRAGMA table_info(broadcasts)")}:
+        con.execute("ALTER TABLE broadcasts ADD COLUMN custom TEXT")
     return con
 
 
@@ -239,7 +242,7 @@ def campaign_for(keys: list[tuple[str, str]], lang: str = "ar") -> dict | None:
 
 # --- The authority's decisions ----------------------------------------------
 
-def decide(campaign_id: str, status: str) -> dict | None:
+def decide(campaign_id: str, status: str, custom: dict | None = None) -> dict | None:
     if status not in ("confirmed", "dismissed"):
         raise ValueError("status must be confirmed or dismissed")
     found = next((c for c in campaigns() if c["id"] == campaign_id), None)
@@ -253,8 +256,9 @@ def decide(campaign_id: str, status: str) -> dict | None:
         con.executemany("INSERT OR REPLACE INTO decisions (kind, value, status, decided_at) VALUES (?, ?, ?, ?)",
                         [(k, v, status, now) for k, v in keys])
         if status == "confirmed":
-            broadcast_id = con.execute("INSERT INTO broadcasts (created_at, category, keys) VALUES (?, ?, ?)",
-                                       (now, found["category"], json.dumps(keys))).lastrowid
+            broadcast_id = con.execute("INSERT INTO broadcasts (created_at, category, keys, custom) VALUES (?, ?, ?, ?)",
+                                       (now, found["category"], json.dumps(keys),
+                                        json.dumps(custom, ensure_ascii=False) if custom else None)).lastrowid
     blocks = [i for i in found["identifiers"] if i["kind"] in ("phone", "domain")] if status == "confirmed" else []
     return {"campaign": campaign_id, "status": status, "block_requests": blocks, "simulated": True,
             "broadcast_id": broadcast_id}
@@ -265,16 +269,32 @@ def _describe(keys: list, lang: str) -> str:
     return "، ".join(shown) if lang in ("ar", "ur") else ", ".join(shown)
 
 
+def warning_text(category: str, keys: list, lang: str, custom: dict | None = None) -> dict:
+    """The title and text of an official warning in one language: the standard wording, or the authority's own."""
+    label = t(CATEGORY_LABELS, category, lang)
+    if lang == "en":
+        label = label.lower()
+    body = (custom or {}).get(lang) or TEXT["broadcast_body"][lang].format(
+        authority=AUTHORITY_NAME[lang], ids=_describe(keys, lang) or "—")
+    return {"title": TEXT["broadcast_title"][lang].format(category=label), "body": body}
+
+
+def preview(campaign_id: str, custom: dict | None = None) -> dict | None:
+    """What the warning would say in every language, before the authority approves it."""
+    found = next((c for c in campaigns() if c["id"] == campaign_id), None)
+    if not found:
+        return None
+    keys = [(k["kind"], k["value"]) for k in found["keys"]]
+    return {lang: warning_text(found["category"], keys, lang, custom) for lang in SUPPORTED_LANGS}
+
+
 def _broadcast_view(row, lang: str) -> dict:
     keys = [tuple(k) for k in json.loads(row["keys"])]
-    category = t(CATEGORY_LABELS, row["category"], lang)
-    if lang == "en":
-        category = category.lower()
+    custom = json.loads(row["custom"]) if row["custom"] else None
     return {
         "id": row["id"],
         "created_at": row["created_at"],
-        "title": TEXT["broadcast_title"][lang].format(category=category),
-        "body": TEXT["broadcast_body"][lang].format(authority=AUTHORITY_NAME[lang], ids=_describe(keys, lang) or "—"),
+        **warning_text(row["category"], keys, lang, custom),
         "demo": TEXT["demo"][lang],
         "keys": keys,
     }
