@@ -71,7 +71,7 @@
       throw new Error("auth");
     }
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.detail || String(res.status));
+    if (!res.ok) throw Object.assign(new Error(data.detail || String(res.status)), { status: res.status });
     login.hidden = true;
     document.getElementById("login-error").textContent = "";
     return data;
@@ -234,7 +234,10 @@
     document.getElementById("updated").textContent = `آخر تحديث: ${new Date().toLocaleTimeString("ar-AE")} · يتحدّث كل 5 ثوانٍ`;
     if (selected) {
       try { showDetail(await call(`/api/authority/reports/${encodeURIComponent(selected)}`)); }
-      catch { selected = ""; detail.replaceChildren(el("p", { class: "empty", text: "اختر بلاغاً من القائمة لعرض تفاصيله." })); }
+      catch (e) {
+        // Only a case that no longer exists closes; a slow or busy moment keeps it open until the next refresh.
+        if (e.status === 404) { selected = ""; detail.replaceChildren(el("p", { class: "empty", text: "لم يعد هذا البلاغ موجوداً." })); }
+      }
     }
   }
 

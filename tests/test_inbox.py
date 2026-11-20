@@ -128,3 +128,24 @@ def test_reference_is_dated_in_uae_time(monkeypatch):
 
     monkeypatch.setattr(report, "datetime", Late)
     assert report.new_reference().startswith("HRS-20261121-")
+
+
+def test_authority_dashboard_has_its_own_allowance(monkeypatch):
+    pytest.importorskip("fastapi")
+    pytest.importorskip("httpx")
+    from fastapi.testclient import TestClient
+
+    from app import main
+
+    monkeypatch.setattr(main, "_hits", main.defaultdict(main.deque))
+    monkeypatch.setattr(main, "RATE_LIMIT", 3)
+    monkeypatch.setenv("HARIS_AUTHORITY_TOKEN", "1234")
+    client = TestClient(main.app)
+    ok = {"x-authority-token": "1234"}
+    # A dashboard refreshing every 5 seconds is not throttled like the public chat.
+    assert all(client.get("/api/authority/reports", headers=ok).status_code == 200 for _ in range(10))
+    assert [client.get("/api/health").status_code for _ in range(4)][-1] == 429
+    # A wrong code gets no extra allowance.
+    monkeypatch.setattr(main, "_hits", main.defaultdict(main.deque))
+    codes = [client.get("/api/authority/reports", headers={"x-authority-token": "0000"}).status_code for _ in range(4)]
+    assert codes[:3] == [401, 401, 401] and codes[3] == 429

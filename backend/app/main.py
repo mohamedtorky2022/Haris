@@ -32,6 +32,9 @@ Incident = Literal["money_sent", "account_hacked", "extortion", "harassment", "i
 ImageDataUrl = Annotated[str, Field(max_length=6_000_000)]  # a 4 MB image as a base64 data: URL
 FRONTEND_DIR = Path(__file__).resolve().parents[2] / "frontend"
 RATE_LIMIT = int(os.getenv("HARIS_RATE_LIMIT", "30"))  # requests per minute per client
+# The authority's dashboards refresh every 5 seconds and an officer clicks through cases, so a request
+# carrying the right access code has its own, larger allowance instead of the public one.
+AUTHORITY_RATE_LIMIT = int(os.getenv("HARIS_AUTHORITY_RATE_LIMIT", "300"))
 MAX_TEXT = 5000
 
 app = FastAPI(
@@ -97,11 +100,14 @@ _hits: dict[str, deque] = defaultdict(deque)
 async def protect(request: Request, call_next):
     if request.url.path.startswith("/api/") and RATE_LIMIT > 0:
         client = request.client.host if request.client else "unknown"
+        limit = RATE_LIMIT
+        if request.url.path.startswith("/api/authority/") and _has_authority_token(request):
+            client, limit = f"authority:{client}", AUTHORITY_RATE_LIMIT
         now = time.monotonic()
         window = _hits[client]
         while window and now - window[0] > 60:
             window.popleft()
-        if len(window) >= RATE_LIMIT:
+        if len(window) >= limit:
             return JSONResponse({"detail": "Too many requests. Please wait a minute."}, status_code=429)
         window.append(now)
 
@@ -145,6 +151,12 @@ def radar_report(body: RadarReport):
 def radar_broadcasts(lang: Lang = "ar"):
     """Official warnings the authority approved. Shown to every Haris user."""
     return radar.broadcasts(lang)
+
+
+def _has_authority_token(request: Request) -> bool:
+    token = os.getenv("HARIS_AUTHORITY_TOKEN")
+    given = request.headers.get("x-authority-token", "")
+    return bool(token) and hmac.compare_digest(given.encode(), token.encode())
 
 
 def require_authority(request: Request) -> None:
