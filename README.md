@@ -124,7 +124,7 @@ Open <http://127.0.0.1:8000/authority.html> (the authority dashboard), approve t
 
 The test number cannot receive messages from the public. For the poster's QR code, Haris needs its own WhatsApp Business number.
 
-**Explainer videos** (one per language). Cartoon Haris explains what he does: he blinks, his mouth follows his voice, and he points to each part of the app. The Arabic script is in the Emirati dialect.
+**Explainer videos** (one per language). Cartoon Haris explains what he does: he blinks, his mouth follows his voice, and he points to each part of the app. The Arabic script is in Modern Standard Arabic, which the system voice pronounces correctly.
 
 ```bash
 bash docs/video/build_voice.sh        # on a Mac: records the lines with the system voices
