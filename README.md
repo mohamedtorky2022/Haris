@@ -4,7 +4,7 @@
 
 > **حارس** مساعد ذكي يحمي كل من يعيش في الإمارات من الاحتيال والجرائم الإلكترونية، بلغته: يفحص الرسائل والروابط المشبوهة، ويرشد الضحية خطوة بخطوة، ويجهّز ملف بلاغ منظماً للشرطة. لا يحفظ رسائل المستخدمين، ويخفي بياناتهم الشخصية قبل أي تحليل.
 
-Haris is a chat assistant that helps anyone in the UAE spot online scams, act fast when they have been scammed, and hand the police a complete report. It speaks Arabic, English, Urdu and Hindi, and stores nothing users send.
+Haris is a chat assistant that helps anyone in the UAE spot online scams, act fast when they have been scammed, and hand the police a complete report. It speaks Arabic, English, Urdu, Hindi and Russian, works for visitors without an Emirates ID, and stores nothing users send unless they choose to send a report.
 
 This repository is the hackathon MVP: a FastAPI backend and a WhatsApp-style web chat.
 
@@ -29,8 +29,9 @@ Haris covers the three moments of a cybercrime:
 | **Before** — a suspicious message arrives | Paste any message, link or offer. Haris rates the risk (low / medium / high), names the scam type, explains **why** in plain words, and says what to do. |
 | **After** — "I've been scammed" | A step-by-step emergency plan for ten situations: money sent, account hacked, extortion, online bullying/harassment/defamation, a fake account in your name, being filmed or having photos or personal details posted without permission, a hacked device or ransomware (including SIM swap), ID shared, a business that paid a fake invoice or a fake "boss" request, and a suspicious message only. Each comes with the official reporting channels. |
 | **Reporting** | The victim tells the story their own way: typed, spoken or as screenshots of the chat or the debit alert. For speech, the user picks their dialect once (Emirati/Gulf, Saudi, Egyptian, Levantine, Iraqi, Maghrebi; English and Urdu accents too), and after each dictation Haris suggests fixes for misheard words such as «ارا ماكس» → «أرامكس». The user approves the fix, and numbers are never changed. Haris pulls out the amount, time, payment method, steps already taken and the scammer's numbers, links and IBANs, asks only about what is still missing with ready-made answers, then shows a summary card where any line can be edited. The report opens in a new tab, downloads as a web page with the screenshots inside, or prints and saves as PDF. |
-| **Sending it** — to the authority (demo) | "Send it to the authority": the victim picks their emirate, reads exactly what will be sent and for how long it is kept, confirms their identity (UAE PASS, simulated in the demo), and the report reaches the **reports dashboard** with the same reference number as their file. Haris sorts it: **critical** (a threat to life, or a child involved), **financial** (money lost in the last 24 hours, when the bank can still freeze it), **medium**, or **indicator**. The officer receives it, asks for more information, or closes it with a note, and the victim follows every step in "My reports" and answers in the chat. A report written in **Hindi, Urdu or English reaches the officer in Arabic**, with the victim's own words beside it and their language flagged so the case can go to an officer who speaks it; the officer writes in Arabic and the victim reads the note in their own language. |
-| **Early warning** — a message nobody fell for | "Report it to protect others" sends the sender's number, link and the redacted text to the **campaign radar** (demo). Reports that share a number, a link or the same text become one campaign. At 3 people Haris tells anyone who checks it "reported by N people"; at 10 people, or 3 with a link imitating an official body, the authority is alerted on its dashboard. Only the authority can approve a public warning, which then reaches every Haris user, goes out as a **WhatsApp alert to everyone who subscribed** (by sending «تنبيهات» / ALERTS) in the language they chose, after the officer has seen it in all four languages (the standard wording, or the authority's own text translated by Haris and editable), and sends a block request to the telecom providers (simulated). |
+| **Sending it** — to the authority (demo) | "Send it to the authority": the victim picks their emirate, reads exactly what will be sent and for how long it is kept, confirms their identity (UAE PASS, simulated in the demo), and the report reaches the **reports dashboard** with the same reference number as their file. Haris sorts it: **critical** (a threat to life, or a child involved), **financial** (money lost in the last 24 hours, when the bank can still freeze it), **medium**, or **indicator**. The officer receives it, asks for more information, or closes it with a note, and the victim follows every step in "My reports" and answers in the chat. A report written in **Hindi, Urdu, English or Russian reaches the officer in Arabic**, with the victim's own words beside it and their language flagged so the case can go to an officer who speaks it; the officer writes in Arabic and the victim reads the note in their own language. |
+| **Visitors** — no Emirates ID | Every check, plan and report file works without any ID. When sending a report, Haris asks "do you live here or are you visiting?". A visitor picks the emirate they are staying in, when they leave, their nationality and a contact for after they fly, and confirms their identity with a UAE PASS visitor account (passport) or their passport (both simulated in the demo). A visitor leaving within 3 days moves up the queue, and the officer sees "suggest the Tourism Police", who follow a visitor's case even after they leave. Every plan ends with tips for visitors: a card from a bank abroad, the embassy, travel insurance, and the Tourism Police numbers. |
+| **Early warning** — a message nobody fell for | "Report it to protect others" sends the sender's number, link and the redacted text to the **campaign radar** (demo). Reports that share a number, a link or the same text become one campaign. At 3 people Haris tells anyone who checks it "reported by N people"; at 10 people, or 3 with a link imitating an official body, the authority is alerted on its dashboard. Only the authority can approve a public warning, which then reaches every Haris user, goes out as a **WhatsApp alert to everyone who subscribed** (by sending «تنبيهات» / ALERTS) in the language they chose, after the officer has seen it in all five languages (the standard wording, or the authority's own text translated by Haris and editable), and sends a block request to the telecom providers (simulated). |
 
 ### What it covers today, and what is next
 
@@ -57,7 +58,7 @@ The same engine serves every group; the scam patterns and advice cover parcel an
 ## 3. How it works
 
 ```
- Browser (web chat, AR / EN / UR / HI)        WhatsApp (Cloud API)
+ Browser (web chat, AR / EN / UR / HI / RU)   WhatsApp (Cloud API)
         │  /api/check, /api/playbooks, …          │  /webhook/whatsapp (signed by Meta)
         ▼                                         ▼
  FastAPI app ── rate limit, security headers, input limits, no logging of content
@@ -66,7 +67,7 @@ The same engine serves every group; the scam patterns and advice cover parcel an
  haris core (pure Python, no dependencies)
    ├─ text.py       normalise Arabic spelling and digits, detect language
    ├─ redact.py     remove card numbers (Luhn-checked), Emirates ID, IBAN, phones, e-mails
-   ├─ rules.py      30 weighted scam signals in 4 languages, with "unless" exceptions
+   ├─ rules.py      30 weighted scam signals in 5 languages, with "unless" exceptions
    ├─ urls.py       offline link analysis: look-alike brands, risky TLDs, shorteners, raw IPs
    ├─ detector.py   combines the above into a score, risk level and category
    ├─ llm.py        the AI layer (Claude or Gemini) on the REDACTED text
@@ -132,12 +133,12 @@ python scripts/radar_demo.py          # 10 people report the same fake-parcel ca
 
 Open <http://127.0.0.1:8000/authority.html> (the authority dashboard), approve the warning, then reload the chat: every user now sees the official warning, and any message from those numbers or links is rated high risk.
 
-To show the WhatsApp alert going out, add fictional subscribers first: `python scripts/alerts_demo.py` (2,400 in four languages). After the approval, "WhatsApp alerts" on the same page counts the delivery. Fictional subscribers are never sent anything; a real phone that sends «تنبيهات» to the Haris number gets the warning for real once WhatsApp is connected.
+To show the WhatsApp alert going out, add fictional subscribers first: `python scripts/alerts_demo.py` (2,400 in five languages). After the approval, "WhatsApp alerts" on the same page counts the delivery. Fictional subscribers are never sent anything; a real phone that sends «تنبيهات» to the Haris number gets the warning for real once WhatsApp is connected.
 
 **Demo the reports dashboard** (with the server running):
 
 ```bash
-python scripts/inbox_demo.py --clear  # 30 fictional reports: 4 languages, 7 emirates, the past 5 days
+python scripts/inbox_demo.py --clear  # 30 fictional reports: 5 languages, visitors, 7 emirates, the past 5 days
 ```
 
 Open <http://127.0.0.1:8000/reports.html>. The queue puts the critical cases first (a threat to life, a child in an extortion), then money lost in the last hours; some cases are already received, waiting for information, or closed. Open a case, press "Receive", then "Ask for information" with a note. In the chat, "My reports" now shows the note, and the victim's answer appears in the case log. To try it end to end, prepare a report in the chat and press "Send it to the authority".
@@ -195,7 +196,7 @@ Measured on 20 November 2026 with `gemini-3.5-flash-lite` on the free tier. The 
 | `POST` | `/api/authority/reports/{ref}` | `{"action": "receive" \| "request_info" \| "close", "note": "..."}` (authority only) |
 | `GET` | `/api/authority/campaigns` | campaigns for the authority dashboard (this computer only, or with `X-Authority-Token`) |
 | `POST` | `/api/authority/campaigns/{id}` | `{"status": "confirmed" \| "dismissed"}`: approve the public warning, the WhatsApp alert and the block request, or dismiss |
-| `POST` | `/api/authority/campaigns/{id}/preview` | `{"text": "..."}` (optional): the warning in all four languages, the authority's own text translated (authority only) |
+| `POST` | `/api/authority/campaigns/{id}/preview` | `{"text": "..."}` (optional): the warning in all five languages, the authority's own text translated (authority only) |
 | `GET` | `/api/authority/alerts` | WhatsApp alert subscribers by language, the delivery mode, and the last deliveries (authority only) |
 | `POST` | `/api/report` | build a police report (HTML + Markdown), nothing stored |
 | `GET` | `/api/health` | status, and whether the AI second opinion and WhatsApp are on |
@@ -225,9 +226,12 @@ Measured on 20 November 2026 with `gemini-3.5-flash-lite` on the free tier. The 
 **A report is kept only when the victim sends it, and only for 7 days.** Sending a report straight to the authority means it must wait somewhere until an officer opens it. The inbox keeps it only after the victim has seen everything that will be sent and pressed send, deletes it automatically after `HARIS_INBOX_RETENTION_DAYS` (7) whatever its status, and never stores the screenshots: they stay in the victim's own file. The victim follows the case with the reference number and a private token, stored on the server only as a hash.
 - *Trade-off:* in the demo the database is a plain SQLite file readable only by the server's user, not encrypted, and UAE PASS is simulated. A launch needs the partner's own case system, encryption at rest, UAE hosting and the real UAE PASS sign-in.
 
-**Translate, but keep the original.** Many victims in the UAE write Hindi, Urdu or English, and most officers read Arabic first. So the victim's words are translated into Arabic when the report arrives, and each officer note is translated into the victim's language, using the same AI model as the checks. The victim's original always travels with the translation, because it is the evidence and a machine translation can miss a nuance, and the dashboard flags the reporter's language so a supervisor can hand the case to an officer who speaks it.
+**Translate, but keep the original.** Many victims in the UAE write Hindi, Urdu, English or Russian, and most officers read Arabic first. So the victim's words are translated into Arabic when the report arrives, and each officer note is translated into the victim's language, using the same AI model as the checks. The victim's original always travels with the translation, because it is the evidence and a machine translation can miss a nuance, and the dashboard flags the reporter's language so a supervisor can hand the case to an officer who speaks it.
 - *Safety:* as in dictation correction, numbers, amounts, links and e-mails are swapped for tokens before the model sees the text and put back after. An answer that loses, adds or changes a token or a digit, or leaves words untranslated, gets one more try and is otherwise refused: the case is then marked "needs a translator", and nothing is lost.
 - *Trade-off:* the text goes to the AI provider (outside the UAE in this demo); names in it are not removed, because the officer needs them. A launch uses a model hosted in the UAE.
+
+**Visitors report with their passport.** UAE PASS already lets visitors open an account with a passport or a GCC national ID, and Dubai Police's eCrime takes a passport number instead of an Emirates ID, so a visitor's path needs no new kind of identity, only different questions: where they are staying, when they leave, and how to reach them after they fly.
+- *Trade-off:* the demo stores the nationality and the contact abroad but not the passport number; a launch takes the verified identity from UAE PASS.
 
 **Triage by simple rules a supervisor can read.** The priority comes from the situation and a few words, not from a model: a threat to life or a child in an extortion, harassment or privacy case is critical; money lost in the last 24 hours is financial, because the first hour decides whether the bank can freeze it; older fraud and the other situations are medium; a message nobody fell for is an indicator. The officer sees why at the top of the case.
 
@@ -241,7 +245,7 @@ Measured on 20 November 2026 with `gemini-3.5-flash-lite` on the free tier. The 
 - *Trade-off:* it can't fix what the service didn't hear at all. A trainable server-side model (Azure Custom Speech, which supports ar-AE, ar-EG, ar-SA and more; Urdu only as ur-IN) is the plan for the police pilot, hosted in a UAE region and trained on anonymised data from the partner.
 - *Safety:* numbers, links and e-mails are swapped for tokens before the AI sees the text and put back after; an answer that loses, repeats or adds a digit is thrown away. The user always sees the changes and chooses.
 
-**One file per language.** Every sentence the user sees is in `frontend/locales/<lang>.json` (the chat) and `backend/haris/locales/<lang>.json` (results, advice, plans, the report, the radar). A reviewer corrects wording without touching code, a new language is one new file in each folder, and `tests/test_locales.py` fails if any language is missing a key, has a different number of steps, or loses a `{placeholder}`. The Hindi text was drafted with AI help and needs a native speaker's review before launch.
+**One file per language.** Every sentence the user sees is in `frontend/locales/<lang>.json` (the chat) and `backend/haris/locales/<lang>.json` (results, advice, plans, the report, the radar). A reviewer corrects wording without touching code, a new language is one new file in each folder, and `tests/test_locales.py` fails if any language is missing a key, has a different number of steps, or loses a `{placeholder}`. The Hindi and Russian text was drafted with AI help and needs a native speaker's review before launch. Russian, the fifth language, was added in about an hour and a half: two language files, a list of Russian scam phrases, and the Cyrillic script in language detection.
 
 **Plain JavaScript front end.** No framework and no build step, so judges can run it with one command, and the strict Content-Security-Policy (`script-src 'self'`) stays simple.
 
@@ -257,14 +261,14 @@ Measured on 20 November 2026 with `gemini-3.5-flash-lite` on the free tier. The 
 ### What we would do differently with more time
 
 - Build the test set from **real, anonymised scam messages** supplied by the partner authority, measured separately from the rules, instead of samples we wrote ourselves.
-- Have the **Arabic dialect, Urdu and Hindi wording reviewed** by native speakers and by child-protection and victim-support specialists, especially the extortion guidance.
+- Have the **Arabic dialect, Urdu, Hindi and Russian wording reviewed** by native speakers and by child-protection and victim-support specialists, especially the extortion guidance.
 - Replace keyword weights with a **small fine-tuned classifier** trained on that data, keeping the rules as an explainable safety net.
 - Store rules and advice text in a **reviewable content file** the partner authority can edit without a code change.
 
 ## 6. Privacy and safety summary
 
 - Nothing users send is stored or logged, except two things the user chooses to send: a report to the campaign radar (the sender's numbers and links and the redacted text, kept 30 days, with no data about the reporter), and a report sent to the authority (the report fields without screenshots, kept 7 days). API responses carry `Cache-Control: no-store`.
-- Reports sent to the authority in Hindi, Urdu or English are translated by the AI provider, with numbers, amounts, links and e-mails kept on the server as tokens. The translation is stored next to the original in the same case.
+- Reports sent to the authority in Hindi, Urdu, English or Russian are translated by the AI provider, with numbers, amounts, links and e-mails kept on the server as tokens. The translation is stored next to the original in the same case.
 - WhatsApp alert subscribers: the WhatsApp number and language of people who sent «تنبيهات», kept until they send «إيقاف», readable only by the server's user. Fictional demo subscribers are never messaged.
 - On the user's device the chat keeps only the reference numbers and status tokens of reports they sent, so they can follow them.
 - The authority dashboards open only on the computer running Haris, or anywhere with the `HARIS_AUTHORITY_TOKEN` set. Behind a tunnel or proxy (requests carrying `X-Forwarded-For` or `CF-Connecting-IP`) the token is always required.
