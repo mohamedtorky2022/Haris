@@ -42,12 +42,15 @@
     return node;
   }
 
+  // Arabic counting: one, two (dual), 3-10 (plural), 11 and more (singular).
+  const count = (n, [one, two, few, many]) => (n === 1 ? one : n === 2 ? two : n <= 10 ? `${n} ${few}` : `${n} ${many}`);
   const ago = (ts) => {
     const m = Math.max(0, Math.round((Date.now() / 1000 - ts) / 60));
     if (m < 1) return "الآن";
-    if (m < 60) return `قبل ${m} دقيقة`;
+    if (m < 60) return `قبل ${count(m, ["دقيقة", "دقيقتين", "دقائق", "دقيقة"])}`;
     const h = Math.round(m / 60);
-    return h < 24 ? `قبل ${h} ساعة` : `قبل ${Math.round(h / 24)} يوم`;
+    if (h < 24) return `قبل ${count(h, ["ساعة", "ساعتين", "ساعات", "ساعة"])}`;
+    return `قبل ${count(Math.round(h / 24), ["يوم", "يومين", "أيام", "يوماً"])}`;
   };
   const clock = (ts) => new Date(ts * 1000).toLocaleString("ar-AE", { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short" });
   const money = (r) => (r.amount ? `${r.amount} ${r.currency || "AED"}` : "");

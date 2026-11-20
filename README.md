@@ -133,10 +133,10 @@ Open <http://127.0.0.1:8000/authority.html> (the authority dashboard), approve t
 **Demo the reports dashboard** (with the server running):
 
 ```bash
-python scripts/inbox_demo.py --clear  # 6 fictional reports in 4 languages and 6 emirates
+python scripts/inbox_demo.py --clear  # 30 fictional reports: 4 languages, 7 emirates, the past 5 days
 ```
 
-Open <http://127.0.0.1:8000/reports.html>. The queue puts the critical extortion case first, then money lost today. Open a case, press "Receive", then "Ask for information" with a note. In the chat, "My reports" now shows the note, and the victim's answer appears in the case log. To try it end to end, prepare a report in the chat and press "Send it to the authority".
+Open <http://127.0.0.1:8000/reports.html>. The queue puts the critical cases first (a threat to life, a child in an extortion), then money lost in the last hours; some cases are already received, waiting for information, or closed. Open a case, press "Receive", then "Ask for information" with a note. In the chat, "My reports" now shows the note, and the victim's answer appears in the case log. To try it end to end, prepare a report in the chat and press "Send it to the authority".
 
 **Connect WhatsApp** (free, with Meta's test number):
 
@@ -279,7 +279,7 @@ haris/
 ├── data/samples/messages.json  labelled synthetic test messages
 ├── scripts/evaluate.py         accuracy on the samples
 ├── scripts/radar_demo.py       sends 10 reports of one campaign, for a live demo
-├── scripts/inbox_demo.py       fills the reports dashboard with 6 fictional reports
+├── scripts/inbox_demo.py       fills the reports dashboard with 30 fictional reports
 ├── tests/                      unit and API tests
 └── docs/
     ├── TECHNICAL.md            architecture, model choices, privacy design
