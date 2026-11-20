@@ -138,7 +138,7 @@ Open <http://127.0.0.1:8000/authority.html> (the authority dashboard), approve t
 
 The test number cannot receive messages from the public. For the poster's QR code, Haris needs its own WhatsApp Business number.
 
-**Journey video** (one per language). The user's journey with Haris, from scanning the poster's QR code to the official warning: WhatsApp opens, a forwarded scam gets its risk rating, "I've been scammed" gives the first steps, the report file is prepared, and the radar turns reports into a warning. Haris does not speak: he points at each step, captions appear beside him, and formal music plays. The music is composed in code (`journey.py`), so there is no licence to clear.
+**Journey video** (one per language). The user's journey with Haris, from scanning the poster's QR code to the official warning: WhatsApp opens, a forwarded scam gets its risk rating, "I've been scammed" gives the first steps, the report file is prepared, and the radar turns reports into a warning. Haris does not speak: he points at each step, captions appear beside him, and formal music plays. The pace leaves time to read every line (`SLOW` in `journey.py`; about 1:53). The music is composed in code (`journey.py`), so there is no licence to clear.
 
 ```bash
 bash docs/video/fetch_fonts.sh        # IBM Plex Arabic and Devanagari (Open Font License)

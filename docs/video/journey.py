@@ -29,14 +29,37 @@ BPM = 72
 BEAT = 60 / BPM
 BAR = 4 * BEAT
 CHORD = {"D": (62, "maj"), "Bm": (59, "min"), "G": (55, "maj"), "A": (57, "maj"), "F#m": (54, "min")}
-PROGRESSION = ["D", "Bm", "G", "A"] * 2 + ["D", "F#m", "G", "A", "Bm", "G", "D", "A", "D", "Bm", "G", "A", "A", "D"]
-MELODY = [  # (bar, beat, midi note, beats)
-    (4, 0, 66, 2), (4, 2, 69, 2), (5, 0, 66, 2), (5, 2, 62, 2), (6, 0, 67, 2), (6, 2, 71, 2), (7, 0, 69, 4),
-    (8, 0, 74, 2), (8, 2, 73, 1), (8, 3, 71, 1), (9, 0, 69, 4), (10, 0, 71, 2), (10, 2, 74, 2), (11, 0, 73, 2), (11, 2, 76, 2),
-    (12, 0, 74, 2), (12, 2, 78, 2), (13, 0, 74, 4), (14, 0, 69, 2), (14, 2, 74, 2), (15, 0, 73, 4),
-    (16, 0, 78, 2), (16, 2, 76, 1), (16, 3, 74, 1), (17, 0, 74, 2), (17, 2, 71, 2), (18, 0, 71, 2), (18, 2, 74, 2), (19, 0, 76, 4),
-    (20, 0, 73, 2), (20, 2, 76, 2), (21, 0, 74, 4),
-]
+# The piece is built from 4-bar blocks: an intro, then phrases A B C D (repeating B C D for a
+# longer video), then a 2-bar cadence, so it always ends on its last chord with the video.
+BLOCKS = {  # chords, and melody as (bar in block, beat, midi note, beats)
+    "intro": (["D", "Bm", "G", "A"], []),
+    "A": (["D", "Bm", "G", "A"], [(0, 0, 66, 2), (0, 2, 69, 2), (1, 0, 66, 2), (1, 2, 62, 2), (2, 0, 67, 2), (2, 2, 71, 2), (3, 0, 69, 4)]),
+    "B": (["D", "F#m", "G", "A"], [(0, 0, 74, 2), (0, 2, 73, 1), (0, 3, 71, 1), (1, 0, 69, 4), (2, 0, 71, 2), (2, 2, 74, 2), (3, 0, 73, 2), (3, 2, 76, 2)]),
+    "C": (["Bm", "G", "D", "A"], [(0, 0, 74, 2), (0, 2, 78, 2), (1, 0, 74, 4), (2, 0, 69, 2), (2, 2, 74, 2), (3, 0, 73, 4)]),
+    "D": (["D", "Bm", "G", "A"], [(0, 0, 78, 2), (0, 2, 76, 1), (0, 3, 74, 1), (1, 0, 74, 2), (1, 2, 71, 2), (2, 0, 71, 2), (2, 2, 74, 2), (3, 0, 76, 4)]),
+    "end": (["A", "D"], [(0, 0, 73, 2), (0, 2, 76, 2), (1, 0, 74, 4)]),
+}
+
+
+def plan(body_blocks: int) -> list[str]:
+    order = ["A", "B", "C", "D"] + ["B", "C", "D"] * 4
+    return ["intro"] + order[:body_blocks] + ["end"]
+
+
+def bars_for(body_blocks: int) -> int:
+    return 4 + 4 * body_blocks + 2
+
+
+def schedule(body_blocks: int):
+    """Chords per bar, melody notes with absolute bars, and the bars where a block starts."""
+    chords, melody, starts = [], [], []
+    for name in plan(body_blocks):
+        start = len(chords)
+        starts.append((start, name))
+        names, notes = BLOCKS[name]
+        chords += names
+        melody += [(start + b, beat, m, n) for b, beat, m, n in notes]
+    return chords, melody, starts
 
 
 def hz(m: float) -> float:
@@ -69,7 +92,9 @@ def chord_notes(name: str) -> list[int]:
     return [root, root + third, root + 7, root + 12]
 
 
-def music(total: float) -> np.ndarray:
+def music(total: float, body_blocks: int) -> np.ndarray:
+    progression, melody, block_starts = schedule(body_blocks)
+    last = len(progression) - 1
     n = int(total * SR) + SR
     left, right = np.zeros(n), np.zeros(n)
 
@@ -80,7 +105,14 @@ def music(total: float) -> np.ndarray:
         right[s:e] += sig[: e - s] * gain * (1 + pan) / 2
 
     lp = butter(2, 2200, "low", fs=SR, output="sos")
-    for b, name in enumerate(PROGRESSION):
+    loud = {start for start, name in block_starts if name in ("C", "D")}
+    bell_bars = set()
+    for start, name in block_starts:
+        if name in ("C", "D") and start >= 12:
+            bell_bars.update(range(start, start + 4))
+    bell_bars.add(last - 1)
+    timpani_bars = {start for start, name in block_starts if name != "end"}
+    for b, name in enumerate(progression):
         start = b * BAR
         length = int((BAR + 0.9) * SR)
         # strings pad: detuned saws, soft
@@ -94,8 +126,8 @@ def music(total: float) -> np.ndarray:
             f = hz(CHORD[name][0] - 24 if CHORD[name][0] >= 57 else CHORD[name][0] - 12)
             bass = (np.sin(2 * np.pi * f * t) + 0.3 * np.sin(4 * np.pi * f * t)) * env(len(t), 0.05, 0.4)
             add(bass, start, 0, 0.16)
-        # bells: an arpeggio of eighth notes in the last part
-        if 12 <= b < 21:
+        # bells: an arpeggio of eighth notes in the later phrases
+        if b in bell_bars:
             notes = chord_notes(name)
             for i in range(8):
                 m = notes[i % 4] + 12
@@ -103,25 +135,25 @@ def music(total: float) -> np.ndarray:
                 bell = (np.sin(2 * np.pi * hz(m) * t) + 0.25 * np.sin(2 * np.pi * hz(m) * 2.76 * t)) * np.exp(-t * 5)
                 add(bell, start + i * BEAT / 2, 0.3 if i % 2 else -0.3, 0.05)
         # timpani on the strong bars, and a roll into the last chord
-        if b in (0, 4, 8, 12, 16):
+        if b in timpani_bars:
             add(timpani(hz(38)), start, 0, 0.5)
-    roll_start = 20 * BAR + 2 * BEAT
+    roll_start = (last - 1) * BAR + 2 * BEAT
     for i in range(16):
         add(timpani(hz(45)) * (0.25 + 0.04 * i), roll_start + i * (2 * BEAT / 16), 0, 0.35)
-    add(timpani(hz(38)) * 1.2, 21 * BAR, 0, 0.6)
+    add(timpani(hz(38)) * 1.2, last * BAR, 0, 0.6)
 
     # horn melody
     hlp = butter(2, 1800, "low", fs=SR, output="sos")
-    for bar, beat, m, beats in MELODY:
+    for bar, beat, m, beats in melody:
         length = int((beats * BEAT + 0.35) * SR)
-        if bar == 21:
+        if bar == last:
             length = int((4 * BEAT + 2.0) * SR)
         t = np.arange(length) / SR
         vib = 1 + 0.004 * np.sin(2 * np.pi * 5 * t) * np.clip((t - 0.3) * 3, 0, 1)
         f = hz(m)
         tone = sum(np.sin(2 * np.pi * f * k * np.cumsum(vib) / SR) / k ** 1.3 for k in range(1, 9))
         horn = sosfilt(hlp, tone) * env(length, 0.08, 0.3) * (0.85 + 0.15 * np.exp(-t * 3))
-        add(horn, bar * BAR + beat * BEAT, 0.15, 0.10 if bar < 12 else 0.13)
+        add(horn, bar * BAR + beat * BEAT, 0.15, 0.13 if bar >= 12 else 0.10)
 
     # a hall: short decaying noise as the impulse response
     rng = np.random.default_rng(7)
@@ -147,8 +179,8 @@ def timpani(f: float) -> np.ndarray:
     return tone + sosfilt(butter(2, 600, "low", fs=SR, output="sos"), noise)
 
 
-def write_music(total: float, path: Path) -> Path:
-    pcm = (music(total) * 32767).astype("<i2")
+def write_music(total: float, body_blocks: int, path: Path) -> Path:
+    pcm = (music(total, body_blocks) * 32767).astype("<i2")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "s16le", "-ar", str(SR), "-ac", "2", "-i", "-", str(path)],
                    input=pcm.tobytes(), check=True)
     return path
@@ -156,14 +188,25 @@ def write_music(total: float, path: Path) -> Path:
 
 # --- Video -------------------------------------------------------------------
 
+SLOW = 1.55  # how much slower than the first cut, so every line on screen can be read
+
+
+def fit(base: float, slow: float = SLOW) -> tuple[float, int]:
+    """The reading factor closest to `slow` that makes the video end with a whole music block."""
+    blocks = max(4, round(((base * slow + LEAD) / BAR - 6) / 4))
+    return (bars_for(blocks) * BAR - LEAD) / base, blocks
+
+
 def data(lang: str) -> dict:
     journey = json.loads((HERE / "journey.json").read_text())
+    slow, blocks = fit(sum(journey["durations"]))
     spec = json.loads((HERE / "scripts.json").read_text())[lang]
     locale = json.loads((ROOT / "backend" / "haris" / "locales" / f"{lang}.json").read_text())
     ui = {**spec["ui"], **journey[lang], "wa": locale["whatsapp"], "risk": locale["risk_labels"]["high"], "native": NATIVE[lang]}
-    total = LEAD + sum(journey["durations"])
-    return {"lang": lang, "dir": spec["dir"], "font": spec["font"], "ui": ui, "lead": LEAD,
-            "durations": journey["durations"], "scenes": journey["scenes"], "total": total}
+    durations = [round(d * slow, 4) for d in journey["durations"]]
+    total = LEAD + sum(durations)
+    return {"lang": lang, "dir": spec["dir"], "font": spec["font"], "ui": ui, "lead": LEAD, "slow": slow,
+            "blocks": blocks, "durations": durations, "scenes": journey["scenes"], "total": total}
 
 
 def open_page(p, d):
@@ -219,7 +262,7 @@ if __name__ == "__main__":
         for lang in langs:
             stills(lang, times)
     else:
-        total = data(langs[0])["total"]
-        track = write_music(total, OUT / "music.wav")
+        d0 = data(langs[0])
+        track = write_music(d0["total"], d0["blocks"], OUT / "music.wav")
         for lang in langs:
             print(render(lang, track))

@@ -249,49 +249,50 @@ function render(t) {
     s.style.visibility = vis > 0 ? "visible" : "hidden";
     s.style.transform = `translateY(${(1 - vis) * 22}px)`;
     if (vis <= 0) return;
+    const r = l / D.slow;  // reading time: items appear and stay longer, fades keep their speed
     s.querySelectorAll("[data-at]").forEach((n) => {
       const a = +n.dataset.at, u = n.dataset.until ? +n.dataset.until : Infinity;
-      const on = l >= a && l < u;
+      const on = r >= a && r < u;
       n.style.display = on ? "" : "none";
-      const o = ease((l - a) / 0.25);
+      const o = ease((r - a) / 0.25);
       n.style.opacity = String(o);
       n.style.transform = `translateY(${(1 - o) * 10}px)`;
     });
     s.querySelectorAll("[data-tapat]").forEach((n) => {
       const a = +n.dataset.tapat;
-      const on = l >= a && l < a + 0.45;
+      const on = r >= a && r < a + 0.45;
       n.classList.toggle("tap", on);
       n.style.scale = on ? "0.96" : "1";
     });
     const typed = s.querySelector("[data-typed]");
     if (typed && i === 1) {
-      const g = D.ui.greeting, n = Math.round(clamp((l - 0.6) / 1.4) * g.length);
-      typed.textContent = l < 2.3 ? (n ? g.slice(0, n) : D.ui.composer) : D.ui.composer;
-      typed.style.color = l < 2.3 && n ? "#1B2330" : "#5B6770";
+      const g = D.ui.greeting, n = Math.round(clamp((r - 0.6) / 1.4) * g.length);
+      typed.textContent = r < 2.3 ? (n ? g.slice(0, n) : D.ui.composer) : D.ui.composer;
+      typed.style.color = r < 2.3 && n ? "#1B2330" : "#5B6770";
     } else if (typed) { typed.textContent = D.ui.composer; }
     const sheet = s.querySelector("[data-sheet]");
     if (sheet) {
       const [a, b] = sheet.dataset.sheet.split(",").map(Number);
-      const o = Math.min(ease((l - a) / 0.35), ease((b - l) / 0.3));
+      const o = Math.min(ease((r - a) / 0.35), ease((b - r) / 0.3));
       sheet.style.transform = `translateY(${(1 - o) * 110}%)`;
     }
     const cam = s.querySelector("[data-cam]");
     if (cam) {
-      const up = ease((l - 0.8) / 1.0), away = ease((l - 5.6) / 0.8);
+      const up = ease((r - 0.8) / 1.0), away = ease((r - 5.6) / 0.8);
       cam.style.top = (900 - up * 540 + away * 40) + "px";
       cam.style.opacity = String(1 - away * 0.0);
       const scan = s.querySelector("[data-scan]");
-      const sp = clamp((l - 1.9) / 1.8);
+      const sp = clamp((r - 1.9) / 1.8);
       scan.style.top = (150 + Math.abs(Math.sin(sp * Math.PI * 2)) * 250) + "px";
-      scan.style.opacity = l > 1.9 && l < 3.8 ? "1" : "0";
+      scan.style.opacity = r > 1.9 && r < 3.8 ? "1" : "0";
     }
     s.querySelectorAll("[data-wave]").forEach((n) => {
       const j = +n.dataset.wave;
-      n.style.height = (8 + 24 * Math.abs(Math.sin(j * 1.7 + t * 6)) * (l > 0.6 && l < 3 ? 1 : 0.3)) + "px";
+      n.style.height = (8 + 24 * Math.abs(Math.sin(j * 1.7 + t * 6)) * (r > 0.6 && r < 3 ? 1 : 0.3)) + "px";
     });
     const people = s.querySelectorAll("[data-person]");
     if (people.length) {
-      const n = Math.round(clamp((l - 2.8) / 3.7) * 12);
+      const n = Math.round(clamp((r - 2.8) / 3.7) * 12);
       const color = n >= 10 ? "#B42318" : n >= 3 ? "#C2410C" : "#0A4740";
       people.forEach((p, j) => { p.style.opacity = j < n ? "1" : "0.15"; p.querySelector("svg").setAttribute("fill", j < n ? color : "#0A4740"); });
       s.querySelector("[data-count]").textContent = String(n);
