@@ -30,7 +30,7 @@ from pathlib import Path
 from .playbooks import PLAYBOOKS
 from .report import _clean, _clean_list, new_reference
 from .text import SUPPORTED_LANGS, detect_language, normalize
-from .translate import translate
+from .translate import translate, translate_lines
 from .translations import section
 
 DEFAULT_DB = Path(__file__).resolve().parents[2] / "data" / "inbox.db"
@@ -136,8 +136,8 @@ def to_arabic(fields: dict, lang: str) -> dict | None:
     short = [("occurred_at", fields["occurred_at"]), ("payment_method", fields["payment_method"])]
     short += [("steps_taken", s) for s in fields["steps_taken"]]
     short = [(k, v) for k, v in short if v]
-    lines = translate("\n".join(v for _, v in short), lang, "ar") if short else {"text": "", "ok": True}
-    got = lines["text"].split("\n") if lines["ok"] else []
+    lines = translate_lines([v for _, v in short], lang, "ar") if short else {"lines": [], "ok": True}
+    got = lines["lines"] if lines["ok"] else []
     out = {"from": lang, "ok": story["ok"], "engine": story["engine"] or lines.get("engine"),
            "description": story["text"], "steps_taken": []}
     if len(got) == len(short):  # one line out for each line in; otherwise keep only the originals

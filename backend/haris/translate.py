@@ -62,6 +62,38 @@ def translate(text: str, source: str, target: str) -> dict:
     return {"text": out or "", "ok": bool(out), "engine": llm.model_name() if out else None}
 
 
+LINES_NOTE = """
+The text is a JSON list of short, separate items (a time, a payment method, a step the person took).
+Translate each item on its own and keep the order. Reply with JSON only: {{"lines": [one translation per item]}}"""
+
+
+def translate_lines(lines: list[str], source: str, target: str) -> dict:
+    """Several short items in one call, one translation back for each, in the same order."""
+    lines = [(x or "").strip() for x in lines]
+    if not any(lines) or source == target:
+        return {"lines": lines, "ok": True, "engine": None}
+    if not llm.enabled():
+        return {"lines": [], "ok": False, "engine": None}
+    masked, kept = mask("\n".join(x.replace("\n", " ") for x in lines))  # tokens never span a line
+    items = masked.split("\n")
+    system = PROMPT.format(source=llm.LANG_NAMES.get(source, source), target=llm.LANG_NAMES.get(target, target),
+                           style=STYLE.get(target, "")).rsplit("\n\nReply with JSON only", 1)[0] + LINES_NOTE.format()
+    reply = llm._call(system, "<text>\n" + json.dumps(items, ensure_ascii=False) + "\n</text>", 1200,
+                      float(os.getenv("HARIS_LLM_TIMEOUT", "12")))
+    match = re.search(r"\{.*\}", reply or "", re.DOTALL)
+    try:
+        got = [str(x).strip() for x in json.loads(match.group(0)).get("lines", [])] if match else []
+    except ValueError:
+        got = []
+    if len(got) != len(items) or not all(got[i] or not items[i] for i in range(len(items))):
+        return {"lines": [], "ok": False, "engine": None}
+    joined = unmask("\n".join(g.replace("\n", " ") for g in got), kept)
+    out = joined.split("\n") if joined is not None else []
+    if len(out) != len(lines) or any(_foreign_words(o, src, target) for o, src in zip(out, lines)):
+        return {"lines": [], "ok": False, "engine": None}
+    return {"lines": out, "ok": True, "engine": llm.model_name()}
+
+
 LATIN = re.compile(r"[A-Za-z]{3,}")
 
 

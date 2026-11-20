@@ -21,6 +21,8 @@ def fake_model(monkeypatch, answer):
     def call(system, content, max_tokens, timeout):
         masked = re.search(r"<text>\n(.*)\n</text>", content, re.S).group(1)
         calls.append((system, masked))
+        if '"lines"' in system:  # several short items: one answer each
+            return json.dumps({"lines": [answer(system, x) for x in json.loads(masked)]}, ensure_ascii=False)
         return json.dumps({"text": answer(system, masked)}, ensure_ascii=False)
 
     monkeypatch.setattr(llm, "enabled", lambda: True)
@@ -98,3 +100,15 @@ def test_an_untranslated_english_word_gets_one_more_try(monkeypatch):
 def test_names_in_latin_letters_are_fine(monkeypatch):
     fake_model(monkeypatch, lambda s, m: "اخترقوا حسابي على Instagram")
     assert translate.translate("मेरा Instagram अकाउंट हैक हो गया", "hi", "ar")["ok"]
+
+
+def test_short_items_come_back_one_for_one(monkeypatch):
+    fake_model(monkeypatch, lambda s, m: {"आज सुबह": "اليوم صباحاً", "क्रिप्टो (USDT)": "عملات رقمية (USDT)"}[m])
+    out = translate.translate_lines(["आज सुबह", "क्रिप्टो (USDT)"], "hi", "ar")
+    assert out["ok"] and out["lines"] == ["اليوم صباحاً", "عملات رقمية (USDT)"]
+
+
+def test_merged_items_are_refused(monkeypatch):
+    monkeypatch.setattr(llm, "enabled", lambda: True)
+    monkeypatch.setattr(llm, "_call", lambda *a: json.dumps({"lines": ["اليوم صباحاً العملات المشفرة (USDT)"]}, ensure_ascii=False))
+    assert not translate.translate_lines(["आज सुबह", "क्रिप्टो (USDT)"], "hi", "ar")["ok"]
