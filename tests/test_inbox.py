@@ -43,6 +43,14 @@ def test_submit_then_follow_with_the_private_token():
     assert stored["verified"] and stored["emirate"] == "dubai"
 
 
+def test_keeps_the_report_file_number_once():
+    a = inbox.submit(MONEY, "ar", "dubai", True, reference="HRS-20261121-ABC123")
+    assert a["reference"] == "HRS-20261121-ABC123"
+    b = inbox.submit(MONEY, "ar", "dubai", True, reference="HRS-20261121-ABC123")  # sent twice
+    c = inbox.submit(MONEY, "ar", "dubai", True, reference="'; DROP TABLE reports; --")
+    assert b["reference"] != a["reference"] and c["reference"].startswith("HRS-") and len(inbox.queue()["items"]) == 3
+
+
 def test_token_is_stored_only_as_a_hash(tmp_path):
     r = inbox.submit(MONEY, "en", "sharjah", verified=False)
     raw = (tmp_path / "inbox.db").read_bytes()

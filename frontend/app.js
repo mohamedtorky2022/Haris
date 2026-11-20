@@ -379,6 +379,7 @@
     button(tr("print"), () => openReport(html, true));
     parts.push(actions);
     bubble(parts);
+    fileReference = r.reference;
     setChips([[tr("sendAuthority"), chooseEmirate], [tr("checkAnother"), askCheck], [tr("menuBack"), menu]]);
   }
 
@@ -386,6 +387,7 @@
   // Only the reference number and a private token are kept on this device, to follow the status.
   const EMIRATES = ["abu_dhabi", "dubai", "sharjah", "ajman", "umm_al_quwain", "ras_al_khaimah", "fujairah"];
   const myCases = () => { try { return JSON.parse(store.get("haris.cases") || "[]"); } catch { return []; } };
+  let fileReference = "";
   const refText = (ref) => `⁦${ref.replaceAll("-", "‑")}⁩`;
 
   function chooseEmirate() {
@@ -402,7 +404,7 @@
 
   async function sendToAuthority(emirate) {
     bubble(tr("uaePassDone"));
-    const r = await api("/api/reports", { ...draft, lang, emirate, consent: true, identity_confirmed: true });
+    const r = await api("/api/reports", { ...draft, lang, emirate, consent: true, identity_confirmed: true, reference: fileReference });
     if (!r) return;
     store.set("haris.cases", JSON.stringify([{ ref: r.reference, token: r.token, emirate }, ...myCases()].slice(0, 10)));
     bubble([el("p", { text: tr("sentAuthority", { ref: refText(r.reference), emirate: UI[lang].emirates[emirate], status: r.status_label }) }),

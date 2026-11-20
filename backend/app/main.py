@@ -212,6 +212,7 @@ class SubmitRequest(ReportRequest):
     emirate: Emirate
     consent: bool = False
     identity_confirmed: bool = False  # demo stand-in for UAE PASS
+    reference: str = Field("", max_length=24)  # the number on the victim's report file
 
 
 class ReplyRequest(BaseModel):
@@ -228,8 +229,8 @@ def submit_report(body: SubmitRequest):
     """Kept only because the victim pressed send after seeing the whole report; deleted after the retention period."""
     if not body.consent:
         raise HTTPException(400, "The victim must agree before the report is sent")
-    data = body.model_dump(exclude={"emirate", "consent", "identity_confirmed"})
-    return inbox.submit(data, body.lang, body.emirate, body.identity_confirmed)
+    data = body.model_dump(exclude={"emirate", "consent", "identity_confirmed", "reference"})
+    return inbox.submit(data, body.lang, body.emirate, body.identity_confirmed, body.reference)
 
 
 def _report_token(request: Request) -> str:

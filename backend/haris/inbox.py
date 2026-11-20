@@ -122,17 +122,25 @@ def _hash(token: str) -> str:
     return hashlib.sha256(token.encode()).hexdigest()
 
 
-def submit(data: dict, lang: str, emirate: str, verified: bool) -> dict:
-    """Save a report the victim agreed to send. Returns the reference and the private status token."""
+REFERENCE = re.compile(r"HRS-\d{8}-[0-9A-F]{6}")
+
+
+def submit(data: dict, lang: str, emirate: str, verified: bool, reference: str = "") -> dict:
+    """Save a report the victim agreed to send. Returns the reference and the private status token.
+
+    The reference of the report file the victim already has is kept, so one case has one number.
+    """
     if emirate not in EMIRATES:
         raise ValueError("unknown emirate")
     fields = _fields(data)
     now = time.time()
-    ref = f"HRS-{datetime.now(timezone.utc):%Y%m%d}-{secrets.token_hex(3).upper()}"
+    ref = reference if REFERENCE.fullmatch(reference or "") else ""
     token = secrets.token_urlsafe(18)
     priority = triage(fields)
     events = [{"ts": now, "kind": "submitted"}]
     with closing(_connect()) as con, con:
+        if not ref or _row(con, ref):  # missing, malformed or already sent: a fresh number
+            ref = f"HRS-{datetime.now(timezone.utc):%Y%m%d}-{secrets.token_hex(3).upper()}"
         con.execute("INSERT INTO reports VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                     (ref, now, now, "new", priority, emirate, fields["incident_type"], lang, int(verified),
                      _hash(token), json.dumps(fields, ensure_ascii=False), json.dumps(events)))
