@@ -11,3 +11,5 @@ docs/video/out/
 data/inbox.db
 data/inbox.db-*
 tools/
+data/alerts.db
+data/alerts.db-*

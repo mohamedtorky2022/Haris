@@ -18,7 +18,7 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from haris import __version__, inbox, llm, radar, whatsapp
+from haris import __version__, alerts, inbox, llm, radar, whatsapp
 from haris.detector import analyze
 from haris.intake import MAX_IMAGES, extract
 from haris.playbooks import get_playbook, list_playbooks
@@ -170,12 +170,23 @@ def authority_campaigns(request: Request):
 
 
 @app.post("/api/authority/campaigns/{campaign_id}")
-def authority_decide(campaign_id: str, body: Decision, request: Request):
+def authority_decide(campaign_id: str, body: Decision, request: Request, background: BackgroundTasks):
     require_authority(request)
     result = radar.decide(campaign_id, body.status)
     if not result:
         raise HTTPException(status_code=404, detail="Unknown campaign")
+    if result.get("broadcast_id"):
+        # The official warning goes to every WhatsApp subscriber, after this answer is sent.
+        background.add_task(alerts.deliver, result["broadcast_id"])
+        result["whatsapp_alert"] = {**alerts.counts(), "mode": alerts.mode()}
     return result
+
+
+@app.get("/api/authority/alerts")
+def authority_alerts(request: Request):
+    """WhatsApp alert subscribers and the last deliveries, for the radar dashboard."""
+    require_authority(request)
+    return {"subscribers": alerts.counts(), "mode": alerts.mode(), "sends": alerts.history()}
 
 
 @app.get("/api/playbooks")

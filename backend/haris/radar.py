@@ -248,14 +248,16 @@ def decide(campaign_id: str, status: str) -> dict | None:
     cfg = _settings()
     now = time.time()
     keys = [(k["kind"], k["value"]) for k in found["keys"]]
+    broadcast_id = None
     with closing(_connect(cfg["db"])) as con, con:
         con.executemany("INSERT OR REPLACE INTO decisions (kind, value, status, decided_at) VALUES (?, ?, ?, ?)",
                         [(k, v, status, now) for k, v in keys])
         if status == "confirmed":
-            con.execute("INSERT INTO broadcasts (created_at, category, keys) VALUES (?, ?, ?)",
-                        (now, found["category"], json.dumps(keys)))
+            broadcast_id = con.execute("INSERT INTO broadcasts (created_at, category, keys) VALUES (?, ?, ?)",
+                                       (now, found["category"], json.dumps(keys))).lastrowid
     blocks = [i for i in found["identifiers"] if i["kind"] in ("phone", "domain")] if status == "confirmed" else []
-    return {"campaign": campaign_id, "status": status, "block_requests": blocks, "simulated": True}
+    return {"campaign": campaign_id, "status": status, "block_requests": blocks, "simulated": True,
+            "broadcast_id": broadcast_id}
 
 
 def _describe(keys: list, lang: str) -> str:
@@ -276,6 +278,12 @@ def _broadcast_view(row, lang: str) -> dict:
         "demo": TEXT["demo"][lang],
         "keys": keys,
     }
+
+
+def broadcast_view(broadcast_id: int, lang: str = "ar") -> dict | None:
+    with closing(_connect(_settings()["db"])) as con:
+        row = con.execute("SELECT * FROM broadcasts WHERE id = ?", (broadcast_id,)).fetchone()
+    return _broadcast_view(row, lang) if row else None
 
 
 def broadcasts(lang: str = "ar") -> list[dict]:

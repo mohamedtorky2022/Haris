@@ -24,7 +24,7 @@ import urllib.error
 import urllib.request
 from collections import OrderedDict, defaultdict, deque
 
-from . import radar
+from . import alerts, radar
 from .detector import analyze
 from .playbooks import contacts, get_playbook, list_playbooks
 from .text import SUPPORTED_LANGS, detect_language, normalize
@@ -264,7 +264,23 @@ def report(token: str, sender: str, lang: str) -> list[dict]:
     if campaign.get("people", 0) > 1:
         hours = radar._settings()["window"] // 3600
         body += "\n\n👥 " + radar.TEXT["reported"][lang].format(n=campaign["people"], h=hours)
-    return _with_buttons(body, [_button("again", lang), _button("guide", lang)], lang)
+    buttons = [_button("again", lang)]
+    if not alerts.is_subscribed(sender):
+        buttons.append(_button("alerts", lang))  # someone who reports a scam is likely to want the warnings
+    return _with_buttons(body, buttons + [_button("guide", lang)], lang)
+
+
+def alerts_on(sender: str, lang: str) -> list[dict]:
+    """The user asked for official warnings: keep their number until they send «إيقاف»."""
+    t = alerts.TEXT[lang]
+    new = alerts.subscribe(sender, lang)
+    return _with_buttons(t["subscribed"] if new else t["already"], [_button("check", lang), _button("guide", lang)], lang)
+
+
+def alerts_off(sender: str, lang: str) -> list[dict]:
+    t = alerts.TEXT[lang]
+    gone = alerts.unsubscribe(sender)
+    return _with_buttons(t["stopped"] if gone else t["not_subscribed"], [_button("alerts", lang), _button("check", lang)], lang)
 
 
 def handle(msg: dict) -> list[dict]:
@@ -274,6 +290,11 @@ def handle(msg: dict) -> list[dict]:
         lang = detect_language(text) if text else "ar"
         if is_greeting(text):
             return welcome(lang)
+        wanted = alerts.command(text)
+        if wanted == "subscribe":
+            return alerts_on(msg["from"], lang)
+        if wanted == "stop":
+            return alerts_off(msg["from"], lang)
         return check(text, lang)
     if msg["reply_id"]:
         action, _, rest = msg["reply_id"].partition(":")
@@ -285,7 +306,11 @@ def handle(msg: dict) -> list[dict]:
         if action == "scammed":
             return scammed_menu(lang)
         if action == "guide":
-            return _with_buttons(TEXT[lang]["guide"], [_button("check", lang), _button("scammed", lang)], lang)
+            return _with_buttons(TEXT[lang]["guide"], [_button("check", lang), _button("scammed", lang), _button("alerts", lang)], lang)
+        if action == "alerts":
+            return alerts_on(msg["from"], lang)
+        if action == "stop":
+            return alerts_off(msg["from"], lang)
         if action == "pb":
             return playbook(arg, lang)
         if action == "report":

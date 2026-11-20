@@ -23,26 +23,35 @@
   </header>
 
   <main>
-    <section class="explain">
-      <p><strong>كيف تعمل:</strong> كل بلاغ يحمل رقم المرسل ورابطه ونص الرسالة بعد إخفاء البيانات الشخصية، دون أي بيانات عن المُبلِّغ. تُجمع البلاغات المتشابهة في حملة واحدة.</p>
-      <ul class="steps">
-        <li><span class="st warning">تحذير في «حارس»</span> 3 مُبلِّغين أو أكثر خلال 24 ساعة: يرى من يفحص الرسالة عدد البلاغات.</li>
-        <li><span class="st escalated">إنذار للجهة</span> 10 مُبلِّغين، أو 3 مع رابط يقلّد جهة رسمية: تحتاج مراجعتكم.</li>
-        <li><span class="st confirmed">تم التعميم</span> بعد اعتمادكم فقط: تحذير رسمي لكل مستخدمي «حارس»، وطلب حظر لشركات الاتصالات.</li>
-      </ul>
-    </section>
-
     <form id="login" class="login" hidden>
       <label for="token">رمز الدخول للجهة المختصة</label>
       <input id="token" type="password" autocomplete="off">
       <button type="submit">دخول</button>
     </form>
 
+    <section class="explain">
+      <p><strong>كيف تعمل:</strong> كل بلاغ يحمل رقم المرسل ورابطه ونص الرسالة بعد إخفاء البيانات الشخصية، دون أي بيانات عن المُبلِّغ. تُجمع البلاغات المتشابهة في حملة واحدة.</p>
+      <ul class="steps">
+        <li><span class="st warning">تحذير في «حارس»</span> 3 مُبلِّغين أو أكثر خلال 24 ساعة: يرى من يفحص الرسالة عدد البلاغات.</li>
+        <li><span class="st escalated">إنذار للجهة</span> 10 مُبلِّغين، أو 3 مع رابط يقلّد جهة رسمية: تحتاج مراجعتكم.</li>
+        <li><span class="st confirmed">تم التعميم</span> بعد اعتمادكم فقط: تحذير رسمي لكل مستخدمي «حارس»، وإشعار على واتساب لكل المشتركين في التنبيهات بلغتهم، وطلب حظر لشركات الاتصالات.</li>
+      </ul>
+    </section>
+
     <section class="counters" aria-live="polite">
       <div><b id="n-escalated">0</b><span>إنذار للجهة</span></div>
       <div><b id="n-warning">0</b><span>تحذير في «حارس»</span></div>
       <div><b id="n-confirmed">0</b><span>تم التعميم</span></div>
       <div><b id="n-collecting">0</b><span>قيد التجميع</span></div>
+    </section>
+
+    <section class="wa" aria-live="polite">
+      <div class="wa-head">
+        <h2>📲 تنبيهات واتساب</h2>
+        <p><b id="wa-subs">0</b> مشتركاً طلبوا التحذيرات الرسمية <span id="wa-langs"></span></p>
+        <span id="wa-mode" class="wa-mode"></span>
+      </div>
+      <ol id="wa-sends" class="wa-sends"></ol>
     </section>
 
     <p id="updated" class="updated"></p>

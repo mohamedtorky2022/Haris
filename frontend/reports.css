@@ -69,3 +69,16 @@ textarea:focus-visible, select:focus-visible, .case:focus-visible, .tabs a:focus
 }
 .login .err { flex-basis: 100%; margin: 4px 0 0; color: var(--high); font-size: 14px; }
 .login { flex-wrap: wrap; margin: 0 0 16px; border-color: var(--brand); }
+
+/* WhatsApp alerts box on the radar page */
+.wa { background: #fff; border: 1px solid var(--line); border-inline-start: 6px solid #25d366; border-radius: 12px; padding: 12px 16px; margin: 0 0 12px; }
+.wa-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.wa-head h2 { margin: 0; font-size: 17px; }
+.wa-head p { margin: 0; font-size: 14px; }
+.wa-head b { font-size: 20px; color: var(--brand); }
+.wa-mode { margin-inline-start: auto; font-size: 12px; font-weight: 700; color: var(--muted); background: var(--bg); border-radius: 999px; padding: 2px 10px; }
+.wa-sends { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; font-size: 13px; }
+.wa-sends li { display: grid; gap: 2px; border-top: 1px solid var(--line); padding-top: 6px; }
+.wa-sends li span { color: var(--muted); }
+.wa-sends li.running span { color: var(--brand); font-weight: 600; }
+.wa-sends li.empty { color: var(--muted); border-top: 0; }

@@ -290,14 +290,15 @@
   "blocked": "Blocked the scammer"
  },
  "whatsapp": {
-  "welcome": "Hello, I'm Haris 🛡️\nForward me any suspicious message, or paste its text or link here, and I'll tell you how risky it is and what to do.\n\nI don't keep your messages, and I hide your personal details before checking.",
+  "welcome": "Hello, I'm Haris 🛡️\nForward me any suspicious message, or paste its text or link here, and I'll tell you how risky it is and what to do.\n\nI don't keep your messages, and I hide your personal details before checking.\n\n🔔 To get the authority's warnings about scam campaigns, send: ALERTS",
   "footer": "An AI assistant, not an official body · Emergency 999",
   "buttons": {
    "check": "Check a message",
    "again": "Check another",
    "scammed": "I've been scammed",
    "guide": "How to use Haris",
-   "report": "Report to protect"
+   "report": "Report to protect",
+   "alerts": "🔔 Get alerts"
   },
   "ask_check": "Send the suspicious message or link here, or forward it to me from the chat where you got it.",
   "reasons_heading": "Why:",
@@ -325,7 +326,14 @@
   "reported": "Thank you, your report was received 🙏\nEvery report helps spot a campaign early, and the authority decides on any official warning.",
   "report_expired": "This report has expired. Send the suspicious message again, then tap \"Report to protect\".",
   "unsupported": "On WhatsApp I can check text messages and links for now. Copy the message text and send it here. To report with screenshots or voice, use the Haris app.",
-  "too_many": "I got a lot of messages in one minute. Please wait a little and send again."
+  "too_many": "I got a lot of messages in one minute. Please wait a little and send again.",
+  "alerts": {
+   "subscribed": "You're subscribed 🔔\nOfficial warnings the authority approves about scam campaigns spreading in the UAE will reach you here, in your language.\n\nYour number is kept for this only. To stop at any time, send: STOP",
+   "already": "You're already subscribed 🔔\nTo stop, send: STOP",
+   "stopped": "Alerts stopped, and your number was removed from the list. To start again, send: ALERTS",
+   "not_subscribed": "You're not subscribed. To get official warnings, send: ALERTS",
+   "stop_line": "To stop alerts, send: STOP"
+  }
  },
  "inbox": {
   "status": {

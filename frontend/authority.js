@@ -29,13 +29,19 @@
     return node;
   }
 
+  // Arabic counting: one, two (dual), 3-10 (plural), 11 and more (singular).
+  const count = (n, [one, two, few, many]) => (n === 1 ? one : n === 2 ? two : n <= 10 ? `${n} ${few}` : `${n} ${many}`);
   const ago = (ts) => {
     const m = Math.max(0, Math.round((Date.now() / 1000 - ts) / 60));
     if (m < 1) return "الآن";
-    if (m < 60) return `قبل ${m} دقيقة`;
+    if (m < 60) return `قبل ${count(m, ["دقيقة", "دقيقتين", "دقائق", "دقيقة"])}`;
     const h = Math.round(m / 60);
-    return h < 24 ? `قبل ${h} ساعة` : `قبل ${Math.round(h / 24)} يوم`;
+    if (h < 24) return `قبل ${count(h, ["ساعة", "ساعتين", "ساعات", "ساعة"])}`;
+    return `قبل ${count(Math.round(h / 24), ["يوم", "يومين", "أيام", "يوماً"])}`;
   };
+  const num = (n) => n.toLocaleString("ar-AE");
+  const LANG = { ar: "العربية", en: "الإنجليزية", ur: "الأردية", hi: "الهندية" };
+  const MODE = { simulated: "إرسال محاكى: واتساب غير مربوط", text: "واتساب مربوط: رسالة نصية", template: "واتساب مربوط: قالب معتمد من Meta" };
   const shown = (i) => (i.kind === "phone" ? `+${i.value}` : i.value);
 
   async function call(path, body) {
@@ -66,9 +72,10 @@
 
     if (results[c.id]) {
       const r = results[c.id];
-      node.append(el("p", { class: "done", text: r.length
-        ? `صدر التحذير الرسمي، وأُرسل طلب حظر (محاكاة) لشركات الاتصالات عن: ${r.map(shown).join("، ")}`
+      node.append(el("p", { class: "done", text: r.blocks.length
+        ? `صدر التحذير الرسمي، وأُرسل طلب حظر (محاكاة) لشركات الاتصالات عن: ${r.blocks.map(shown).join("، ")}`
         : "صدر التحذير الرسمي لكل مستخدمي «حارس»." }));
+      if (r.wa) node.append(el("p", { class: "done", text: `📲 بدأ إرسال التحذير على واتساب إلى ${num(r.wa.total)} مشتركاً بلغاتهم. التقدّم في «تنبيهات واتساب» أعلاه.` }));
     }
     if (c.status !== "confirmed" && c.status !== "dismissed") {
       const actions = el("div", { class: "actions" });
@@ -95,7 +102,7 @@
   async function decide(id, status) {
     try {
       const r = await call(`/api/authority/campaigns/${encodeURIComponent(id)}`, { status });
-      if (status === "confirmed") results[id] = r.block_requests;
+      if (status === "confirmed") results[id] = { blocks: r.block_requests, wa: r.whatsapp_alert };
     } catch { /* shown on next refresh */ }
     refresh();
   }
@@ -108,7 +115,26 @@
       if (n) n.textContent = items.filter((c) => c.status === k).length;
     }
     list.replaceChildren(...(items.length ? items.map(card) : [el("p", { class: "empty", text: "لا توجد بلاغات خلال آخر 24 ساعة." })]));
+    showAlerts();
     document.getElementById("updated").textContent = `آخر تحديث: ${new Date().toLocaleTimeString("ar-AE")} · يتحدّث تلقائياً كل 5 ثوانٍ`;
+  }
+
+  async function showAlerts() {
+    let a;
+    try { a = await call("/api/authority/alerts"); } catch { return; }
+    const subs = a.subscribers;
+    document.getElementById("wa-subs").textContent = num(subs.total);
+    document.getElementById("wa-langs").textContent = subs.total
+      ? `(${Object.entries(subs.by_lang).filter(([, n]) => n).map(([l, n]) => `${LANG[l]} ${num(n)}`).join("، ")})` : "";
+    document.getElementById("wa-mode").textContent = MODE[a.mode] || a.mode;
+    document.getElementById("wa-sends").replaceChildren(...(a.sends.length ? a.sends.map((x) => {
+      const reached = x.sent + x.simulated;
+      const how = x.mode === "simulated" ? "محاكاة" : `وصل ${num(x.sent)}${x.failed ? `، تعذّر ${num(x.failed)}` : ""}${x.simulated ? `، ومحاكاة ${num(x.simulated)} تجريبي` : ""}`;
+      return el("li", { class: x.done ? "" : "running" }, [
+        el("strong", { text: x.title }),
+        el("span", { text: `${ago(x.created_at)} · ${num(reached)} من ${num(x.total)} مشتركاً · ${how}${x.done ? "" : " · جارٍ الإرسال…"}` }),
+      ]);
+    }) : [el("li", { class: "empty", text: "لم يُرسل أي تحذير بعد. اعتماد أي حملة يرسله تلقائياً." })]));
   }
 
   login.addEventListener("submit", (e) => {
