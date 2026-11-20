@@ -112,7 +112,8 @@
       ["طريقة الدفع", both(tr.payment_method, f.payment_method)],
       ["الأدلة", f.evidence_count ? `${f.evidence_count} لقطة شاشة في ملف المُبلّغ (لا تُحفظ هنا)` : "—"],
       ["لغة المُبلّغ", LANG[d.lang] || d.lang],
-      ["المُبلّغ", [f.reporter_name, f.reporter_contact].filter(Boolean).join(" · ") || "من الهوية الرقمية عند الربط"],
+      // \u2066…\u2069 keeps a phone number or e-mail left-to-right inside the Arabic line.
+      ["المُبلّغ", [f.reporter_name, f.reporter_contact && `\u2066${f.reporter_contact}\u2069`].filter(Boolean).join(" · ") || "من الهوية الرقمية عند الربط"],
     ];
     const dl = el("dl", { class: "facts" });
     for (const [k, v] of pairs) dl.append(el("dt", { text: k }), el("dd", { text: v }));
@@ -137,7 +138,9 @@
     ];
     const v = d.fields.visitor;
     if (v) {
-      const who = ["🧳 المُبلّغ زائر وليس مقيماً", v.nationality ? `الجنسية: ${v.nationality}` : "", DEPARTURE[v.departure]].filter(Boolean).join(" · ");
+      const nat = (d.fields.translation || {}).nationality;
+      const who = ["🧳 المُبلّغ زائر وليس مقيماً", v.nationality ? `الجنسية: ${nat && nat !== v.nationality ? `${nat} (${v.nationality})` : v.nationality}` : "",
+                   DEPARTURE[v.departure]].filter(Boolean).join(" · ");
       parts.push(el("div", { class: `visitor-banner${v.departure === "within_3_days" ? " soon" : ""}` }, [
         el("strong", { text: who }),
         el("span", { text: `يُقترح تحويله لشرطة السياحة في ${EMIRATE[d.emirate]}، فهي تتابع قضايا الزوار حتى بعد مغادرتهم.${v.departure === "within_3_days" ? " تقدّم البلاغ في الطابور لأن المُبلّغ يغادر قريباً: خذ إفادته وبيانات بنكه قبل سفره." : ""}` }),

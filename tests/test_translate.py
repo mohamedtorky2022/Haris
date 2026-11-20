@@ -119,3 +119,10 @@ def test_an_invented_token_gets_one_more_try(monkeypatch):
     calls = fake_model(monkeypatch, lambda s, m: next(answers))
     out = translate.translate("کوئی مجھے روز گالیاں بھیج رہا ہے", "ur", "ar")
     assert out["ok"] and out["text"] == "يرسل لي شتائم كل يوم" and "none" in calls[1][0]
+
+
+def test_a_visitors_nationality_is_translated_too(monkeypatch):
+    fake_model(monkeypatch, lambda s, m: {"British": "بريطاني"}.get(m, "[ع] " + m))
+    r = inbox.submit({"incident_type": "money_sent", "description": "my card was charged"}, "en", "dubai", True,
+                     visitor={"nationality": "British", "departure": "within_3_days"})
+    assert inbox.detail(r["reference"])["fields"]["translation"]["nationality"] == "بريطاني"

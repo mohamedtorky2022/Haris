@@ -138,6 +138,7 @@ def to_arabic(fields: dict, lang: str) -> dict | None:
     story = translate(fields["description"], lang, "ar")
     short = [("occurred_at", fields["occurred_at"]), ("payment_method", fields["payment_method"])]
     short += [("steps_taken", s) for s in fields["steps_taken"]]
+    short += [("nationality", (fields.get("visitor") or {}).get("nationality", ""))]
     short = [(k, v) for k, v in short if v]
     lines = translate_lines([v for _, v in short], lang, "ar") if short else {"lines": [], "ok": True}
     got = lines["lines"] if lines["ok"] else []
