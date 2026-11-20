@@ -53,10 +53,16 @@ def translate(text: str, source: str, target: str) -> dict:
     system = PROMPT.format(source=llm.LANG_NAMES.get(source, source), target=llm.LANG_NAMES.get(target, target),
                            style=STYLE.get(target, ""))
     timeout = float(os.getenv("HARIS_LLM_TIMEOUT", "12"))
-    out = _read(llm._call(system, f"<text>\n{masked}\n</text>", 1600, timeout), masked, kept)
-    if out and _foreign_words(out, text, target):  # one more try, telling the model what went wrong
-        again = system + f"\n\nYour last answer left words untranslated ({', '.join(_foreign_words(out, text, target))}). Translate them too."
-        out = _read(llm._call(again, f"<text>\n{masked}\n</text>", 1600, timeout), masked, kept)
+    reply = llm._call(system, f"<text>\n{masked}\n</text>", 1600, timeout)
+    out = _read(reply, masked, kept)
+    problem = ""
+    if reply and out is None:
+        tokens = " ".join(f"[#{i}]" for i in range(1, len(kept) + 1)) or "none"
+        problem = f"Your last answer changed the tokens. The text has exactly these tokens: {tokens}. Copy them, add none."
+    elif out and _foreign_words(out, text, target):
+        problem = f"Your last answer left words untranslated ({', '.join(_foreign_words(out, text, target))}). Translate them too."
+    if problem:  # one more try, telling the model what went wrong
+        out = _read(llm._call(system + "\n\n" + problem, f"<text>\n{masked}\n</text>", 1600, timeout), masked, kept)
         if out and _foreign_words(out, text, target):
             out = None
     return {"text": out or "", "ok": bool(out), "engine": llm.model_name() if out else None}

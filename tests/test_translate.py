@@ -112,3 +112,10 @@ def test_merged_items_are_refused(monkeypatch):
     monkeypatch.setattr(llm, "enabled", lambda: True)
     monkeypatch.setattr(llm, "_call", lambda *a: json.dumps({"lines": ["اليوم صباحاً العملات المشفرة (USDT)"]}, ensure_ascii=False))
     assert not translate.translate_lines(["आज सुबह", "क्रिप्टो (USDT)"], "hi", "ar")["ok"]
+
+
+def test_an_invented_token_gets_one_more_try(monkeypatch):
+    answers = iter(["يرسل لي شتائم كل يوم [#1]", "يرسل لي شتائم كل يوم"])
+    calls = fake_model(monkeypatch, lambda s, m: next(answers))
+    out = translate.translate("کوئی مجھے روز گالیاں بھیج رہا ہے", "ur", "ar")
+    assert out["ok"] and out["text"] == "يرسل لي شتائم كل يوم" and "none" in calls[1][0]
