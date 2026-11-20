@@ -90,7 +90,7 @@ def test_when_translation_fails_the_case_is_flagged(monkeypatch):
 def test_an_untranslated_english_word_gets_one_more_try(monkeypatch):
     answers = iter(["أخذوا المال تحت pretext الوظيفة", "أخذوا المال بحجة الوظيفة"])
     calls = fake_model(monkeypatch, lambda s, m: next(answers))
-    out = translate.translate("They took the money with the job as a pretext on WhatsApp", "en", "ar")
+    out = translate.translate("नौकरी के नाम पर पैसे लिए", "hi", "ar")
     assert out["ok"] and out["text"] == "أخذوا المال بحجة الوظيفة" and len(calls) == 2
     assert "pretext" in calls[1][0]
 
