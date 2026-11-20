@@ -91,8 +91,10 @@ def test_routes_need_consent_and_the_authority(monkeypatch):
     pytest.importorskip("httpx")
     from fastapi.testclient import TestClient
 
+    from app import main
     from app.main import app
 
+    monkeypatch.setattr(main, "_hits", main.defaultdict(main.deque))  # its own per-minute API limit
     client = TestClient(app)
     body = {**MONEY, "lang": "ar", "emirate": "dubai", "identity_confirmed": True}
     assert client.post("/api/reports", json=body).status_code == 400  # no consent
