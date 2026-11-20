@@ -150,5 +150,6 @@
  "qAddInfo": "Type the information asked for, then send it.",
  "infoSent": "Your information reached the authority.",
  "refresh": "Refresh status",
- "caseGone": "A report no longer exists: it was deleted after the retention period."
+ "caseGone": "A report no longer exists: it was deleted after the retention period.",
+ "noteOriginal": "Original (Arabic): {text}"
 }

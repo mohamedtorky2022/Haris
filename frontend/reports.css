@@ -82,3 +82,16 @@ textarea:focus-visible, select:focus-visible, .case:focus-visible, .tabs a:focus
 .wa-sends li span { color: var(--muted); }
 .wa-sends li.running span { color: var(--brand); font-weight: 600; }
 .wa-sends li.empty { color: var(--muted); border-top: 0; }
+
+/* The reporter's language and the translations */
+.lang-chip { display: inline-block; font-size: 12px; font-weight: 700; color: var(--brand-dark); background: #e7f1fb; border-radius: 999px; padding: 1px 8px; margin-inline-start: 6px; vertical-align: middle; }
+.lang-chip.warn { color: #8a4b00; background: #f9eeda; }
+.lang-banner { margin: 0 0 12px; padding: 8px 12px; border-radius: 8px; font-size: 14px; font-weight: 600; background: #e7f1fb; color: #0b3d6e; }
+.lang-banner.warn { background: #f9eeda; color: #8a4b00; }
+blockquote.translated { border-inline-start: 4px solid #4a90d9; }
+details.original { margin: 6px 0 0; font-size: 13px; }
+details.original summary { cursor: pointer; color: var(--muted); }
+details.original blockquote { margin-top: 6px; opacity: 0.85; }
+.timeline .note.small { font-size: 12px; color: var(--muted); background: transparent; padding: 2px 10px; }
+.timeline .note.translated { border-inline-start: 3px solid #4a90d9; }
+.toolbar .by-lang { font-size: 12px; color: var(--muted); }

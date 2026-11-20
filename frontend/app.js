@@ -444,6 +444,7 @@
       el("ol", { class: "case-events" }, s.events.map((e) => el("li", {}, [
         el("span", { text: `${new Date(e.ts * 1000).toLocaleString(lang === "ar" ? "ar-AE" : lang, { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short" })} · ${e.label}` }),
         e.note ? el("q", { dir: "auto", text: e.note }) : null,
+        e.original ? el("small", { class: "case-original", dir: "auto", text: tr("noteOriginal", { text: e.original }) }) : null,
       ]))),
     ]);
   }

@@ -14,6 +14,7 @@ import argparse
 import json
 import os
 import random
+import time
 import sys
 from contextlib import closing
 from datetime import datetime
@@ -22,7 +23,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
 
-from haris import inbox  # noqa: E402
+
+def _load_env(path: Path) -> None:
+    """Read KEY=value lines from .env, as the server does with --env-file, without overriding the shell."""
+    if not path.exists():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        key, sep, value = line.strip().partition("=")
+        if sep and key and not key.startswith("#") and value and key not in os.environ:
+            os.environ[key] = value.strip().strip('"').strip("'")
+
+
+_load_env(ROOT / ".env")  # the AI key, so the demo reports are translated like real ones
+
+from haris import inbox, llm  # noqa: E402
 from haris.report import UAE_TIME  # noqa: E402
 
 REPORTS = [
@@ -77,13 +91,25 @@ EXTRA = [
     ("ar", "suspicious_only", "اليوم", "رسالة تقول إن حسابي في «الإقامة» سيُوقف وفيها رابط، لم أضغط عليه.", "", ["https://icp-update-demo{n}.top"]),
     ("en", "suspicious_only", "today", "A text about a parcel at the post office with a link. I didn't open it.", "", ["https://emirates-post-demo{n}.top"]),
 ]
+# The officer writes in Arabic; Haris translates for a victim who wrote in another language.
 NOTES = {
-    "request_info": ["أرسل اسم البنك وآخر 4 أرقام من البطاقة ووقت الخصم.", "Please send a screenshot of the chat with the full number.",
-                     "أرسل رابط الحساب المنتحِل كما يظهر في المتصفح.", "Send the date and time of the last threatening message."],
-    "close": ["أُبلغ البنك وجُمّد جزء من المبلغ. أُغلق البلاغ.", "The account was removed by the platform. Case closed.",
+    "request_info": ["أرسل اسم البنك وآخر 4 أرقام من البطاقة ووقت الخصم.", "أرسل لقطة شاشة للمحادثة يظهر فيها الرقم كاملاً.",
+                     "أرسل رابط الحساب المنتحِل كما يظهر في المتصفح.", "متى وصلتك آخر رسالة تهديد؟ اذكر التاريخ والوقت."],
+    "close": ["أُبلغ البنك وجُمّد جزء من المبلغ. أُغلق البلاغ.", "حذفت المنصة الحساب المنتحِل، وأُغلق البلاغ.",
               "حُوّل البلاغ إلى قسم الجرائم الإلكترونية في الإمارة المختصة."],
-    "reply": ["بنك تجريبي، البطاقة المنتهية بـ 0000، الساعة 8:12 م", "Sent the screenshot in the report file.", "الرابط هو الموجود في البلاغ نفسه."],
 }
+REPLIES = {
+    "ar": ["بنك تجريبي، البطاقة المنتهية بـ 0000، الساعة 8:12 م", "الرابط هو الموجود في البلاغ نفسه."],
+    "en": ["Demo Bank, card ending 0000, at 8:12 pm.", "The last message came yesterday at 11 pm."],
+    "ur": ["ڈیمو بینک، کارڈ کے آخری نمبر 0000، رات 8:12 بجے۔", "آخری پیغام کل رات 11 بجے آیا۔"],
+    "hi": ["डेमो बैंक, कार्ड के आख़िरी अंक 0000, रात 8:12 बजे।", "आख़िरी मैसेज कल रात 11 बजे आया।"],
+}
+PACE = float(os.getenv("HARIS_DEMO_PACE", "4.5"))  # seconds per AI call: Gemini's free tier allows about 15 a minute
+
+
+def wait(calls: int) -> None:
+    if llm.enabled() and PACE > 0:
+        time.sleep(PACE * calls)
 
 
 def _generated(count: int) -> list:
@@ -131,8 +157,13 @@ def main() -> None:
         if db.exists():
             db.unlink()
     made = 0
+    if llm.enabled():
+        print(f"Translating the reports that are not in Arabic with {llm.model_name()}, "
+              f"{PACE:g} s per call (HARIS_DEMO_PACE=0 to go faster and risk the free-tier limit)...\n")
     for lang, emirate, verified, data in REPORTS[: args.count]:
         r = inbox.submit(data, lang, emirate, verified)
+        if lang != "ar":
+            wait(2)
         made += 1
         print(f"{r['reference']}  {r['priority']:<10} {emirate:<15} {data['incident_type']}")
     hacked = next((i["reference"] for i in inbox.queue()["items"] if i["incident_type"] == "account_hacked"), None)
@@ -140,17 +171,22 @@ def main() -> None:
         inbox.act(hacked, "receive")
     for lang, emirate, verified, data, rng in _generated(max(0, args.count - len(REPORTS))):
         r = inbox.submit(data, lang, emirate, verified)
+        other = lang != "ar"
+        wait(2 if other else 0)
         ref, roll = r["reference"], rng.random()
         if roll < 0.25:
             inbox.act(ref, "receive")
         elif roll < 0.42:
             inbox.act(ref, "receive")
             inbox.act(ref, "request_info", rng.choice(NOTES["request_info"]))
+            wait(1 if other else 0)
             if rng.random() < 0.5:
-                inbox.reply(ref, r["token"], rng.choice(NOTES["reply"]))
+                inbox.reply(ref, r["token"], rng.choice(REPLIES[lang]))
+                wait(1 if other else 0)
         elif roll < 0.55:
             inbox.act(ref, "receive")
             inbox.act(ref, "close", rng.choice(NOTES["close"]))
+            wait(1 if other else 0)
         # Money lost "today" stays within the last hours; the rest spreads over 5 days.
         recent = r["priority"] in ("critical", "financial")
         ref = _backdate(ref, rng.uniform(0.2, 5) if recent else rng.uniform(1, 5 * 24))
@@ -159,6 +195,7 @@ def main() -> None:
     s = inbox.queue()["stats"]
     print(f"\n{made} fictional reports in {os.path.relpath(inbox._settings()['db'], ROOT)}: "
           f"{s['new']} new, {s['in_progress']} in progress, {s['closed']} closed, {s['urgent']} urgent or critical open")
+    print(f"Open cases by language: {s['by_lang']}; needing a translator: {s['needs_translator']}")
 
 
 if __name__ == "__main__":
