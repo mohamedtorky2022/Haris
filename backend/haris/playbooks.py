@@ -28,9 +28,19 @@ VISITOR_CONTACT_VALUES = [
     ("tourist_police_abu_dhabi", "+971 2 512 7777"),
 ]
 
+# For anyone under 18: the Ministry of Interior's Child Protection Centre (116111, and its Hemayati app)
+# and the Ministry of Education's Child Protection Unit (u.ae, November 2026). Haris guides a child,
+# but hands the report to these specialists instead of taking it into its own inbox.
+CHILD_CONTACT_VALUES = [
+    ("child_protection_moi", "116111"),
+    ("child_protection_moe", "80085"),
+]
+CHILD_PLAYBOOKS = ("extortion", "harassment", "privacy_violation")
+
 _labels = table("contacts")
 CONTACTS = [{"id": cid, "value": value, "label": _labels[cid]} for cid, value in CONTACT_VALUES]
 VISITOR_CONTACTS = [{"id": cid, "value": value, "label": _labels[cid]} for cid, value in VISITOR_CONTACT_VALUES]
+CHILD_CONTACTS = [{"id": cid, "value": value, "label": _labels[cid]} for cid, value in CHILD_CONTACT_VALUES]
 
 PLAYBOOKS: dict[str, dict] = {
     key: {
@@ -59,5 +69,13 @@ def get_playbook(playbook_id: str, lang: str) -> dict | None:
     pb = PLAYBOOKS.get(playbook_id)
     if not pb:
         return None
-    return {"id": playbook_id, "title": pb["title"][lang], "steps": pb["steps"][lang], "contacts": contacts(lang),
-            "visitor": visitor_help(lang)}
+    out = {"id": playbook_id, "title": pb["title"][lang], "steps": pb["steps"][lang], "contacts": contacts(lang),
+           "visitor": visitor_help(lang)}
+    if playbook_id in CHILD_PLAYBOOKS:
+        out["child"] = child_help(lang)
+    return out
+
+
+def child_help(lang: str) -> dict:
+    return {"title": section(lang, "child")["title"], "tips": section(lang, "child")["tips"],
+            "contacts": [{"id": c["id"], "value": c["value"], "label": c["label"][lang]} for c in CHILD_CONTACTS]}

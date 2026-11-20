@@ -184,3 +184,13 @@ def test_plans_carry_help_for_visitors():
         v = get_playbook("money_sent", lang)["visitor"]
         assert v["title"] and len(v["tips"]) == 4
         assert {c["id"] for c in v["contacts"]} == {"tourist_police_dubai", "tourist_police_dubai_email", "tourist_police_abu_dhabi"}
+
+
+def test_plans_about_children_point_to_child_protection():
+    from haris.playbooks import get_playbook
+
+    for lang in ("ar", "en", "ur", "hi", "ru"):
+        for pid in ("extortion", "harassment", "privacy_violation"):
+            c = get_playbook(pid, lang)["child"]
+            assert len(c["tips"]) == 3 and [x["value"] for x in c["contacts"]] == ["116111", "80085"]
+        assert "child" not in get_playbook("money_sent", lang)

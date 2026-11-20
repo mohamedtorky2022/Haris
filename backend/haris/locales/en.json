@@ -242,7 +242,9 @@
   "dubai_police": "Dubai Police (non-emergency)",
   "tourist_police_dubai": "Tourism Police - Dubai",
   "tourist_police_dubai_email": "Tourism Police e-mail - Dubai",
-  "tourist_police_abu_dhabi": "Tourism Police - Abu Dhabi"
+  "tourist_police_abu_dhabi": "Tourism Police - Abu Dhabi",
+  "child_protection_moi": "Child Protection Centre - Ministry of Interior (and the Hemayati app)",
+  "child_protection_moe": "Child Protection Unit - Ministry of Education"
  },
  "report": {
   "title": "Cybercrime incident report",
@@ -365,6 +367,14 @@
    "Passport lost, stolen, or a photo of it sent to a suspicious party? Tell the police, then your embassy.",
    "Keep the report number and file for your travel insurance and your bank at home.",
    "You don't need an Emirates ID: you can report with your passport, and the Tourism Police follows your case even after you leave the UAE."
+  ]
+ },
+ "child": {
+  "title": "Under 18?",
+  "tips": [
+   "It is not your fault: the person threatening or hurting you is. Tell a parent or an adult you trust, such as a school counsellor.",
+   "Don't send any more photos, and never attach a private photo of yourself to a report: screenshot only the person's account and messages.",
+   "The Child Protection Centre helps you in confidence on 116111 or in the Hemayati app, even if you can't tell your family."
   ]
  }
 }

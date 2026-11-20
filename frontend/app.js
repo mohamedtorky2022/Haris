@@ -165,6 +165,10 @@
     if (!pb) return;
     bubble([el("h3", { text: pb.title }), el("p", { text: tr("steps") }), list(pb.steps, true)]);
     bubble(contactsBlock(pb.contacts));
+    if (pb.child) {
+      // Haris guides a child; the report itself goes to the Child Protection Centre's specialists.
+      bubble([el("h3", { text: `🧒 ${pb.child.title}` }), list(pb.child.tips), ...contactsBlock(pb.child.contacts).slice(1)]);
+    }
     if (pb.visitor) {
       // A tourist has no Emirates ID and a card from a bank abroad: the same plan, a few things differ.
       const v = pb.visitor;
@@ -274,7 +278,9 @@
 
   function askStory() {
     phase = "story";
-    bubble(tr("qStory"));
+    // Extortion and leaked photos: the evidence is the account and the threats, never a private photo.
+    const sensitive = ["extortion", "privacy_violation"].includes(draft.incident_type);
+    bubble(sensitive ? [el("p", { text: tr("qStory") }), el("p", { class: "radar-line", text: tr("noPrivateImages") })] : tr("qStory"));
     showTools(true);
     input.focus();
   }
@@ -401,7 +407,19 @@
   function chooseResidency() {
     bubble(tr("residencyQ"));
     setChips([[tr("resident"), () => { visitor = null; chooseEmirate(); }],
-              [tr("visitor"), () => { visitor = {}; chooseEmirate(); }]]);
+              [tr("visitor"), () => { visitor = {}; chooseEmirate(); }],
+              [tr("minor"), minorHandoff]]);
+  }
+
+  // Under 18: Haris does not take a child's report into its own inbox. The Child Protection Centre's
+  // specialists handle it, or a parent sends it with their own identity.
+  function minorHandoff() {
+    visitor = null;
+    bubble([el("p", { text: tr("minorHandoff") }), ...contactsBlock([
+      { id: "child_protection_moi", value: "116111", label: tr("childMoi") },
+      { id: "child_protection_moe", value: "80085", label: tr("childMoe") },
+    ]).slice(1), el("p", { class: "note", text: tr("noPrivateImages") })]);
+    setChips([[tr("parentSends"), () => { bubble(tr("parentNote")); chooseEmirate(); }], [tr("menuBack"), menu]]);
   }
 
   function chooseEmirate() {

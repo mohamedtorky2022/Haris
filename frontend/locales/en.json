@@ -173,5 +173,12 @@
  "uaePassVisitor": "UAE PASS visitor (passport)",
  "passportVerify": "No UAE PASS: confirm with my passport",
  "passportDone": "✔ Identity confirmed with your passport (simulated).",
- "visitorSent": "🧳 You are visiting: the report will be suggested for the Tourism Police, who follow it even after you leave the UAE. Keep the report number for your travel insurance."
+ "visitorSent": "🧳 You are visiting: the report will be suggested for the Tourism Police, who follow it even after you leave the UAE. Keep the report number for your travel insurance.",
+ "minor": "I'm under 18",
+ "minorHandoff": "Thank you for speaking up. It is not your fault: the person threatening or hurting you is. To protect you, your report is handled by the Child Protection Centre's specialists, in full confidence, even if you can't tell your family. Your report file is ready: give it to them or to your parent.",
+ "childMoi": "Child Protection Centre - Ministry of Interior (and the Hemayati app)",
+ "childMoe": "Child Protection Unit - Ministry of Education",
+ "noPrivateImages": "🔒 Don't attach any private photo of yourself. Screenshot only the person's account and the threats.",
+ "parentSends": "My parent will send it now",
+ "parentNote": "Your parent continues from here and confirms their own identity."
 }
