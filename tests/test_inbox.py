@@ -149,3 +149,38 @@ def test_authority_dashboard_has_its_own_allowance(monkeypatch):
     monkeypatch.setattr(main, "_hits", main.defaultdict(main.deque))
     codes = [client.get("/api/authority/reports", headers={"x-authority-token": "0000"}).status_code for _ in range(4)]
     assert codes[:3] == [401, 401, 401] and codes[3] == 429
+
+
+def test_a_visitor_reports_without_an_emirates_id():
+    r = inbox.submit(MONEY, "en", "dubai", True, visitor={"nationality": "British", "departure": "within_week",
+                                                         "contact_abroad": "visitor@example.com", "identity": "passport"})
+    d = inbox.detail(r["reference"])
+    assert d["visitor"] and d["fields"]["visitor"] == {"nationality": "British", "departure": "within_week",
+                                                      "contact_abroad": "visitor@example.com", "identity": "passport"}
+    odd = inbox.submit(MONEY, "en", "dubai", True, visitor={"departure": "tomorrow?", "identity": "selfie"})
+    assert inbox.detail(odd["reference"])["fields"]["visitor"]["departure"] == "unknown"
+    assert inbox.detail(odd["reference"])["fields"]["visitor"]["identity"] is None
+
+
+def test_a_visitor_leaving_soon_moves_up_one_step():
+    resident = inbox.submit({"incident_type": "account_hacked"}, "ar", "dubai", True)
+    leaving = inbox.submit({"incident_type": "account_hacked"}, "en", "dubai", True, visitor={"departure": "within_3_days"})
+    money = inbox.submit(MONEY, "ar", "dubai", True)
+    crit = inbox.submit({"incident_type": "harassment", "description": "قال سأقتلك"}, "ar", "dubai", True)
+    staying = inbox.submit({"incident_type": "account_hacked"}, "en", "dubai", True, visitor={"departure": "later"})
+    order = [i["reference"] for i in inbox.queue()["items"]]
+    # critical stays first; the medium case of a visitor leaving in 3 days sits with the financial ones, ahead of them
+    assert order.index(crit["reference"]) == 0
+    assert order.index(leaving["reference"]) < order.index(money["reference"]) < order.index(resident["reference"])
+    assert order.index(staying["reference"]) > order.index(money["reference"])
+    s = inbox.queue()["stats"]
+    assert s["visitors"] == 2 and s["leaving_soon"] == 1
+
+
+def test_plans_carry_help_for_visitors():
+    from haris.playbooks import get_playbook
+
+    for lang in ("ar", "en", "ur", "hi"):
+        v = get_playbook("money_sent", lang)["visitor"]
+        assert v["title"] and len(v["tips"]) == 4
+        assert {c["id"] for c in v["contacts"]} == {"tourist_police_dubai", "tourist_police_dubai_email", "tourist_police_abu_dhabi"}

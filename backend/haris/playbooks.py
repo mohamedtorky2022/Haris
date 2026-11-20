@@ -20,8 +20,17 @@ CONTACT_VALUES = [
     ("dubai_police", "901"),
 ]
 
+# For tourists and other visitors (u.ae and Dubai Police, November 2026). Dubai's Tourism Police follows a
+# visitor's case even after they have left the country.
+VISITOR_CONTACT_VALUES = [
+    ("tourist_police_dubai", "+971 50 453 8107"),
+    ("tourist_police_dubai_email", "TouristPolice@dubaipolice.gov.ae"),
+    ("tourist_police_abu_dhabi", "+971 2 512 7777"),
+]
+
 _labels = table("contacts")
 CONTACTS = [{"id": cid, "value": value, "label": _labels[cid]} for cid, value in CONTACT_VALUES]
+VISITOR_CONTACTS = [{"id": cid, "value": value, "label": _labels[cid]} for cid, value in VISITOR_CONTACT_VALUES]
 
 PLAYBOOKS: dict[str, dict] = {
     key: {
@@ -36,6 +45,12 @@ def contacts(lang: str) -> list[dict]:
     return [{"id": c["id"], "value": c["value"], "label": c["label"][lang]} for c in CONTACTS]
 
 
+def visitor_help(lang: str) -> dict:
+    """What changes for a tourist: a card from a bank abroad, the embassy, travel insurance, the Tourism Police."""
+    return {"title": section(lang, "visitor")["title"], "tips": section(lang, "visitor")["tips"],
+            "contacts": [{"id": c["id"], "value": c["value"], "label": c["label"][lang]} for c in VISITOR_CONTACTS]}
+
+
 def list_playbooks(lang: str) -> list[dict]:
     return [{"id": key, "title": pb["title"][lang]} for key, pb in PLAYBOOKS.items()]
 
@@ -44,4 +59,5 @@ def get_playbook(playbook_id: str, lang: str) -> dict | None:
     pb = PLAYBOOKS.get(playbook_id)
     if not pb:
         return None
-    return {"id": playbook_id, "title": pb["title"][lang], "steps": pb["steps"][lang], "contacts": contacts(lang)}
+    return {"id": playbook_id, "title": pb["title"][lang], "steps": pb["steps"][lang], "contacts": contacts(lang),
+            "visitor": visitor_help(lang)}

@@ -264,11 +264,20 @@ def report(body: ReportRequest):
 
 # --- Report inbox (demo): the victim sends a report to the authority --------
 
+class VisitorInfo(BaseModel):
+    """A tourist or visitor without an Emirates ID."""
+    nationality: str = Field("", max_length=60)
+    departure: Literal["within_3_days", "within_week", "later", "unknown"] = "unknown"
+    contact_abroad: str = Field("", max_length=120)  # e-mail or an international WhatsApp number, for after they fly
+    identity: Optional[Literal["uae_pass_visitor", "passport"]] = None
+
+
 class SubmitRequest(ReportRequest):
-    emirate: Emirate
+    emirate: Emirate  # for a visitor: where they are staying now
     consent: bool = False
-    identity_confirmed: bool = False  # demo stand-in for UAE PASS
+    identity_confirmed: bool = False  # demo stand-in for UAE PASS (resident) or a UAE PASS visitor account
     reference: str = Field("", max_length=24)  # the number on the victim's report file
+    visitor: Optional[VisitorInfo] = None
 
 
 class ReplyRequest(BaseModel):
@@ -285,8 +294,9 @@ def submit_report(body: SubmitRequest):
     """Kept only because the victim pressed send after seeing the whole report; deleted after the retention period."""
     if not body.consent:
         raise HTTPException(400, "The victim must agree before the report is sent")
-    data = body.model_dump(exclude={"emirate", "consent", "identity_confirmed", "reference"})
-    return inbox.submit(data, body.lang, body.emirate, body.identity_confirmed, body.reference)
+    data = body.model_dump(exclude={"emirate", "consent", "identity_confirmed", "reference", "visitor"})
+    visitor = body.visitor.model_dump() if body.visitor else None
+    return inbox.submit(data, body.lang, body.emirate, body.identity_confirmed, body.reference, visitor)
 
 
 def _report_token(request: Request) -> str:

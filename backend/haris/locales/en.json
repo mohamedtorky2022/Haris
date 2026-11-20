@@ -239,7 +239,10 @@
   "aman_sms": "Aman service (SMS)",
   "aman_email": "Aman service e-mail",
   "ecrime": "eCrime platform - Dubai Police (online report)",
-  "dubai_police": "Dubai Police (non-emergency)"
+  "dubai_police": "Dubai Police (non-emergency)",
+  "tourist_police_dubai": "Tourism Police - Dubai",
+  "tourist_police_dubai_email": "Tourism Police e-mail - Dubai",
+  "tourist_police_abu_dhabi": "Tourism Police - Abu Dhabi"
  },
  "report": {
   "title": "Cybercrime incident report",
@@ -354,5 +357,14 @@
    "reply": "I passed your answer to them",
    "closed": "The report was closed"
   }
+ },
+ "visitor": {
+  "title": "Visiting the UAE?",
+  "tips": [
+   "Card from a bank abroad? Call the international number on the back and ask them to block it now.",
+   "Passport lost, stolen, or a photo of it sent to a suspicious party? Tell the police, then your embassy.",
+   "Keep the report number and file for your travel insurance and your bank at home.",
+   "You don't need an Emirates ID: you can report with your passport, and the Tourism Police follows your case even after you leave the UAE."
+  ]
  }
 }

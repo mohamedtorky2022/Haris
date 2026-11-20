@@ -39,6 +39,9 @@ STATUSES = ("new", "received", "info_requested", "closed")
 PRIORITIES = ("critical", "financial", "medium", "indicator")
 EMIRATES = ("abu_dhabi", "dubai", "sharjah", "ajman", "umm_al_quwain", "ras_al_khaimah", "fujairah")
 ACTIONS = {"receive": "received", "request_info": "info_requested", "close": "closed"}
+# Visitors have no Emirates ID: they confirm identity with a UAE PASS visitor account (passport) or the passport itself.
+DEPARTURES = ("within_3_days", "within_week", "later", "unknown")
+VISITOR_IDENTITY = ("uae_pass_visitor", "passport")
 TEXT = {lang: section(lang, "inbox") for lang in SUPPORTED_LANGS}
 
 
@@ -149,7 +152,22 @@ def to_arabic(fields: dict, lang: str) -> dict | None:
     return out
 
 
-def submit(data: dict, lang: str, emirate: str, verified: bool, reference: str = "") -> dict:
+def _visitor(info: dict | None) -> dict | None:
+    """A tourist or other visitor: where they are from, when they leave, and how to reach them after."""
+    if not info:
+        return None
+    departure = info.get("departure") if info.get("departure") in DEPARTURES else "unknown"
+    identity = info.get("identity") if info.get("identity") in VISITOR_IDENTITY else None
+    return {"nationality": _clean(info.get("nationality"), 60), "departure": departure,
+            "contact_abroad": _clean(info.get("contact_abroad"), 120), "identity": identity}
+
+
+def leaving_soon(fields: dict) -> bool:
+    return (fields.get("visitor") or {}).get("departure") == "within_3_days"
+
+
+def submit(data: dict, lang: str, emirate: str, verified: bool, reference: str = "",
+           visitor: dict | None = None) -> dict:
     """Save a report the victim agreed to send. Returns the reference and the private status token.
 
     The reference of the report file the victim already has is kept, so one case has one number.
@@ -157,6 +175,8 @@ def submit(data: dict, lang: str, emirate: str, verified: bool, reference: str =
     if emirate not in EMIRATES:
         raise ValueError("unknown emirate")
     fields = _fields(data)
+    if _visitor(visitor):
+        fields["visitor"] = _visitor(visitor)
     translated = to_arabic(fields, lang)
     if translated:
         fields["translation"] = translated
@@ -243,6 +263,7 @@ def _summary(row) -> dict:
         "updated_at": row["updated_at"], "received_at": received,
         "amount": f["amount"], "currency": f["currency"], "has_reply": any(e["kind"] == "reply" for e in events),
         "needs_translator": row["lang"] != "ar" and not (f.get("translation") or {}).get("ok"),
+        "visitor": bool(f.get("visitor")), "leaving_soon": leaving_soon(f),
     }
 
 
@@ -252,7 +273,12 @@ def queue() -> dict:
         rows = con.execute("SELECT * FROM reports").fetchall()
     items = [_summary(r) for r in rows]
     rank = {p: i for i, p in enumerate(PRIORITIES)}
-    items.sort(key=lambda i: (i["status"] == "closed", rank[i["priority"]], i["created_at"]))
+    # A visitor who leaves within 3 days moves up one step: after they fly, a statement or a refund is much harder.
+    def place(i):
+        r = rank[i["priority"]]
+        return (i["status"] == "closed", r - 1 if i["leaving_soon"] and r > 1 else r, not i["leaving_soon"], i["created_at"])
+
+    items.sort(key=place)
     open_items = [i for i in items if i["status"] != "closed"]
     waits = [i["received_at"] - i["created_at"] for i in items if i["received_at"]]
     return {
@@ -267,6 +293,8 @@ def queue() -> dict:
             # Open cases by the reporter's language, so a supervisor can hand them to officers who speak it.
             "by_lang": {lang: sum(i["lang"] == lang for i in open_items) for lang in SUPPORTED_LANGS},
             "needs_translator": sum(i["needs_translator"] for i in open_items),
+            "visitors": sum(i["visitor"] for i in open_items),
+            "leaving_soon": sum(i["leaving_soon"] for i in open_items),
         },
     }
 
