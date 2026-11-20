@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>البلاغات الواردة | لوحة الجهة المختصة</title>
+  <link rel="icon" href="haris.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="authority.css">
+  <link rel="stylesheet" href="reports.css">
+</head>
+<body>
+  <header class="bar">
+    <img src="haris.svg" alt="" width="40" height="40">
+    <div>
+      <h1>البلاغات الواردة</h1>
+      <p>لوحة تجريبية لجهة مختصة · بلاغات أرسلها أصحابها عبر «حارس»</p>
+    </div>
+    <nav class="tabs" aria-label="أقسام اللوحة">
+      <a href="reports.html" aria-current="page">البلاغات</a>
+      <a href="authority.html">رادار الحملات</a>
+    </nav>
+    <span class="demo">نسخة تجريبية</span>
+  </header>
+
+  <main>
+    <section class="explain">
+      <p><strong>كيف تعمل:</strong> يصل البلاغ فقط بعد أن يراجعه صاحبه ويوافق على إرساله. يُرتَّب تلقائياً حسب الخطورة، ويُوجَّه حسب إمارة المُبلّغ. كل إجراء هنا يظهر لصاحب البلاغ في «حارس» برقم بلاغه.</p>
+      <ul class="steps">
+        <li><span class="pr critical">حرجة</span> خطر على الحياة، أو تهديد بالعنف، أو طفل في الحالة: تواصل فوري.</li>
+        <li><span class="pr financial">عاجلة مالياً</span> مال دُفع أو خُصم خلال آخر 24 ساعة: إشعار البنك في الدقائق الأولى يزيد فرصة التجميد.</li>
+        <li><span class="pr medium">متوسطة</span> اختراق أو ابتزاز أو انتحال أو تشهير، أو احتيال أقدم من 24 ساعة.</li>
+        <li><span class="pr indicator">مؤشر</span> رسالة مشبوهة بلا ضرر بعد.</li>
+      </ul>
+      <p class="privacy">🔒 يُحفظ البلاغ في صندوق مؤقت ويُحذف تلقائياً بعد <b id="retention">7</b> أيام. لقطات الشاشة لا تُحفظ هنا، فهي في ملف البلاغ عند صاحبه.</p>
+    </section>
+
+    <form id="login" class="login" hidden>
+      <label for="token">رمز الدخول للجهة المختصة</label>
+      <input id="token" type="password" autocomplete="off">
+      <button type="submit">دخول</button>
+    </form>
+
+    <section class="counters five" aria-live="polite">
+      <div><b id="n-new">0</b><span>جديدة</span></div>
+      <div class="hot"><b id="n-urgent">0</b><span>عاجلة أو حرجة (مفتوحة)</span></div>
+      <div><b id="n-progress">0</b><span>قيد المعالجة</span></div>
+      <div><b id="n-closed">0</b><span>مغلقة</span></div>
+      <div><b id="n-wait">—</b><span>متوسط زمن الاستلام (دقيقة)</span></div>
+    </section>
+
+    <div class="toolbar">
+      <label><input type="checkbox" id="show-closed"> إظهار المغلقة</label>
+      <label for="emirate">الإمارة</label>
+      <select id="emirate">
+        <option value="">كل الإمارات</option>
+      </select>
+      <p id="updated" class="updated"></p>
+    </div>
+
+    <div class="split">
+      <section id="list" class="queue" aria-label="قائمة البلاغات" aria-live="polite"></section>
+      <section id="detail" class="detail" aria-live="polite">
+        <p class="empty">اختر بلاغاً من القائمة لعرض تفاصيله.</p>
+      </section>
+    </div>
+  </main>
+  <script src="reports.js"></script>
+</body>
+</html>

@@ -276,3 +276,12 @@ body {
 .guide { padding-inline-start: 22px; margin: 6px 0 8px; }
 .guide li { margin-bottom: 8px; }
 .guide strong { display: block; color: var(--brand-dark, #0a4740); }
+
+/* Reports sent to the authority (demo): status and messages from the authority */
+.case-card { border: 1px solid var(--line, #dde3e8); border-inline-start: 5px solid var(--brand, #0b6e5f); border-radius: 12px; padding: 8px 12px; margin: 6px 0; background: #fff; }
+.case-card.new { border-inline-start-color: #98a2ab; }
+.case-card.info_requested { border-inline-start-color: #b54708; }
+.case-card.closed { opacity: 0.75; }
+.case-events { margin: 6px 0 0; padding-inline-start: 18px; font-size: 0.92em; }
+.case-events li { margin: 3px 0; }
+.case-events q { display: block; quotes: none; background: #f4f6f8; border-radius: 8px; padding: 4px 8px; margin-top: 3px; white-space: pre-wrap; }

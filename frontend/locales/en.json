@@ -133,5 +133,22 @@
    "en-PH",
    "Filipino"
   ]
- ]
+ ],
+ "sendAuthority": "Send it to the authority",
+ "qEmirate": "Which emirate do you live in? The report goes to the authority there.",
+ "emirates": {"abu_dhabi": "Abu Dhabi", "dubai": "Dubai", "sharjah": "Sharjah", "ajman": "Ajman", "umm_al_quwain": "Umm Al Quwain", "ras_al_khaimah": "Ras Al Khaimah", "fujairah": "Fujairah"},
+ "authConsent": "Everything in the report file will be sent to the authority, except the screenshots: they stay with you, and the authority may ask for them later. The report is kept for {days} days only, then deleted automatically. Before sending, we confirm your identity with your digital ID.",
+ "uaePass": "Confirm my identity with UAE PASS",
+ "uaePassDemo": "Demo: the UAE PASS step here is simulated, and the report does not reach any real authority.",
+ "uaePassDone": "✔ Identity confirmed (simulated).",
+ "sentAuthority": "Your report {ref} was sent to the authority in {emirate}. Status: {status}.",
+ "trackHint": "Follow it from \"My reports\" in the menu. Only the report number is kept on this device.",
+ "myReports": "My reports",
+ "noReports": "You haven't sent a report from this device.",
+ "caseStatus": "Report {ref}: {status}",
+ "addInfo": "Send the information asked for",
+ "qAddInfo": "Type the information asked for, then send it.",
+ "infoSent": "Your information reached the authority.",
+ "refresh": "Refresh status",
+ "caseGone": "A report no longer exists: it was deleted after the retention period."
 }

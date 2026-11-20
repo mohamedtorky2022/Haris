@@ -326,5 +326,20 @@
   "report_expired": "This report has expired. Send the suspicious message again, then tap \"Report to protect\".",
   "unsupported": "On WhatsApp I can check text messages and links for now. Copy the message text and send it here. To report with screenshots or voice, use the Haris app.",
   "too_many": "I got a lot of messages in one minute. Please wait a little and send again."
+ },
+ "inbox": {
+  "status": {
+   "new": "Sent, waiting to be received",
+   "received": "Received by the authority",
+   "info_requested": "More information needed from you",
+   "closed": "Report closed"
+  },
+  "events": {
+   "submitted": "You sent the report",
+   "received": "The authority received your report",
+   "info_requested": "The authority asks for more information",
+   "reply": "You added information",
+   "closed": "The report was closed"
+  }
  }
 }

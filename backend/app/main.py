@@ -18,7 +18,7 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from haris import __version__, llm, radar, whatsapp
+from haris import __version__, inbox, llm, radar, whatsapp
 from haris.detector import analyze
 from haris.intake import MAX_IMAGES, extract
 from haris.playbooks import get_playbook, list_playbooks
@@ -70,6 +70,9 @@ class Decision(BaseModel):
     status: Literal["confirmed", "dismissed"]
 
 
+Emirate = Literal["abu_dhabi", "dubai", "sharjah", "ajman", "umm_al_quwain", "ras_al_khaimah", "fujairah"]
+
+
 class ReportRequest(BaseModel):
     lang: Lang = "ar"
     incident_type: Incident = "suspicious_only"
@@ -119,7 +122,7 @@ async def protect(request: Request, call_next):
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "version": __version__, "ai_enabled": llm.enabled(), "ai_provider": llm.provider(), "ai_model": llm.model_name(), "whatsapp_enabled": whatsapp.enabled()}
+    return {"status": "ok", "version": __version__, "ai_enabled": llm.enabled(), "ai_provider": llm.provider(), "ai_model": llm.model_name(), "whatsapp_enabled": whatsapp.enabled(), "inbox_retention_days": inbox.retention_days()}
 
 
 @app.post("/api/check")
@@ -201,6 +204,82 @@ def polish_text(body: PolishRequest):
 @app.post("/api/report")
 def report(body: ReportRequest):
     return build_report(body.model_dump(), body.lang)
+
+
+# --- Report inbox (demo): the victim sends a report to the authority --------
+
+class SubmitRequest(ReportRequest):
+    emirate: Emirate
+    consent: bool = False
+    identity_confirmed: bool = False  # demo stand-in for UAE PASS
+
+
+class ReplyRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=2000)
+
+
+class CaseAction(BaseModel):
+    action: Literal["receive", "request_info", "close"]
+    note: str = Field("", max_length=1000)
+
+
+@app.post("/api/reports")
+def submit_report(body: SubmitRequest):
+    """Kept only because the victim pressed send after seeing the whole report; deleted after the retention period."""
+    if not body.consent:
+        raise HTTPException(400, "The victim must agree before the report is sent")
+    data = body.model_dump(exclude={"emirate", "consent", "identity_confirmed"})
+    return inbox.submit(data, body.lang, body.emirate, body.identity_confirmed)
+
+
+def _report_token(request: Request) -> str:
+    return request.headers.get("x-report-token", "")
+
+
+@app.get("/api/reports/{ref}")
+def report_status(ref: str, request: Request):
+    found = inbox.status(ref, _report_token(request))
+    if not found:
+        raise HTTPException(404, "Report not found")
+    return found
+
+
+@app.post("/api/reports/{ref}/reply")
+def report_reply(ref: str, body: ReplyRequest, request: Request):
+    try:
+        found = inbox.reply(ref, _report_token(request), body.text)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from None
+    if not found:
+        raise HTTPException(404, "Report not found or closed")
+    return found
+
+
+@app.get("/api/authority/reports")
+def authority_reports(request: Request):
+    require_authority(request)
+    return inbox.queue()
+
+
+@app.get("/api/authority/reports/{ref}")
+def authority_report(ref: str, request: Request):
+    require_authority(request)
+    found = inbox.detail(ref)
+    if not found:
+        raise HTTPException(404, "Report not found")
+    return found
+
+
+@app.post("/api/authority/reports/{ref}")
+def authority_report_action(ref: str, body: CaseAction, request: Request):
+    require_authority(request)
+    try:
+        found = inbox.act(ref, body.action, body.note)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from None
+    if not found:
+        raise HTTPException(404, "Report not found or closed")
+    return found
 
 
 

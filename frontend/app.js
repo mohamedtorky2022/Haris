@@ -96,6 +96,7 @@
       [tr("help"), chooseSituation],
       [tr("report"), startReport],
       [tr("howTo"), showGuide],
+      ...(myCases().length ? [[tr("myReports"), showCases]] : []),
     ]);
   }
 
@@ -378,7 +379,93 @@
     button(tr("print"), () => openReport(html, true));
     parts.push(actions);
     bubble(parts);
-    setChips([[tr("checkAnother"), askCheck], [tr("menuBack"), menu]]);
+    setChips([[tr("sendAuthority"), chooseEmirate], [tr("checkAnother"), askCheck], [tr("menuBack"), menu]]);
+  }
+
+  // ---- Send the report to the authority (demo), then follow its status ----
+  // Only the reference number and a private token are kept on this device, to follow the status.
+  const EMIRATES = ["abu_dhabi", "dubai", "sharjah", "ajman", "umm_al_quwain", "ras_al_khaimah", "fujairah"];
+  const myCases = () => { try { return JSON.parse(store.get("haris.cases") || "[]"); } catch { return []; } };
+  const refText = (ref) => `⁦${ref.replaceAll("-", "‑")}⁩`;
+
+  function chooseEmirate() {
+    bubble(tr("qEmirate"));
+    setChips(EMIRATES.map((e) => [UI[lang].emirates[e], () => authorityConsent(e)]));
+  }
+
+  async function authorityConsent(emirate) {
+    let days = 7;
+    try { days = (await (await fetch("/api/health")).json()).inbox_retention_days || days; } catch { /* keep the default */ }
+    bubble([el("p", { text: tr("authConsent", { days }) }), el("p", { class: "note", text: tr("uaePassDemo") })]);
+    setChips([[tr("uaePass"), () => sendToAuthority(emirate)], [tr("cancel"), menu]]);
+  }
+
+  async function sendToAuthority(emirate) {
+    bubble(tr("uaePassDone"));
+    const r = await api("/api/reports", { ...draft, lang, emirate, consent: true, identity_confirmed: true });
+    if (!r) return;
+    store.set("haris.cases", JSON.stringify([{ ref: r.reference, token: r.token, emirate }, ...myCases()].slice(0, 10)));
+    bubble([el("p", { text: tr("sentAuthority", { ref: refText(r.reference), emirate: UI[lang].emirates[emirate], status: r.status_label }) }),
+            el("p", { class: "note", text: tr("trackHint") })]);
+    setChips([[tr("myReports"), showCases], [tr("menuBack"), menu]]);
+  }
+
+  async function caseStatus(c) {
+    try {
+      const res = await fetch(`/api/reports/${encodeURIComponent(c.ref)}`, { headers: { "X-Report-Token": c.token } });
+      return res.ok ? await res.json() : null;
+    } catch { return undefined; }
+  }
+
+  async function showCases() {
+    const cases = myCases();
+    if (!cases.length) { bubble(tr("noReports")); setChips([[tr("menuBack"), menu]]); return; }
+    const stop = typing();
+    const found = await Promise.all(cases.map(caseStatus));
+    stop();
+    const kept = cases.filter((_, i) => found[i] !== null);
+    store.set("haris.cases", JSON.stringify(kept));
+    if (found.some((f) => f === null)) bubble(tr("caseGone"));
+    const rows = [];
+    cases.forEach((c, i) => { if (found[i]) rows.push(caseView(c, found[i])); });
+    if (rows.length) bubble(rows);
+    const waiting = cases.find((c, i) => found[i] && found[i].status === "info_requested");
+    const options = [];
+    if (waiting) options.push([tr("addInfo"), () => askReply(waiting)]);
+    options.push([tr("refresh"), showCases], [tr("menuBack"), menu]);
+    setChips(options);
+  }
+
+  function caseView(c, s) {
+    return el("div", { class: `case-card ${s.status}` }, [
+      el("strong", { text: tr("caseStatus", { ref: refText(s.reference), status: s.status_label }) }),
+      el("ol", { class: "case-events" }, s.events.map((e) => el("li", {}, [
+        el("span", { text: `${new Date(e.ts * 1000).toLocaleString(lang === "ar" ? "ar-AE" : lang, { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short" })} · ${e.label}` }),
+        e.note ? el("q", { dir: "auto", text: e.note }) : null,
+      ]))),
+    ]);
+  }
+
+  let replyCase = null;
+  function askReply(c) {
+    replyCase = c;
+    mode = "reply";
+    bubble(tr("qAddInfo"));
+    input.focus();
+  }
+
+  async function sendReply(text) {
+    const c = replyCase;
+    mode = "check";
+    replyCase = null;
+    try {
+      const res = await fetch(`/api/reports/${encodeURIComponent(c.ref)}/reply`, {
+        method: "POST", headers: { "Content-Type": "application/json", "X-Report-Token": c.token }, body: JSON.stringify({ text }),
+      });
+      if (!res.ok) throw new Error();
+      bubble(tr("infoSent"));
+    } catch { bubble(tr("error")); }
+    setChips([[tr("myReports"), showCases], [tr("menuBack"), menu]]);
   }
 
   // Adds the screenshots to the report file itself, so the police see the evidence.
@@ -430,6 +517,7 @@
     else if (mode === "report" && (phase === "field" || phase === "edit")) answerField(text);
     else if (mode === "report" && phase === "summary") { phase = "more"; sendStory(text, images); }
     else if (mode === "radar" && text) confirmReport(text);
+    else if (mode === "reply" && text) sendReply(text);
     else if (text) check(text);
   });
 

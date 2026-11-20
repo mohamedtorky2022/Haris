@@ -8,3 +8,6 @@ venv/
 data/radar.db
 data/radar.db-*
 docs/video/out/
+data/inbox.db
+data/inbox.db-*
+tools/
