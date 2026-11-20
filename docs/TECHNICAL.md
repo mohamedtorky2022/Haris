@@ -107,7 +107,11 @@ The category is the category of the heaviest signal that fired (`phishing_link` 
 
 `scripts/evaluate.py` runs the rules engine on `data/samples/messages.json`: 37 scam messages and 22 legitimate ones (OTP notices that say "never share", delivery confirmations, "pay cash on delivery", salary deposits, paid fines, donation receipts, visa approvals, genuine rental viewings, mall sales, family and spouse messages with words like "darling") across Arabic, English, Urdu and Hindi. Current result: **37/37 scams flagged as medium or high, 0/22 false alarms.**
 
-This is a regression test, not an accuracy claim: the samples were written alongside the rules. A real accuracy figure needs a held-out set of genuine, anonymised messages from the partner authority.
+This is a regression test, not an accuracy claim: the samples were written alongside the rules.
+
+`data/samples/hard.json` was written afterwards to measure the AI layer: 12 scams in wording no rule was written for (a friend's "new number", a fake CEO asking for gift cards, a landlord abroad, a "wrong number" turning to crypto, a relative in hospital in Urdu, a KYC call in Hindi) and 8 genuine messages that look suspicious (a real OTP notice, a card-use alert, a job interview invite, an Emirates ID renewal reminder). `scripts/evaluate.py --ai --hard`, 20 November 2026, `gemini-3.5-flash-lite` on the free tier: **rules alone 2/12, rules + AI 12/12, 0/8 false alarms**, and the AI answered all 20 messages. On `messages.json` the AI answered 59/59 and the result stayed 37/37 with 0/22 false alarms. The hard set is never used as AI examples, and no message is ever shown to the model among its own examples.
+
+On the free tier, requests per minute are limited: an early run that sent one message a second got HTTP 429 on 27 of 59 calls, and Haris fell back to the rules each time. The evaluation now sends one message every 4.5 s, verdicts for a repeated message are reused for an hour, and after a 429 Haris stops calling for the delay Gemini asks. A real accuracy figure still needs a held-out set of genuine, anonymised messages from the partner authority.
 
 ### Report intake: `POST /api/extract`
 

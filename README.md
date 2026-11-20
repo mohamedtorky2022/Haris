@@ -153,9 +153,15 @@ The captions are in `docs/video/journey.json`; the chat wording comes from the a
 pip install -r requirements-dev.txt
 pytest                                 # from the repo root
 python scripts/evaluate.py             # accuracy on the labelled sample messages
+python scripts/evaluate.py --ai --hard # rules + AI on wording the rules were not written for
 ```
 
-On the 59 labelled samples in `data/samples/messages.json` (37 scams, 22 legitimate messages, in 4 languages), the rules engine alone catches **37 of 37 scams** with **0 of 22 false alarms**. These samples were written while building the rules, so they show the rules behave as designed; they are **not** an independent accuracy measure (see trade-offs below).
+| Set | Rules only | Rules + Gemini |
+|---|---|---|
+| `messages.json`: 37 scams, 22 genuine, 4 languages | 37/37 caught, 0/22 false alarms | 37/37 caught, 0/22 false alarms (AI answered 59/59) |
+| `hard.json`: 12 scams in new wording, 8 genuine messages that look suspicious | **2/12** caught, 0/8 false alarms | **12/12** caught, 0/8 false alarms (AI answered 20/20) |
+
+Measured on 20 November 2026 with `gemini-3.5-flash-lite` on the free tier. The first set was written while building the rules, so it shows they behave as designed; the hard set was written afterwards, is never shown to the model as an example, and shows what the AI adds: "my phone broke, this is my new number", a fake CEO asking for gift cards, a fake landlord abroad, a "wrong number" that turns to crypto. Both sets are small and written by us; a real accuracy figure needs genuine, anonymised messages from the partner authority.
 
 ### API
 
