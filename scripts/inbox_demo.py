@@ -87,6 +87,7 @@ NOTES = {
 
 
 def _generated(count: int) -> list:
+    random.seed(7)  # the officer's pace in _backdate
     rng = random.Random(42)
     out = []
     for n in range(count):
@@ -109,9 +110,14 @@ def _backdate(ref: str, hours: float) -> str:
         shift = hours * 3600
         day = datetime.fromtimestamp(row["created_at"] - shift, UAE_TIME)
         new_ref = f"HRS-{day:%Y%m%d}-{ref.rsplit('-', 1)[1]}"
-        events = [{**e, "ts": e["ts"] - shift} for e in json.loads(row["events"])]
-        con.execute("UPDATE reports SET ref = ?, created_at = created_at - ?, updated_at = updated_at - ?, events = ? WHERE ref = ?",
-                    (new_ref, shift, shift, json.dumps(events, ensure_ascii=False), ref))
+        # Each later step comes some minutes after the one before, as an officer would work it.
+        events, gap = json.loads(row["events"]), 0.0
+        for k, e in enumerate(events):
+            if k:
+                gap = min(gap + random.uniform(6, 75) * 60, shift * 0.9)
+            e["ts"] = e["ts"] - shift + gap
+        con.execute("UPDATE reports SET ref = ?, created_at = created_at - ?, updated_at = ?, events = ? WHERE ref = ?",
+                    (new_ref, shift, events[-1]["ts"], json.dumps(events, ensure_ascii=False), ref))
     return new_ref
 
 
