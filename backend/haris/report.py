@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import html
 import secrets
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from .playbooks import PLAYBOOKS, contacts
 from .redact import find_identifiers
@@ -30,10 +30,19 @@ def _clean_list(values) -> list[str]:
     return [_clean(v, 300) for v in (values or []) if _clean(v, 300)][:30]
 
 
+# The UAE has one time zone and no daylight saving: Gulf Standard Time, UTC+4.
+UAE_TIME = timezone(timedelta(hours=4), "UTC+4")
+
+
+def new_reference() -> str:
+    """HRS-YYYYMMDD-XXXXXX, dated in UAE time so a report made after midnight carries that day."""
+    return f"HRS-{datetime.now(UAE_TIME):%Y%m%d}-{secrets.token_hex(3).upper()}"
+
+
 def build_report(data: dict, lang: str) -> dict:
     L = {k: v[lang] for k, v in LABELS.items()}
-    now = datetime.now(timezone.utc)
-    reference = f"HRS-{now:%Y%m%d}-{secrets.token_hex(3).upper()}"
+    now = datetime.now(UAE_TIME)
+    reference = new_reference()
 
     incident = data.get("incident_type", "suspicious_only")
     incident_title = PLAYBOOKS.get(incident, PLAYBOOKS["suspicious_only"])["title"][lang]
@@ -63,7 +72,7 @@ def build_report(data: dict, lang: str) -> dict:
         sections.append((L["reporter"], reporter))
     sections.append((L["where"], [f"{c['label']}: {c['value']}" for c in contacts(lang)]))
 
-    header = [(L["reference"], reference), (L["generated"], now.strftime("%Y-%m-%d %H:%M UTC"))]
+    header = [(L["reference"], reference), (L["generated"], now.strftime("%Y-%m-%d %H:%M (UTC+4)"))]
     return {
         "reference": reference,
         "markdown": _markdown(L, header, sections),

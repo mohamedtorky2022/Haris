@@ -25,11 +25,10 @@ import secrets
 import sqlite3
 import time
 from contextlib import closing
-from datetime import datetime, timezone
 from pathlib import Path
 
 from .playbooks import PLAYBOOKS
-from .report import _clean, _clean_list
+from .report import _clean, _clean_list, new_reference
 from .text import SUPPORTED_LANGS, normalize
 from .translations import section
 
@@ -140,7 +139,7 @@ def submit(data: dict, lang: str, emirate: str, verified: bool, reference: str =
     events = [{"ts": now, "kind": "submitted"}]
     with closing(_connect()) as con, con:
         if not ref or _row(con, ref):  # missing, malformed or already sent: a fresh number
-            ref = f"HRS-{datetime.now(timezone.utc):%Y%m%d}-{secrets.token_hex(3).upper()}"
+            ref = new_reference()
         con.execute("INSERT INTO reports VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                     (ref, now, now, "new", priority, emirate, fields["incident_type"], lang, int(verified),
                      _hash(token), json.dumps(fields, ensure_ascii=False), json.dumps(events)))

@@ -114,3 +114,17 @@ def test_routes_need_consent_and_the_authority(monkeypatch):
     assert q["items"][0]["reference"] == ref
     assert client.post(f"/api/authority/reports/{ref}", json={"action": "receive"}).json()["status"] == "received"
     assert client.get("/api/authority/reports", headers={"x-forwarded-for": "1.2.3.4"}).status_code == 403
+
+
+def test_reference_is_dated_in_uae_time(monkeypatch):
+    from datetime import datetime as real_dt, timezone
+
+    from haris import report
+
+    class Late(real_dt):  # 21:30 UTC on 20 Nov is 01:30 on 21 Nov in the UAE
+        @classmethod
+        def now(cls, tz=None):
+            return real_dt(2026, 11, 20, 21, 30, tzinfo=timezone.utc).astimezone(tz)
+
+    monkeypatch.setattr(report, "datetime", Late)
+    assert report.new_reference().startswith("HRS-20261121-")
