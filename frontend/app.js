@@ -431,11 +431,26 @@
     const rows = [];
     cases.forEach((c, i) => { if (found[i]) rows.push(caseView(c, found[i])); });
     if (rows.length) bubble(rows);
-    const waiting = cases.find((c, i) => found[i] && found[i].status === "info_requested");
-    const options = [];
-    if (waiting) options.push([tr("addInfo"), () => askReply(waiting)]);
-    options.push([tr("refresh"), showCases], [tr("menuBack"), menu]);
-    setChips(options);
+    const w = cases.findIndex((c, i) => found[i] && found[i].status === "info_requested");
+    if (w >= 0) {
+      // The authority is waiting: whatever the person types next is their answer, not a message to check.
+      askReply(cases[w], found[w]);
+      setChips([[tr("refresh"), showCases], [tr("menuBack"), menu]]);
+      return;
+    }
+    setChips([[tr("refresh"), showCases], [tr("menuBack"), menu]]);
+  }
+
+  // When Haris opens, a question from the authority comes first.
+  async function pendingQuestion() {
+    const cases = myCases();
+    if (!cases.length) return false;
+    const found = await Promise.all(cases.map(caseStatus));
+    const w = cases.findIndex((c, i) => found[i] && found[i].status === "info_requested");
+    if (w < 0) return false;
+    askReply(cases[w], found[w]);
+    setChips([[tr("myReports"), showCases], [tr("menuBack"), menu]]);
+    return true;
   }
 
   function caseView(c, s) {
@@ -450,24 +465,30 @@
   }
 
   let replyCase = null;
-  function askReply(c) {
+  function askReply(c, s) {
     replyCase = c;
     mode = "reply";
-    bubble(tr("qAddInfo"));
+    const asked = s && [...s.events].reverse().find((e) => e.kind === "info_requested");
+    bubble(asked && asked.note ? tr("infoWaiting", { ref: refText(c.ref), note: asked.note }) : tr("qAddInfo"));
     input.focus();
   }
 
   async function sendReply(text) {
     const c = replyCase;
-    mode = "check";
-    replyCase = null;
+    const stop = typing();  // a reply in another language is translated for the authority: a few seconds
     try {
       const res = await fetch(`/api/reports/${encodeURIComponent(c.ref)}/reply`, {
         method: "POST", headers: { "Content-Type": "application/json", "X-Report-Token": c.token }, body: JSON.stringify({ text }),
       });
       if (!res.ok) throw new Error();
+      stop();
+      mode = "check";
+      replyCase = null;
       bubble(tr("infoSent"));
-    } catch { bubble(tr("error")); }
+    } catch {
+      stop();
+      bubble(tr("error"));  // still in reply mode: sending again answers the same question
+    }
     setChips([[tr("myReports"), showCases], [tr("menuBack"), menu]]);
   }
 
@@ -719,7 +740,7 @@
   async function start() {
     bubble(tr("welcome"));
     await showBroadcasts();
-    menu();
+    if (!(await pendingQuestion())) menu();
   }
 
   loadLocales().then(() => {

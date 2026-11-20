@@ -151,5 +151,6 @@
  "infoSent": "Your information reached the authority.",
  "refresh": "Refresh status",
  "caseGone": "A report no longer exists: it was deleted after the retention period.",
- "noteOriginal": "Original (Arabic): {text}"
+ "noteOriginal": "Original (Arabic): {text}",
+ "infoWaiting": "🔔 The authority has a question about your report {ref}:\n“{note}”\n\nType your answer in the box below and send it. It goes straight to them."
 }
