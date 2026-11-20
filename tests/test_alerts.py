@@ -173,7 +173,7 @@ def test_preview_route_translates_the_authoritys_text(monkeypatch):
         radar.report(SCAM, f"device-{i}", "ar")
     camp = client.get("/api/authority/campaigns").json()[0]
     r = client.post(f"/api/authority/campaigns/{camp['id']}/preview", json={"text": "لا تدفع رسوم الطرود عبر الروابط"}).json()
-    assert r["versions"]["en"]["body"].startswith("[en]") and r["translated"] == {"en": True, "ur": True, "hi": False}
+    assert r["versions"]["en"]["body"].startswith("[en]") and r["translated"] == {"en": True, "ur": True, "hi": False, "ru": True}
     assert "hi" not in r["custom"]  # not translated: the officer sees the standard text there and can write one
     ok = client.post(f"/api/authority/campaigns/{camp['id']}", json={"status": "confirmed", "custom": r["custom"]}).json()
     assert radar.broadcast_view(ok["broadcast_id"], "ur")["body"].startswith("[ur]")
