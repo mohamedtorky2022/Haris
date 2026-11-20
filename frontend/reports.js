@@ -182,7 +182,8 @@
     const note = el("textarea", { id: "note", placeholder: "مثال: أرسل اسم البنك وآخر 4 أرقام من البطاقة" });
     const err = el("p", { class: "err", role: "alert" });
     box.append(el("label", { for: "note", text: d.lang === "ar" ? "رسالة لصاحب البلاغ (تظهر له في «حارس»)"
-      : `رسالة لصاحب البلاغ: اكتبها بالعربية، وتصله مترجمة إلى ${LANG[d.lang]} ومعها نصك` }), note);
+      : `رسالة لصاحب البلاغ: اكتبها بالعربية، وتصله مترجمة إلى ${LANG[d.lang]} ومعها نصك` }), note,
+      el("p", { class: "hint-small", text: "تصله في محادثة «حارس» على أنها سؤال من الجهة المختصة، ومعها تذكير بأن الجهة لا تطلب رمز تحقق أو كلمة مرور أو رقم بطاقة. فلا تطلب أياً منها." }));
     const row = el("div", { class: "actions" });
     const run = async (action) => {
       err.textContent = "";

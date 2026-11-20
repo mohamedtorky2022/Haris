@@ -425,8 +425,7 @@
     const stop = typing();
     const found = await Promise.all(cases.map(caseStatus));
     stop();
-    const kept = cases.filter((_, i) => found[i] !== null);
-    store.set("haris.cases", JSON.stringify(kept));
+    markSeen(cases, found);
     if (found.some((f) => f === null)) bubble(tr("caseGone"));
     const rows = [];
     cases.forEach((c, i) => { if (found[i]) rows.push(caseView(c, found[i])); });
@@ -441,11 +440,31 @@
     setChips([[tr("refresh"), showCases], [tr("menuBack"), menu]]);
   }
 
-  // When Haris opens, a question from the authority comes first.
+  // What changed in a case since the person last looked, told by Haris in a sentence.
+  function caseNews(c, s) {
+    const fresh = s.events.slice(c.seen || 1);  // the first event is their own "sent"
+    const lines = [];
+    for (const e of fresh) {
+      if (e.kind === "received") lines.push(tr("newsReceived", { ref: refText(c.ref) }));
+      if (e.kind === "closed") lines.push(e.note ? tr("newsClosedNote", { ref: refText(c.ref), note: e.note }) : tr("newsClosed", { ref: refText(c.ref) }));
+    }
+    return lines;
+  }
+
+  // found[i]: the status, null when the case is gone (deleted after the retention period), undefined when offline.
+  function markSeen(cases, found) {
+    store.set("haris.cases", JSON.stringify(cases.flatMap((c, i) => (found[i] === null ? []
+      : [found[i] ? { ...c, seen: found[i].events.length } : c]))));
+  }
+
+  // When Haris opens: news about the person's reports first, then any question from the authority.
   async function pendingQuestion() {
     const cases = myCases();
     if (!cases.length) return false;
     const found = await Promise.all(cases.map(caseStatus));
+    const news = cases.flatMap((c, i) => (found[i] ? caseNews(c, found[i]) : []));
+    if (news.length) bubble(news.map((t) => el("p", { text: t })));
+    markSeen(cases, found);
     const w = cases.findIndex((c, i) => found[i] && found[i].status === "info_requested");
     if (w < 0) return false;
     askReply(cases[w], found[w]);
@@ -458,6 +477,7 @@
       el("strong", { text: tr("caseStatus", { ref: refText(s.reference), status: s.status_label }) }),
       el("ol", { class: "case-events" }, s.events.map((e) => el("li", {}, [
         el("span", { text: `${new Date(e.ts * 1000).toLocaleString(lang === "ar" ? "ar-AE" : lang, { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short" })} · ${e.label}` }),
+        e.note && e.kind !== "reply" ? el("small", { class: "case-from", text: tr("fromAuthority") }) : null,
         e.note ? el("q", { dir: "auto", text: e.note }) : null,
         e.original ? el("small", { class: "case-original", dir: "auto", text: tr("noteOriginal", { text: e.original }) }) : null,
       ]))),
@@ -469,7 +489,9 @@
     replyCase = c;
     mode = "reply";
     const asked = s && [...s.events].reverse().find((e) => e.kind === "info_requested");
-    bubble(asked && asked.note ? tr("infoWaiting", { ref: refText(c.ref), note: asked.note }) : tr("qAddInfo"));
+    bubble(asked && asked.note
+      ? [el("p", { text: tr("infoWaiting", { ref: refText(c.ref), note: asked.note }) }), el("p", { class: "note", text: tr("authoritySafety") })]
+      : tr("qAddInfo"));
     input.focus();
   }
 

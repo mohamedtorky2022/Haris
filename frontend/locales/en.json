@@ -152,5 +152,10 @@
  "refresh": "Refresh status",
  "caseGone": "A report no longer exists: it was deleted after the retention period.",
  "noteOriginal": "Original (Arabic): {text}",
- "infoWaiting": "🔔 The authority has a question about your report {ref}:\n“{note}”\n\nType your answer in the box below and send it. It goes straight to them."
+ "infoWaiting": "🛡️ I got a question from the authority about your report {ref}:\n“{note}”\n\nType your answer here and I'll pass it to them.",
+ "newsReceived": "✅ The authority received your report {ref}. It is now under review.",
+ "newsClosed": "Your report {ref} was closed.",
+ "newsClosedNote": "Your report {ref} was closed, with this note from the authority:\n“{note}”",
+ "fromAuthority": "From the authority:",
+ "authoritySafety": "🔒 The authority will never ask you for a verification code, a password or a card number."
 }

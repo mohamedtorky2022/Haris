@@ -286,3 +286,4 @@ body {
 .case-events li { margin: 3px 0; }
 .case-events q { display: block; quotes: none; background: #f4f6f8; border-radius: 8px; padding: 4px 8px; margin-top: 3px; white-space: pre-wrap; }
 .case-events .case-original { display: block; color: var(--muted); font-size: 0.85em; margin-top: 2px; }
+.case-events .case-from { display: block; color: var(--brand-dark); font-weight: 700; font-size: 0.82em; margin-top: 3px; }

@@ -337,16 +337,16 @@
  },
  "inbox": {
   "status": {
-   "new": "Sent, waiting to be received",
-   "received": "Received by the authority",
-   "info_requested": "More information needed from you",
+   "new": "Sent, waiting for the authority to receive it",
+   "received": "🔍 Under review by the authority",
+   "info_requested": "❓ The authority needs one detail from you",
    "closed": "Report closed"
   },
   "events": {
    "submitted": "You sent the report",
-   "received": "The authority received your report",
-   "info_requested": "The authority asks for more information",
-   "reply": "You added information",
+   "received": "✅ The authority received your report",
+   "info_requested": "❓ The authority asked you",
+   "reply": "I passed your answer to them",
    "closed": "The report was closed"
   }
  }
