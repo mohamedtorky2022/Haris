@@ -206,7 +206,8 @@ The report file is enough for a victim who files it themselves. Sending it from 
 
 4. **Routing.** Each case carries the emirate the victim chose; the dashboard filters by emirate. The demo names no police force.
 5. **Status.** `new → received → info_requested → received (after the victim answers) → closed`. Each step is an event with a time and an optional note; notes from the officer are shown to the victim in their language's status labels (`inbox` section of `backend/haris/locales/<lang>.json`). A closed case cannot be changed or answered.
-6. **Follow-up.** The submission returns a random status token. The server stores only its SHA-256 hash and compares it in constant time; the chat keeps the reference and token in the browser so "My reports" can show the status and send the victim's answer.
+6. **Translation** (`translate.py`). When the victim's language is not Arabic, the story is translated into Arabic on arrival, and the short items (time, payment method, steps taken) as one numbered list that must come back one for one. A victim's reply is translated into Arabic, and an officer's note into the victim's language. The case keeps both: `fields.translation` and `note_ar` / `note_victim` beside the originals. Numbers, amounts, links and e-mails are replaced by tokens first (`polish.mask`), so they stay on the server; the answer must return every token once and no digit of its own, and in Arabic, Urdu or Hindi no Latin-script word that was not in the source (names are). A failed check gets one retry with the reason, then the case is marked `needs_translator`. Triage reads the original and the translation, so a threat is caught in either language.
+7. **Follow-up.** The submission returns a random status token. The server stores only its SHA-256 hash and compares it in constant time; the chat keeps the reference and token in the browser so "My reports" can show the status and send the victim's answer.
 
 **Storage.** `data/inbox.db` (SQLite, file mode 600), one row per case with the fields as JSON and the event log. Every access first deletes cases older than `HARIS_INBOX_RETENTION_DAYS` (default 7), whatever their status. The officer pages (`/reports.html`, `/authority.html`) use the same `require_authority` check as the radar: the computer running Haris only, or `X-Authority-Token`, which is always required behind a tunnel.
 
@@ -245,7 +246,7 @@ The report file is enough for a victim who files it themselves. Sending it from 
 | Dictated text sent for correction | Server memory; to Claude only if the AI is on, with numbers, links and e-mails replaced by tokens | Until the response is sent |
 | Dialect choice | The user's browser (localStorage) | Until the user clears site data |
 | Report sent to the campaign radar (user taps "Report it") | `data/radar.db` (SQLite): sender's phone numbers, e-mails, IBANs and link domains, the message text with the reporter's personal data redacted, the scam category, and a keyed hash of a random device id | 30 days (`HARIS_RADAR_RETENTION_DAYS`) |
-| Report sent to the authority (user presses "Send it to the authority" and confirms) | `data/inbox.db` (SQLite, readable by the server's user only): the report fields, the emirate, the number of screenshots (not the screenshots), whether identity was confirmed, a SHA-256 hash of the status token, and the case log | 7 days (`HARIS_INBOX_RETENTION_DAYS`) |
+| Report sent to the authority (user presses "Send it to the authority" and confirms) | `data/inbox.db` (SQLite, readable by the server's user only): the report fields and, for Hindi, Urdu or English, their Arabic translation, the emirate, the number of screenshots (not the screenshots), whether identity was confirmed, a SHA-256 hash of the status token, and the case log | 7 days (`HARIS_INBOX_RETENTION_DAYS`) |
 | WhatsApp alert subscription (user sends «تنبيهات») | `data/alerts.db` (SQLite, readable by the server's user only): WhatsApp number, language, join time; a delivery log with counts only | Until the user sends «إيقاف» (STOP) |
 | Reports the user sent | The user's browser (localStorage): reference number and status token only | Until the user clears site data |
 | Random device id for the radar | The user's browser (localStorage); the server keeps only an HMAC of it | Until the user clears site data |
@@ -276,6 +277,7 @@ The police report keeps the **scammer's** numbers and links on purpose, because 
 | Leaking personal data to a third party | Redaction before any AI call; the AI layer is optional and off by default |
 | Haris being impersonated by scammers | It never asks for codes, passwords or card details; a verified number and domain announced by the partner authority would be needed at launch |
 | Someone reads another person's case | Status and replies need the private token; the server keeps only its hash and compares in constant time; a guessed reference alone returns "not found" |
+| A machine translation changes the meaning or a number | Numbers and links never pass through the model; the original stays beside every translation; a failed check marks the case "needs a translator" |
 | Holding victims' reports longer than needed | Deleted after 7 days whatever their status; no screenshots stored |
 | Using the tool offensively | It only analyses text. It never opens, scans or contacts the links or numbers it sees |
 
