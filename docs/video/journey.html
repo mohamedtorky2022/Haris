@@ -76,6 +76,22 @@ body { background: #F1F5F4; color: #1B2330; font-family: var(--font), "IBM Plex 
 .s1 { font-size: 124px; font-weight: 700; color: #E7C77A; line-height: 1.1; }
 .s2 { font-size: 70px; font-weight: 700; color: #fff; line-height: 1.2; padding: 0 30px; }
 .soon { margin-top: 34px; display: flex; align-items: center; gap: 12px; background: #1E8E5A; color: #fff; font-size: 32px; font-weight: 700; border-radius: 20px; padding: 16px 30px; }
+.casepanel { position: absolute; inset: 0; background: #fff; border-radius: 44px; padding: 38px 34px; box-shadow: 0 24px 60px rgba(10,46,42,.18); }
+.casepanel h3 { font-size: 38px; color: #0A4740; margin-bottom: 26px; }
+.cases { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.case { display: flex; align-items: center; gap: 12px; background: #F1F5F4; border-radius: 18px; padding: 16px 16px; font-size: 25px; font-weight: 600; min-height: 124px; line-height: 1.35; }
+.case .ic { flex: none; width: 58px; height: 58px; border-radius: 50%; background: #0A4740; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+.badge { display: inline-block; margin-top: 14px; padding: 6px 14px; border-radius: 12px; background: #FFF1D6; color: #8A5A00; font-size: 22px; font-weight: 700; }
+.uae { display: flex; align-items: center; justify-content: center; gap: 10px; background: #0A4740; color: #fff; border-radius: 14px; padding: 15px; font-size: 21px; font-weight: 700; }
+.okrow { display: flex; align-items: center; gap: 10px; font-size: 21px; font-weight: 700; color: #10633D; }
+.notif { position: absolute; left: 12px; right: 12px; top: 12px; z-index: 5; background: rgba(255,255,255,.97); border-radius: 22px; padding: 14px 16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+.notif .app { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #5B6770; }
+.notif b { display: block; font-size: 19px; margin-top: 4px; }
+.notif p { font-size: 17px; line-height: 1.45; color: #1B2330; }
+.alertmsg { align-self: stretch; background: #fff; border: 3px solid #B08A3E; border-radius: 16px; padding: 14px 16px; font-size: 20px; line-height: 1.55; }
+.alertmsg b { color: #6B4E12; display: block; margin-bottom: 4px; }
+.more { border: 3px dashed #9FC3B8; border-radius: 16px; padding: 14px; font-size: 20px; font-weight: 600; color: #0A4740; text-align: center; line-height: 1.6; }
+.guards { font-size: 34px; font-weight: 700; color: #E7C77A; padding: 0 30px; line-height: 1.4; }
 .note { color: #CFE3DD; font-size: 22px; margin-top: 18px; padding: 0 40px; }
 </style>
 </head>
@@ -84,22 +100,23 @@ body { background: #F1F5F4; color: #1B2330; font-family: var(--font), "IBM Plex 
   <img id="map" class="abs" src="../poster/uae-map.svg" alt="">
   <div id="panel" class="abs"></div>
   <svg id="haris" class="abs" width="620" height="775" viewBox="0 0 640 800" style="overflow:visible">
-    <ellipse cx="320" cy="782" rx="190" ry="14" fill="#DCE5E2"/>
-    <path d="M232 770 h72 a8 8 0 0 1 0 16 h-72 a8 8 0 0 1 0-16 Z" fill="#6B4A2F"/>
-    <path d="M336 770 h72 a8 8 0 0 1 0 16 h-72 a8 8 0 0 1 0-16 Z" fill="#6B4A2F"/>
+    <ellipse cx="320" cy="782" rx="135" ry="12" fill="#DCE5E2"/>
+    <path d="M254 770 h56 a8 8 0 0 1 0 16 h-56 a8 8 0 0 1 0-16 Z" fill="#6B4A2F"/>
+    <path d="M330 770 h56 a8 8 0 0 1 0 16 h-56 a8 8 0 0 1 0-16 Z" fill="#6B4A2F"/>
     <g id="body">
-      <path d="M180 335 C186 302 236 288 320 288 C404 288 454 302 460 335 L506 760 C450 774 190 774 134 760 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="3"/>
+      <path d="M236 330 C240 302 272 292 320 292 C368 292 400 302 404 330 L430 762 C396 774 244 774 210 762 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="3"/>
+      <path d="M320 304 L320 760" stroke="#EEF2F1" stroke-width="2"/>
       <path d="M320 300 L320 400" stroke="#C9D3D0" stroke-width="5" stroke-linecap="round"/>
       <g id="armR">
-        <path d="M442 338 C492 372 512 462 506 560 L452 566 C454 486 444 424 402 384 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="3"/>
-        <ellipse cx="480" cy="580" rx="26" ry="28" fill="#D9A47A"/>
+        <path d="M398 334 C424 356 438 450 434 556 L396 560 C398 486 390 424 374 386 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="3"/>
+        <ellipse cx="415" cy="574" rx="19" ry="21" fill="#D9A47A"/>
       </g>
       <g id="armL">
-        <path d="M198 338 C148 372 128 462 134 560 L188 566 C186 486 196 424 238 384 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="3"/>
-        <ellipse cx="160" cy="580" rx="26" ry="28" fill="#D9A47A"/>
+        <path d="M242 334 C216 356 202 450 206 556 L244 560 C242 486 250 424 266 386 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="3"/>
+        <ellipse cx="225" cy="574" rx="19" ry="21" fill="#D9A47A"/>
       </g>
       <g id="head">
-        <g transform="translate(320 178) scale(2.4) translate(-100 -98)">
+        <g transform="translate(320 190) scale(2.15) translate(-100 -98)">
           <path d="M52 92 C50 60 70 38 100 38 C130 38 150 60 148 92 L156 150 C140 160 128 150 124 140 L76 140 C72 150 60 160 44 150 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="2"/>
           <ellipse cx="100" cy="98" rx="30" ry="35" fill="#D9A47A"/>
           <path d="M66 84 C66 60 82 52 100 52 C118 52 134 60 134 84 C128 72 116 66 100 66 C84 66 72 72 66 84 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="1.5"/>
@@ -137,6 +154,8 @@ const LOCK = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke
 const EYE = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0A4740" stroke-width="2.2" stroke-linecap="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.2 3.9M6.6 6.6C3.9 8.4 2 12 2 12s4 7 10 7a10 10 0 0 0 5.4-1.6"/></svg>';
 const PDF = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#10633D" stroke-width="2" stroke-linecap="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 14h6M9 17h4"/></svg>';
 const LOGO = "../../frontend/haris.svg";
+const CASES = [["money_sent", "💳"], ["account_hacked", "🔓"], ["extortion", "⚠️"], ["harassment", "🗣️"], ["impersonation", "🎭"],
+  ["privacy_violation", "📷"], ["device_hacked", "💻"], ["identity_shared", "🆔"], ["business_fraud", "🏢"], ["suspicious_only", "✉️"]];
 
 function header(u) { return `<div class="wahead"><img src="${LOGO}" alt=""><div><b>${esc(u.title)} ${BADGE}</b><small>${esc(u.verified)}</small></div></div>`; }
 function composer(text = "") { return `<div class="composer"><div class="field" data-typed>${esc(text)}</div><div class="send"></div></div>`; }
@@ -161,6 +180,8 @@ function build(u) {
         ${u.reasons.map((r, i) => `<div data-at="${3.4 + i * 0.5}">• ${esc(r)}</div>`).join("")}</div>
       <div class="btns" data-at="5.0"><div class="btn">${esc(u.wa.buttons.report)}</div><div class="btn" data-tapat="8.6">${esc(u.wa.buttons.scammed)}</div><div class="btn">${esc(u.wa.buttons.again)}</div></div>
       </div>${composer()}</div></div>`,
+    cases: `<div class="casepanel"><h3 data-at="0.1">${esc(u.cases_title)}</h3><div class="cases">
+      ${CASES.map(([k, ic], i) => `<div class="case" data-at="${0.5 + i * 0.45}"><span class="ic">${ic}</span><span>${esc(u.wa.playbooks[k])}</span></div>`).join("")}</div></div>`,
     help: `<div class="phone"><div class="screen">${header(u)}<div class="chat">
       <div class="out" data-at="3.4" style="font-weight:600">${esc(u.wa.playbooks.money_sent)}</div>
       <div class="in" data-at="4.0"><b>${esc(u.help_title)}</b>
@@ -173,8 +194,11 @@ function build(u) {
     report: `<div class="phone"><div class="screen"><div class="wahead"><img src="${LOGO}" alt=""><div><b>${esc(u.title)}</b><small>${esc(u.report_title)}</small></div></div><div class="app">
       <div class="apph" data-at="0.2">${esc(u.report_title)}</div>
       <div class="voice" data-at="0.5"><span class="play">▶</span><div class="bars">${Array.from({ length: 20 }, (_, i) => `<i data-wave="${i}"></i>`).join("")}</div></div>
-      ${u.fields.map((f, i) => `<div class="fld" data-at="${3.2 + i * 0.7}"><span style="color:#5B6770">${esc(f[0])}</span><b>${esc(f[1])} ${TICK}</b></div>`).join("")}
-      <div class="ready" data-at="5.8" style="margin-top:auto">${PDF}<span>${esc(u.ready)}</span></div>
+      ${u.fields.map((f, i) => `<div class="fld" data-at="${2.6 + i * 0.6}"><span style="color:#5B6770">${esc(f[0])}</span><b>${esc(f[1])} ${TICK}</b></div>`).join("")}
+      <div class="ready" data-at="4.6">${PDF}<span>${esc(u.ready)}</span></div>
+      <div class="uae" data-at="5.6" data-tapat="6.6">🪪 ${esc(u.uaepass)}</div>
+      <div class="okrow" data-at="7.2">${TICK}<span>${esc(u.id_ok)}</span></div>
+      <div class="ready" data-at="8.2" style="background:#0A4740;border-color:#0A4740;color:#fff">📨 <span>${esc(u.sent)}</span></div>
       </div></div></div>`,
     radar: `<div class="phone"><div class="screen">${header(u)}<div class="chat">
       <div class="btns"><div class="btn" data-tapat="0.7">${esc(u.wa.buttons.report)}</div></div>
@@ -186,15 +210,25 @@ function build(u) {
         <div class="chip" data-at="6.8" style="background:#0A4740;color:#fff">🛡️ ${esc(u.alert)}</div></div>
       <div class="official" data-at="8.2">📢 ${esc(u.official)}</div>
       </div></div></div>`,
+    broadcast: `<div class="phone"><div class="screen">${header(u)}
+      <div class="notif" data-at="0.5" data-until="3.4"><div class="app"><span class="waicon" style="width:22px;height:22px"></span>${esc(u.notif_app)}</div>
+        <b>📢 ${esc(u.alert_title)}</b><p>${esc(u.alert_text)}</p></div>
+      <div class="chat"><div class="sys" data-at="3.0">${esc(u.official)}</div>
+      <div class="alertmsg" data-at="3.4"><b>📢 ${esc(u.alert_title)}</b>${esc(u.alert_text)}</div>
+      <div class="btns" data-at="4.2"><div class="btn">${esc(u.alert_btn)}</div></div>
+      <div class="in" data-at="6.0" style="max-width:92%">${esc(u.tip)}</div>
+      </div>${composer()}</div></div>`,
     langs: `<div class="phone"><div class="screen">${header(u)}<div class="app">
       <div class="apph" data-at="0.2" style="font-size:22px">${esc(u.choose_lang)}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${["العربية", "English", "اردو", "हिन्दी"].map((l, i) => `<div class="lang ${l === u.native ? "on" : ""}" data-at="${0.5 + i * 0.4}">${l}</div>`).join("")}</div>
-      <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px"><div class="priv" data-at="3.4">${LOCK}<span>${esc(u.privacy[0])}</span></div>
-      <div class="priv" data-at="4.2">${EYE}<span>${esc(u.privacy[1])}</span></div></div>
+      <div class="more" data-at="2.4">+ ${esc(u.more_langs)}<div style="font-size:17px;color:#5B6770;font-weight:500">${esc(u.more_note)}</div></div>
+      <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px"><div class="priv" data-at="4.4">${LOCK}<span>${esc(u.privacy[0])}</span></div>
+      <div class="priv" data-at="5.2">${EYE}<span>${esc(u.privacy[1])}</span></div></div>
       </div></div></div>`,
     outro: `<div class="slogan"><div class="s1" data-at="0.3">${esc(u.slogan1)}</div><div class="s2" data-at="0.9">${esc(u.slogan2)}</div>
-      <div class="soon" data-at="2.0"><span class="waicon" style="background:#fff"></span>${esc(u.soon)}</div>
-      <div class="note" data-at="2.6">${esc(u.wa.footer)}</div></div>`,
+      <div class="guards" data-at="1.6">${esc(u.guards)}</div>
+      <div class="soon" data-at="2.6"><span class="waicon" style="background:#fff"></span>${esc(u.soon)}</div>
+      <div class="note" data-at="3.2">${esc(u.wa.footer)}</div></div>`,
   };
   const panel = document.getElementById("panel");
   D.scenes.forEach((k, i) => {
@@ -235,7 +269,10 @@ function render(t) {
 
   // caption next to Haris
   const cap = document.getElementById("cap");
-  if (cap.dataset.k !== String(k)) { cap.textContent = D.ui.captions[k]; cap.dataset.k = String(k); }
+  if (cap.dataset.k !== String(k)) {
+    cap.innerHTML = esc(D.ui.captions[k]) + ((D.future || []).includes(D.scenes[k]) ? `<br><span class="badge">⏳ ${esc(D.ui.coming)}</span>` : "");
+    cap.dataset.k = String(k);
+  }
   const co = Math.min(ease((lt - 0.2) / 0.4), ease((dur - lt) / 0.3));
   const bub = document.getElementById("bubble");
   bub.style.opacity = String(co);
@@ -313,7 +350,7 @@ function render(t) {
     const up = ease((lt - 0.1) / 0.6), down = ease((dur - lt - 0.1) / 0.5);
     arm = 18 + 34 * Math.min(up, down) + Math.sin(t * 2.6) * 3;
   }
-  document.getElementById("armL").setAttribute("transform", `rotate(${arm} 205 348)`);
+  document.getElementById("armL").setAttribute("transform", `rotate(${arm} 244 346)`);
 }
 </script>
 </body>

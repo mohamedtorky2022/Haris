@@ -206,7 +206,8 @@ def data(lang: str) -> dict:
     durations = [round(d * slow, 4) for d in journey["durations"]]
     total = LEAD + sum(durations)
     return {"lang": lang, "dir": spec["dir"], "font": spec["font"], "ui": ui, "lead": LEAD, "slow": slow,
-            "blocks": blocks, "durations": durations, "scenes": journey["scenes"], "total": total}
+            "blocks": blocks, "durations": durations, "scenes": journey["scenes"], "future": journey.get("future", []),
+            "total": total}
 
 
 def open_page(p, d):
