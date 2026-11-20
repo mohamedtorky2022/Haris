@@ -96,7 +96,8 @@ def _call(system: str, content, max_tokens: int, timeout: float) -> str | None:
         with urllib.request.urlopen(request, timeout=timeout) as resp:
             payload = json.load(resp)
         return "".join(part.get("text", "") for part in payload.get("content", []))
-    except (urllib.error.URLError, TimeoutError, ValueError, KeyError) as exc:
+    except (OSError, ValueError, KeyError) as exc:
+        # OSError covers URLError and socket.timeout (not a TimeoutError on Python 3.9).
         # Log the error type only: never the message content.
         log.warning("LLM call failed: %s", type(exc).__name__)
         return None
@@ -138,7 +139,7 @@ def _call_gemini(system: str, content, max_tokens: int, timeout: float) -> str |
         return "".join(p.get("text", "") for p in parts if not p.get("thought"))
     except urllib.error.HTTPError as exc:
         log.warning("Gemini call failed: HTTP %s", exc.code)
-    except (urllib.error.URLError, TimeoutError, ValueError, KeyError, IndexError) as exc:
+    except (OSError, ValueError, KeyError, IndexError) as exc:  # OSError includes socket.timeout
         log.warning("Gemini call failed: %s", type(exc).__name__)
     return None
 

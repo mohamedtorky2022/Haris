@@ -2,6 +2,7 @@
 
     python scripts/evaluate.py          # rules engine only
     python scripts/evaluate.py --ai     # rules plus the AI (needs a key in .env); slower
+    python scripts/evaluate.py --ai --hard   # new wording the rules were not written for
 
 With --ai, the model never sees the message it is judging among its examples.
 
@@ -13,6 +14,7 @@ from __future__ import annotations
 
 import json
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -42,26 +44,34 @@ def main() -> int:
             print("No AI key found in .env (ANTHROPIC_API_KEY or GEMINI_API_KEY).")
             return 1
         print(f"AI on: {llm.provider()} / {llm.model_name()}\n")
-    samples = json.loads((ROOT / "data" / "samples" / "messages.json").read_text(encoding="utf-8"))
-    caught = missed = false_alarms = clean = 0
-    print(f"{'id':<20} {'label':<6} {'risk':<7} score  category")
+    name = "hard" if "--hard" in sys.argv else "messages"
+    samples = json.loads((ROOT / "data" / "samples" / f"{name}.json").read_text(encoding="utf-8"))
+    print(f"Set: data/samples/{name}.json ({len(samples)} messages)\n")
+    count = {"rules": [0, 0], "final": [0, 0]}  # [scams caught, false alarms]
+    ai_answered = 0
+    print(f"{'id':<22} {'label':<6} {'rules':<7} {'final':<7} category")
     for s in samples:
-        r = analyze(s["text"], use_llm=use_ai)
+        rules = analyze(s["text"], use_llm=False)
+        r = analyze(s["text"], use_llm=True) if use_ai else rules
+        ai_answered += r.get("engine") == "rules+ai"
+        for key, res in (("rules", rules), ("final", r)):
+            flagged = res["risk"] in ("medium", "high")
+            count[key][0 if s["label"] == "scam" else 1] += flagged
         flagged = r["risk"] in ("medium", "high")
-        if s["label"] == "scam":
-            caught += flagged
-            missed += not flagged
-        else:
-            false_alarms += flagged
-            clean += not flagged
         mark = "" if flagged == (s["label"] == "scam") else "  <-- wrong"
-        print(f"{s['id']:<20} {s['label']:<6} {r['risk']:<7} {r['score']:>5}  {r['category']}{mark}")
+        print(f"{s['id']:<22} {s['label']:<6} {rules['risk']:<7} {r['risk']:<7} {r['category']}{mark}")
+        if use_ai:
+            time.sleep(1)  # stay well inside the free tier's per-minute limit
 
-    scams, legit = caught + missed, false_alarms + clean
+    scams = sum(s["label"] == "scam" for s in samples)
+    legit = len(samples) - scams
     print()
-    print(f"Scams caught:  {caught}/{scams} ({caught / scams:.0%})")
-    print(f"False alarms:  {false_alarms}/{legit} ({false_alarms / legit:.0%})")
-    return 0 if missed == 0 and false_alarms == 0 else 1
+    print(f"Rules only:   scams caught {count['rules'][0]}/{scams}, false alarms {count['rules'][1]}/{legit}")
+    if use_ai:
+        print(f"Rules + AI:   scams caught {count['final'][0]}/{scams}, false alarms {count['final'][1]}/{legit}")
+        print(f"AI answered:  {ai_answered}/{len(samples)} (the rest fell back to the rules)")
+    caught, alarms = count["final"]
+    return 0 if caught == scams and alarms == 0 else 1
 
 
 if __name__ == "__main__":

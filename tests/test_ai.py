@@ -81,3 +81,16 @@ def test_teaching_saves_a_redacted_example(tmp_path, monkeypatch):
     assert any("bank_impersonation" == e.get("category") for e in examples.load())
     with pytest.raises(ValueError):
         examples.add("x", "maybe")
+
+
+def test_slow_reply_falls_back_instead_of_crashing(monkeypatch):
+    import socket
+    for provider, key in (("gemini", "GEMINI_API_KEY"), ("anthropic", "ANTHROPIC_API_KEY")):
+        monkeypatch.setenv(key, "k")
+        monkeypatch.setenv("HARIS_AI_PROVIDER", provider)
+
+        def slow(*a, **k):
+            raise socket.timeout("The read operation timed out")
+
+        monkeypatch.setattr(llm.urllib.request, "urlopen", slow)
+        assert llm.assess("text", [], [], "en") is None

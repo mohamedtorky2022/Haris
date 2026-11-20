@@ -313,7 +313,7 @@ def send(to: str, message: dict) -> bool:
     except urllib.error.HTTPError as err:
         detail = err.read(400).decode("utf-8", "replace")
         log.warning("WhatsApp send failed: HTTP %s %s", err.code, detail)
-    except (urllib.error.URLError, TimeoutError) as err:
+    except OSError as err:  # URLError and socket.timeout (not a TimeoutError on Python 3.9)
         log.warning("WhatsApp send failed: %s", err)
     return False
 

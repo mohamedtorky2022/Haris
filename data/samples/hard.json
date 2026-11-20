@@ -1,0 +1,102 @@
+[
+ {
+  "id": "hard-ar-friend",
+  "label": "scam",
+  "text": "هلا خوي، هذا رقمي الجديد، تلفوني خرب. ممكن تسوي لي خدمة؟ أبي أدفع فاتورة ضرورية اليوم وبرجع لك المبلغ بكرة إن شاء الله"
+ },
+ {
+  "id": "hard-en-family",
+  "label": "scam",
+  "text": "Hi mum, my phone fell in water so this is my new number. Can you help me with a payment today? I will explain later"
+ },
+ {
+  "id": "hard-ar-support",
+  "label": "scam",
+  "text": "تهانينا! تم اختيارك ضمن برنامج دعم الأسر المواطنة. لاستكمال صرف المبلغ يرجى تأكيد بيانات حسابك مع الموظف المختص"
+ },
+ {
+  "id": "hard-ar-job",
+  "label": "scam",
+  "text": "مرحبا، أنا من فريق التوظيف. عندنا وظيفة من البيت: تقييم منتجات على الإنترنت، دخل يومي 300 درهم. تواصل معي على تيليجرام"
+ },
+ {
+  "id": "hard-en-wrongnum",
+  "label": "scam",
+  "text": "Hello, is this David? Sorry, wrong number. You seem kind, where are you from? I work in crypto trading in Dubai, maybe we can be friends"
+ },
+ {
+  "id": "hard-ar-landlord",
+  "label": "scam",
+  "text": "السلام عليكم، أنا صاحب الشقة اللي سألت عنها. أنا مسافر حالياً، حوّل مبلغ الحجز عشان أرسل لك المفتاح مع شركة الشحن"
+ },
+ {
+  "id": "hard-en-ceo",
+  "label": "scam",
+  "text": "Hi, it's Ahmed (CEO). I'm in a meeting and can't talk. I need you to buy 5 Apple gift cards for a client today, keep it confidential, send me the codes"
+ },
+ {
+  "id": "hard-ar-telecom",
+  "label": "scam",
+  "text": "عزيزي المشترك، رصيد نقاطك 8,450 نقطة ينتهي الليلة. استبدلها الآن بهدايا قبل الحذف، الرد على هذه الرسالة لتفعيل الاستبدال"
+ },
+ {
+  "id": "hard-ur-relative",
+  "label": "scam",
+  "text": "بیٹا میں تمہارا چاچا ہوں، یہ میرا نیا نمبر ہے۔ ہسپتال میں ہوں، فوراً کچھ پیسے بھیج دو، بعد میں بات کرتا ہوں"
+ },
+ {
+  "id": "hard-hi-kyc",
+  "label": "scam",
+  "text": "नमस्ते, आपका बैंक खाता आज रात बंद हो जाएगा क्योंकि KYC अधूरा है। हमारे अधिकारी से अभी बात करें और जानकारी पूरी करें"
+ },
+ {
+  "id": "hard-en-delivery-call",
+  "label": "scam",
+  "text": "This is the courier. Your package can't be delivered, please share the code we just sent to your phone so I can confirm the address"
+ },
+ {
+  "id": "hard-ar-investor",
+  "label": "scam",
+  "text": "فرصة استثمارية مضمونة مع شريك إماراتي معروف، أرباح أسبوعية ثابتة بدون مخاطرة، المقاعد محدودة، كلمني خاص"
+ },
+ {
+  "id": "hard-ar-otp-real",
+  "label": "legit",
+  "text": "رمز التحقق لعملية الدخول إلى تطبيق البنك هو 482913. لا تشارك هذا الرمز مع أي شخص، البنك لن يطلبه منك أبداً."
+ },
+ {
+  "id": "hard-en-bank-real",
+  "label": "legit",
+  "text": "Your card ending 4417 was used for AED 120.00 at CARREFOUR on 20 Nov. If you don't recognise this, call the number on the back of your card."
+ },
+ {
+  "id": "hard-ar-family-real",
+  "label": "legit",
+  "text": "يا ماما وصلت المطار، الرحلة تأخرت شوي، بكلمك أول ما أوصل البيت"
+ },
+ {
+  "id": "hard-en-friend-money",
+  "label": "legit",
+  "text": "Hey, thanks for lunch yesterday! I owe you 45 dirhams, I'll transfer it tonight"
+ },
+ {
+  "id": "hard-ar-job-real",
+  "label": "legit",
+  "text": "شكراً لتقديمك على وظيفة محاسب. نود دعوتك لمقابلة في مكتبنا يوم الأحد الساعة 10 صباحاً، يرجى إحضار نسخة من السيرة الذاتية."
+ },
+ {
+  "id": "hard-ar-gov-real",
+  "label": "legit",
+  "text": "تذكير: موعد تجديد بطاقة الهوية الإماراتية بعد 30 يوماً. يمكنك التجديد عبر الموقع أو التطبيق الرسمي للهيئة."
+ },
+ {
+  "id": "hard-ur-family-real",
+  "label": "legit",
+  "text": "امی میں دفتر سے نکل گیا ہوں، آدھے گھنٹے میں گھر پہنچ جاؤں گا"
+ },
+ {
+  "id": "hard-hi-delivery-real",
+  "label": "legit",
+  "text": "आपका ऑर्डर आज शाम 6 बजे तक पहुँच जाएगा। डिलीवरी के समय कोई कोड नहीं माँगा जाएगा।"
+ }
+]
