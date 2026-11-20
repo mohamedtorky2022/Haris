@@ -112,6 +112,9 @@ def wait(calls: int) -> None:
         time.sleep(PACE * calls)
 
 
+VISITOR_LANGS = {"en": ["British", "German", "American", "Australian"], "ru": ["Russian", "Kazakh", "Ukrainian"]}
+
+
 def _generated(count: int) -> list:
     random.seed(7)  # the officer's pace in _backdate
     rng = random.Random(42)
@@ -123,7 +126,13 @@ def _generated(count: int) -> list:
                 "scammer_identifiers": [i.format(n=n) for i in ids], "evidence": ["1"] * rng.randint(0, 3)}
         if method:
             data.update(amount=str(amount), payment_method=method)
-        out.append((lang, rng.choice(inbox.EMIRATES), rng.random() < 0.8, data, rng))
+        visitor = None
+        if lang in VISITOR_LANGS and rng.random() < 0.6:  # tourists: no Emirates ID, a flight home
+            visitor = {"nationality": rng.choice(VISITOR_LANGS[lang]), "departure": rng.choice(
+                ["within_3_days", "within_3_days", "within_week", "later", "unknown"]),
+                "contact_abroad": f"visitor{n}@example.com", "identity": rng.choice(["uae_pass_visitor", "passport"])}
+        emirate = rng.choice(["dubai", "dubai", "abu_dhabi", "ras_al_khaimah"]) if visitor else rng.choice(inbox.EMIRATES)
+        out.append((lang, emirate, rng.random() < 0.8, data, rng, visitor))
     return out
 
 
@@ -169,8 +178,8 @@ def main() -> None:
     hacked = next((i["reference"] for i in inbox.queue()["items"] if i["incident_type"] == "account_hacked"), None)
     if hacked:
         inbox.act(hacked, "receive")
-    for lang, emirate, verified, data, rng in _generated(max(0, args.count - len(REPORTS))):
-        r = inbox.submit(data, lang, emirate, verified)
+    for lang, emirate, verified, data, rng, visitor in _generated(max(0, args.count - len(REPORTS))):
+        r = inbox.submit(data, lang, emirate, verified, visitor=visitor)
         other = lang != "ar"
         wait(2 if other else 0)
         ref, roll = r["reference"], rng.random()
@@ -195,7 +204,8 @@ def main() -> None:
     s = inbox.queue()["stats"]
     print(f"\n{made} fictional reports in {os.path.relpath(inbox._settings()['db'], ROOT)}: "
           f"{s['new']} new, {s['in_progress']} in progress, {s['closed']} closed, {s['urgent']} urgent or critical open")
-    print(f"Open cases by language: {s['by_lang']}; needing a translator: {s['needs_translator']}")
+    print(f"Open cases by language: {s['by_lang']}; needing a translator: {s['needs_translator']}; "
+          f"visitors: {s['visitors']} ({s['leaving_soon']} leaving within 3 days)")
 
 
 if __name__ == "__main__":

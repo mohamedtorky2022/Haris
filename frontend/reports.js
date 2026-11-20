@@ -13,6 +13,7 @@
                      device_hacked: "اختراق جهاز", identity_shared: "مشاركة بيانات الهوية", business_fraud: "احتيال على منشأة",
                      suspicious_only: "رسالة مشبوهة دون ضرر" };
   const LANG = { ar: "العربية", en: "الإنجليزية", ur: "الأردية", hi: "الهندية" };
+  const DEPARTURE = { within_3_days: "يغادر الدولة خلال 3 أيام", within_week: "يغادر خلال أسبوع", later: "يغادر بعد أكثر من أسبوع", unknown: "موعد المغادرة غير معروف" };
   const HINT = {
     critical: "حالة حرجة: تواصل فوراً مع غرفة العمليات، واطلب من المُبلّغ الاتصال بـ 999 إن كان في خطر.",
     financial: "عاجلة مالياً: أبلغ وحدة الاحتيال في البنك الآن، فالساعة الأولى هي الأهم لتجميد المبلغ.",
@@ -25,6 +26,7 @@
   const showClosed = document.getElementById("show-closed");
   const emirateFilter = document.getElementById("emirate");
   const langFilter = document.getElementById("lang");
+  const visitorsOnly = document.getElementById("visitors-only");
   let token = "";
   try { token = sessionStorage.getItem("haris.authority") || ""; } catch { /* storage blocked */ }
   let selected = "";
@@ -88,6 +90,7 @@
     b.append(el("span", { class: "what" }, [
       el("span", { text: INCIDENT[r.incident_type] || r.incident_title }),
       r.lang !== "ar" ? el("span", { class: "lang-chip", text: `🗣️ ${LANG[r.lang]}` }) : null,
+      r.visitor ? el("span", { class: `lang-chip visitor${r.leaving_soon ? " soon" : ""}`, text: r.leaving_soon ? "🧳 زائر · يغادر خلال 3 أيام" : "🧳 زائر" }) : null,
       r.needs_translator ? el("span", { class: "lang-chip warn", text: "يحتاج مترجماً" }) : null,
     ]));
     b.append(el("p", { class: "meta", text: [EMIRATE[r.emirate], money(r), ago(r.created_at)].filter(Boolean).join(" · ") }));
@@ -103,7 +106,7 @@
     const tr = f.translation || {};
     const pairs = [
       ["النوع", INCIDENT[d.incident_type] || d.incident_title],
-      ["الإمارة", `${EMIRATE[d.emirate]} (الجهة المختصة حسب إقامة المُبلّغ)`],
+      ["الإمارة", d.fields.visitor ? `${EMIRATE[d.emirate]} (حيث يقيم الزائر الآن)` : `${EMIRATE[d.emirate]} (الجهة المختصة حسب إقامة المُبلّغ)`],
       ["وقت الحادثة", both(tr.occurred_at, f.occurred_at)],
       ["المبلغ", money(f) || "—"],
       ["طريقة الدفع", both(tr.payment_method, f.payment_method)],
@@ -127,9 +130,20 @@
         el("span", { class: `sts ${d.status}`, text: STATUS[d.status] }),
         el("h2", {}, ltr(d.reference)),
       ]),
-      el("span", { class: d.verified ? "verified" : "verified no",
-                   text: d.verified ? "✔ هوية مؤكدة (تأكيد تجريبي، UAE PASS عند الربط الرسمي)" : "هوية غير مؤكدة" }),
+      el("span", { class: d.verified ? "verified" : "verified no", text: !d.verified ? "هوية غير مؤكدة"
+        : (d.fields.visitor || {}).identity === "uae_pass_visitor" ? "✔ هوية زائر مؤكدة بحساب UAE PASS للزوار (تأكيد تجريبي)"
+        : (d.fields.visitor || {}).identity === "passport" ? "✔ هوية زائر مؤكدة بجواز السفر (تأكيد تجريبي)"
+        : "✔ هوية مؤكدة (تأكيد تجريبي، UAE PASS عند الربط الرسمي)" }),
     ];
+    const v = d.fields.visitor;
+    if (v) {
+      const who = ["🧳 المُبلّغ زائر وليس مقيماً", v.nationality ? `الجنسية: ${v.nationality}` : "", DEPARTURE[v.departure]].filter(Boolean).join(" · ");
+      parts.push(el("div", { class: `visitor-banner${v.departure === "within_3_days" ? " soon" : ""}` }, [
+        el("strong", { text: who }),
+        el("span", { text: `يُقترح تحويله لشرطة السياحة في ${EMIRATE[d.emirate]}، فهي تتابع قضايا الزوار حتى بعد مغادرتهم.${v.departure === "within_3_days" ? " تقدّم البلاغ في الطابور لأن المُبلّغ يغادر قريباً: خذ إفادته وبيانات بنكه قبل سفره." : ""}` }),
+        v.contact_abroad ? el("span", {}, ["التواصل بعد سفره: ", ltr(v.contact_abroad)]) : null,
+      ]));
+    }
     if (HINT[d.priority] && d.status !== "closed") parts.push(el("p", { class: `hint ${d.priority}`, text: HINT[d.priority] }));
     const f = d.fields;
     const tr = f.translation || {};
@@ -228,9 +242,10 @@
     document.getElementById("n-wait").textContent = s.avg_minutes_to_receive ?? "—";
     document.getElementById("retention").textContent = s.retention_days;
     document.getElementById("by-lang").textContent = Object.entries(s.by_lang || {}).filter(([, n]) => n)
-      .map(([l, n]) => `${LANG[l]} ${n}`).join(" · ") + (s.needs_translator ? ` · يحتاج مترجماً ${s.needs_translator}` : "");
+      .map(([l, n]) => `${LANG[l]} ${n}`).join(" · ") + (s.needs_translator ? ` · يحتاج مترجماً ${s.needs_translator}` : "")
+      + (s.visitors ? ` · 🧳 زوار ${s.visitors}${s.leaving_soon ? ` (يغادر قريباً ${s.leaving_soon})` : ""}` : "");
     const items = q.items.filter((r) => (showClosed.checked || r.status !== "closed") && (!emirateFilter.value || r.emirate === emirateFilter.value)
-      && (!langFilter.value || r.lang === langFilter.value));
+      && (!langFilter.value || r.lang === langFilter.value) && (!visitorsOnly.checked || r.visitor));
     list.replaceChildren(...(items.length ? items.map(row) : [el("p", { class: "empty", text: "لا توجد بلاغات." })]));
     document.getElementById("updated").textContent = `آخر تحديث: ${new Date().toLocaleTimeString("ar-AE")} · يتحدّث كل 5 ثوانٍ`;
     if (selected) {
@@ -251,6 +266,7 @@
   showClosed.addEventListener("change", refresh);
   emirateFilter.addEventListener("change", refresh);
   langFilter.addEventListener("change", refresh);
+  visitorsOnly.addEventListener("change", refresh);
 
   refresh();
   setInterval(refresh, 5000);

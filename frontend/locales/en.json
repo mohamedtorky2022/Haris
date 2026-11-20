@@ -157,5 +157,21 @@
  "newsClosed": "Your report {ref} was closed.",
  "newsClosedNote": "Your report {ref} was closed, with this note from the authority:\n“{note}”",
  "fromAuthority": "From the authority:",
- "authoritySafety": "🔒 The authority will never ask you for a verification code, a password or a card number."
+ "authoritySafety": "🔒 The authority will never ask you for a verification code, a password or a card number.",
+ "residencyQ": "Do you live in the UAE, or are you visiting?",
+ "resident": "I live here",
+ "visitor": "Visitor or tourist",
+ "qStaying": "Which emirate are you staying in now? The report goes to the authority there.",
+ "departureQ": "When do you leave the UAE? If you fly soon, your report moves up the queue.",
+ "dep_within_3_days": "Within 3 days",
+ "dep_within_week": "Within a week",
+ "dep_later": "In more than a week",
+ "dep_unknown": "Not sure yet",
+ "nationalityQ": "What is your nationality? It helps the authority work with your embassy if needed.",
+ "contactAbroadQ": "How can the authority reach you after you fly? Type your e-mail or a WhatsApp number with the country code.",
+ "authConsentVisitor": "Everything in the report file will be sent to the authority, except the screenshots: they stay with you. It also says you are a visitor, when you leave, and your nationality and contact if you gave them. The report is kept for {days} days only, then deleted automatically. No Emirates ID needed: confirm your identity with a UAE PASS visitor account, or with your passport.",
+ "uaePassVisitor": "UAE PASS visitor (passport)",
+ "passportVerify": "No UAE PASS: confirm with my passport",
+ "passportDone": "✔ Identity confirmed with your passport (simulated).",
+ "visitorSent": "🧳 You are visiting: the report will be suggested for the Tourism Police, who follow it even after you leave the UAE. Keep the report number for your travel insurance."
 }

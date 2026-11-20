@@ -111,3 +111,9 @@ details.original blockquote { margin-top: 6px; opacity: 0.85; }
 .version strong { font-size: 13px; }
 button[data-approve]:disabled { opacity: 0.5; cursor: not-allowed; }
 @media (max-width: 900px) { .versions { grid-template-columns: 1fr; } }
+
+/* Visitors: no Emirates ID, a flight home */
+.lang-chip.visitor { color: #5b3c00; background: #f9eeda; }
+.lang-chip.visitor.soon { color: #fff; background: #b54708; }
+.visitor-banner { margin: 0 0 12px; padding: 8px 12px; border-radius: 8px; background: #f9eeda; color: #5b3c00; display: grid; gap: 3px; font-size: 14px; }
+.visitor-banner.soon { background: #fdecec; color: #8e1414; }

@@ -165,6 +165,11 @@
     if (!pb) return;
     bubble([el("h3", { text: pb.title }), el("p", { text: tr("steps") }), list(pb.steps, true)]);
     bubble(contactsBlock(pb.contacts));
+    if (pb.visitor) {
+      // A tourist has no Emirates ID and a card from a bank abroad: the same plan, a few things differ.
+      const v = pb.visitor;
+      bubble([el("h3", { text: `🧳 ${v.title}` }), list(v.tips), ...contactsBlock(v.contacts).slice(1)]);
+    }
     setChips([
       ...(id === "suspicious_only" ? [[tr("reportIt"), askRadar]] : []),
       [tr("report"), () => startReport(id)],
@@ -176,7 +181,7 @@
     return [el("h3", { text: tr("contacts") }), ...contacts.map((c) => {
       const href = c.value.startsWith("http") ? c.value
         : c.value.includes("@") ? `mailto:${c.value}`
-        : c.id.endsWith("_sms") ? `sms:${c.value}` : `tel:${c.value}`;
+        : c.id.endsWith("_sms") ? `sms:${c.value}` : `tel:${c.value.replace(/\s/g, "")}`;
       const a = el("a", { href, text: c.value.replace("https://", "") });
       if (href.startsWith("http")) { a.setAttribute("target", "_blank"); a.setAttribute("rel", "noopener noreferrer"); }
       return el("div", { class: "contact" }, [el("span", { text: c.label }), a]);
@@ -380,7 +385,7 @@
     parts.push(actions);
     bubble(parts);
     fileReference = r.reference;
-    setChips([[tr("sendAuthority"), chooseEmirate], [tr("checkAnother"), askCheck], [tr("menuBack"), menu]]);
+    setChips([[tr("sendAuthority"), chooseResidency], [tr("checkAnother"), askCheck], [tr("menuBack"), menu]]);
   }
 
   // ---- Send the report to the authority (demo), then follow its status ----
@@ -390,25 +395,71 @@
   let fileReference = "";
   const refText = (ref) => `⁦${ref.replaceAll("-", "‑")}⁩`;
 
+  // Residents confirm with UAE PASS and their Emirates ID; visitors have none, so they take their own path.
+  let visitor = null;
+
+  function chooseResidency() {
+    bubble(tr("residencyQ"));
+    setChips([[tr("resident"), () => { visitor = null; chooseEmirate(); }],
+              [tr("visitor"), () => { visitor = {}; chooseEmirate(); }]]);
+  }
+
   function chooseEmirate() {
-    bubble(tr("qEmirate"));
-    setChips(EMIRATES.map((e) => [UI[lang].emirates[e], () => authorityConsent(e)]));
+    bubble(tr(visitor ? "qStaying" : "qEmirate"));
+    setChips(EMIRATES.map((e) => [UI[lang].emirates[e], () => (visitor ? askDeparture(e) : authorityConsent(e))]));
+  }
+
+  function askDeparture(emirate) {
+    bubble(tr("departureQ"));
+    setChips(["within_3_days", "within_week", "later", "unknown"].map((d) =>
+      [tr(`dep_${d}`), () => { visitor.departure = d; askVisitorText("nationality", emirate); }]));
+  }
+
+  // Two typed answers (nationality, then a contact for after they fly), each one can be skipped.
+  let visitorStep = null;
+  function askVisitorText(field, emirate) {
+    visitorStep = { field, emirate };
+    mode = "visitor";
+    bubble(tr(field === "nationality" ? "nationalityQ" : "contactAbroadQ"));
+    setChips([[tr("skip"), () => visitorAnswer("")]]);
+    input.focus();
+  }
+
+  function visitorAnswer(text) {
+    const { field, emirate } = visitorStep;
+    visitor[field === "nationality" ? "nationality" : "contact_abroad"] = text.trim();
+    if (field === "nationality") return askVisitorText("contact", emirate);
+    mode = "check";
+    visitorStep = null;
+    authorityConsent(emirate);
   }
 
   async function authorityConsent(emirate) {
     let days = 7;
     try { days = (await (await fetch("/api/health")).json()).inbox_retention_days || days; } catch { /* keep the default */ }
+    if (visitor) {
+      bubble([el("p", { text: tr("authConsentVisitor", { days }) }), el("p", { class: "note", text: tr("uaePassDemo") })]);
+      setChips([[tr("uaePassVisitor"), () => sendToAuthority(emirate, "uae_pass_visitor")],
+                [tr("passportVerify"), () => sendToAuthority(emirate, "passport")], [tr("cancel"), menu]]);
+      return;
+    }
     bubble([el("p", { text: tr("authConsent", { days }) }), el("p", { class: "note", text: tr("uaePassDemo") })]);
     setChips([[tr("uaePass"), () => sendToAuthority(emirate)], [tr("cancel"), menu]]);
   }
 
-  async function sendToAuthority(emirate) {
-    bubble(tr("uaePassDone"));
-    const r = await api("/api/reports", { ...draft, lang, emirate, consent: true, identity_confirmed: true, reference: fileReference });
+  async function sendToAuthority(emirate, visitorIdentity) {
+    bubble(tr(visitorIdentity === "passport" ? "passportDone" : "uaePassDone"));
+    const body = { ...draft, lang, emirate, consent: true, identity_confirmed: true, reference: fileReference };
+    if (visitor) {
+      body.visitor = { ...visitor, identity: visitorIdentity };
+      if (!body.reporter_contact && visitor.contact_abroad) body.reporter_contact = visitor.contact_abroad;
+    }
+    const r = await api("/api/reports", body);
     if (!r) return;
     store.set("haris.cases", JSON.stringify([{ ref: r.reference, token: r.token, emirate }, ...myCases()].slice(0, 10)));
     bubble([el("p", { text: tr("sentAuthority", { ref: refText(r.reference), emirate: UI[lang].emirates[emirate], status: r.status_label }) }),
-            el("p", { class: "note", text: tr("trackHint") })]);
+            el("p", { class: "note", text: tr("trackHint") }), visitor ? el("p", { class: "radar-line", text: tr("visitorSent") }) : null]);
+    visitor = null;
     setChips([[tr("myReports"), showCases], [tr("menuBack"), menu]]);
   }
 
@@ -564,6 +615,7 @@
     else if (mode === "report" && phase === "summary") { phase = "more"; sendStory(text, images); }
     else if (mode === "radar" && text) confirmReport(text);
     else if (mode === "reply" && text) sendReply(text);
+    else if (mode === "visitor" && text) visitorAnswer(text);
     else if (text) check(text);
   });
 
