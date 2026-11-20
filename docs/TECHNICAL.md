@@ -18,6 +18,8 @@ flowchart LR
     API --> PO[polish.py<br/>fix misheard dictation]
     API --> RA[radar.py<br/>campaign radar, SQLite]
     RA -->|confirmed campaigns| AUTH[Authority dashboard]
+    API --> IN[inbox.py<br/>reports sent to the authority, SQLite]
+    IN -->|queue by priority| REP[Reports dashboard]
     PO -->|numbers replaced by tokens| C
     API --> P[playbooks.py<br/>emergency plans + contacts]
     API --> RP[report.py<br/>police report, in memory]
@@ -176,6 +178,27 @@ A message nobody fell for is still evidence. The radar turns many such reports i
 
 **Safeguards.** Reports alone never block anyone: people can report an innocent number on purpose, and scammers spoof real numbers. The radar's wording counts reports ("reported by 12 people") and never says "this number is a scammer". The authority dashboard (`/authority.html`) opens only on the computer running Haris unless `HARIS_AUTHORITY_TOKEN` is set, and decisions use a two-click confirm with no browser dialogs.
 
+### Report inbox: `POST /api/reports`
+
+The report file is enough for a victim who files it themselves. Sending it from Haris shows the rest of the journey: the authority receives it, sorts it, and talks back to the victim. The inbox is a demo of that journey; it does not reach any real police system.
+
+1. **Consent first.** After the file is ready, "Send it to the authority" asks for the emirate, then shows what will be sent (every field of the file, no screenshots) and how long it is kept. The identity step stands in for UAE PASS and is labelled as simulated. The request is refused unless `consent` is true.
+2. **One case, one number.** The inbox keeps the reference of the victim's file (`HRS-YYYYMMDD-XXXXXX`) unless it is malformed or already used, so the victim, the file and the officer speak about the same number.
+3. **Triage** (`inbox.triage`), in order:
+
+| Priority | When | Why first |
+| --- | --- | --- |
+| Critical | a threat of violence or self-harm in any language, or a child mentioned in an extortion, harassment or privacy case | a life or a child may be at risk |
+| Financial | money sent or business fraud, unless the time says it was a week or more ago | the bank can still freeze the money in the first hours |
+| Medium | every other situation, and older fraud | serious, but no window is closing |
+| Indicator | a suspicious message with no harm yet | intelligence; the radar handles the campaign |
+
+4. **Routing.** Each case carries the emirate the victim chose; the dashboard filters by emirate. The demo names no police force.
+5. **Status.** `new → received → info_requested → received (after the victim answers) → closed`. Each step is an event with a time and an optional note; notes from the officer are shown to the victim in their language's status labels (`inbox` section of `backend/haris/locales/<lang>.json`). A closed case cannot be changed or answered.
+6. **Follow-up.** The submission returns a random status token. The server stores only its SHA-256 hash and compares it in constant time; the chat keeps the reference and token in the browser so "My reports" can show the status and send the victim's answer.
+
+**Storage.** `data/inbox.db` (SQLite, file mode 600), one row per case with the fields as JSON and the event log. Every access first deletes cases older than `HARIS_INBOX_RETENTION_DAYS` (default 7), whatever their status. The officer pages (`/reports.html`, `/authority.html`) use the same `require_authority` check as the radar: the computer running Haris only, or `X-Authority-Token`, which is always required behind a tunnel.
+
 ### WhatsApp channel: `/webhook/whatsapp`
 
 `whatsapp.py` puts the same engine behind WhatsApp's Cloud API, with no new dependency.
@@ -193,7 +216,7 @@ A message nobody fell for is still evidence. The radar turns many such reports i
 ### Principles
 
 1. **Data minimisation:** only the text the user chooses to paste is processed, and only for the duration of the request.
-2. **No storage of users:** checks, reports, screenshots and dictation are not stored or logged. API responses carry `Cache-Control: no-store`. The one exception is the campaign radar (below), which keeps only what belongs to the sender, and only when the user taps "Report it".
+2. **No storage of users:** checks, reports, screenshots and dictation are not stored or logged. API responses carry `Cache-Control: no-store`. Two exceptions, each only after the user asks for it: the campaign radar (below), which keeps only what belongs to the sender when the user taps "Report it", and the report inbox, which keeps a report the user sends to the authority for 7 days.
 3. **Redact before sharing:** no personal data leaves the server.
 4. **User control:** the police report is built for the user and handed back to them. Haris does not send it anywhere.
 5. **Honesty:** Haris always says it is an assistant, not the police, and never calls a message certainly safe.
@@ -211,6 +234,8 @@ A message nobody fell for is still evidence. The radar turns many such reports i
 | Dictated text sent for correction | Server memory; to Claude only if the AI is on, with numbers, links and e-mails replaced by tokens | Until the response is sent |
 | Dialect choice | The user's browser (localStorage) | Until the user clears site data |
 | Report sent to the campaign radar (user taps "Report it") | `data/radar.db` (SQLite): sender's phone numbers, e-mails, IBANs and link domains, the message text with the reporter's personal data redacted, the scam category, and a keyed hash of a random device id | 30 days (`HARIS_RADAR_RETENTION_DAYS`) |
+| Report sent to the authority (user presses "Send it to the authority" and confirms) | `data/inbox.db` (SQLite, readable by the server's user only): the report fields, the emirate, the number of screenshots (not the screenshots), whether identity was confirmed, a SHA-256 hash of the status token, and the case log | 7 days (`HARIS_INBOX_RETENTION_DAYS`) |
+| Reports the user sent | The user's browser (localStorage): reference number and status token only | Until the user clears site data |
 | Random device id for the radar | The user's browser (localStorage); the server keeps only an HMAC of it | Until the user clears site data |
 | Conversation in the browser | The page's memory only | Until the tab is closed or the language is switched |
 
@@ -238,6 +263,8 @@ The police report keeps the **scammer's** numbers and links on purpose, because 
 | Abuse or automated scanning of the API | 30 requests per minute per client by default; 5,000-character limit on text; list fields capped at 30 items |
 | Leaking personal data to a third party | Redaction before any AI call; the AI layer is optional and off by default |
 | Haris being impersonated by scammers | It never asks for codes, passwords or card details; a verified number and domain announced by the partner authority would be needed at launch |
+| Someone reads another person's case | Status and replies need the private token; the server keeps only its hash and compares in constant time; a guessed reference alone returns "not found" |
+| Holding victims' reports longer than needed | Deleted after 7 days whatever their status; no screenshots stored |
 | Using the tool offensively | It only analyses text. It never opens, scans or contacts the links or numbers it sees |
 
 ### Regulation
@@ -264,6 +291,7 @@ The design follows the data-minimisation and purpose-limitation principles of UA
 ## 7. Known limitations
 
 - The radar demo counts one browser as one person; a determined person could report many times from many browsers. Production should verify reporters (for example UAE PASS) and rate-limit per person.
+- The reports inbox is a demo: UAE PASS is simulated, reports stay on the Haris server instead of reaching the police, the SQLite file is not encrypted, and triage words are a short list. A launch connects to the partner's case system and its sign-in.
 - Rules only catch wording someone wrote down; new scams need the AI layer or a new rule.
 - Screenshots are read only when the AI is on; voice notes sent as audio files are not analysed yet. On WhatsApp, images and voice notes get a polite answer pointing to the app.
 - The WhatsApp demo runs on Meta's test number, which reaches only 5 verified phones. Its short-term memory (retries, rate limit, report tokens) lives in one server process; several servers would need a shared store such as Redis.
