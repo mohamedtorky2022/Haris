@@ -183,7 +183,7 @@ A message nobody fell for is still evidence. The radar turns many such reports i
 The report file is enough for a victim who files it themselves. Sending it from Haris shows the rest of the journey: the authority receives it, sorts it, and talks back to the victim. The inbox is a demo of that journey; it does not reach any real police system.
 
 1. **Consent first.** After the file is ready, "Send it to the authority" asks for the emirate, then shows what will be sent (every field of the file, no screenshots) and how long it is kept. The identity step stands in for UAE PASS and is labelled as simulated. The request is refused unless `consent` is true.
-2. **One case, one number.** The inbox keeps the reference of the victim's file (`HRS-YYYYMMDD-XXXXXX`) unless it is malformed or already used, so the victim, the file and the officer speak about the same number.
+2. **One case, one number.** The inbox keeps the reference of the victim's file (`HRS-YYYYMMDD-XXXXXX`, dated in UAE time, UTC+4) unless it is malformed or already used, so the victim, the file and the officer speak about the same number.
 3. **Triage** (`inbox.triage`), in order:
 
 | Priority | When | Why first |
