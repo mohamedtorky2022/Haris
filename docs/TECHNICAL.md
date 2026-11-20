@@ -178,6 +178,17 @@ A message nobody fell for is still evidence. The radar turns many such reports i
 
 **Safeguards.** Reports alone never block anyone: people can report an innocent number on purpose, and scammers spoof real numbers. The radar's wording counts reports ("reported by 12 people") and never says "this number is a scammer". The authority dashboard (`/authority.html`) opens only on the computer running Haris unless `HARIS_AUTHORITY_TOKEN` is set, and decisions use a two-click confirm with no browser dialogs.
 
+### Official warnings on WhatsApp (`alerts.py`)
+
+When the authority approves a campaign, its warning goes to every Haris WhatsApp subscriber, not only to people who happen to check a message.
+
+1. **Opt-in.** WhatsApp lets a business message only people who agreed. A user sends «تنبيهات» (ALERTS, الرٹس, अलर्ट), or presses the alerts button offered in the guide and after a report; «إيقاف» (STOP, بند, रोकें) removes them. Only a message that is exactly one of these words counts, so a scam message containing "stop" is still checked.
+2. **Delivery.** `radar.decide(..., "confirmed")` returns the new broadcast id, and the route runs `alerts.deliver` in the background after answering. Each subscriber gets the warning in their language, with the stop line. Outside 24 hours of a user's last message WhatsApp accepts only an approved template, so with `WHATSAPP_ALERT_TEMPLATE` set the warning is sent as that template (two body variables: title and text) in the nearest approved language. Without WhatsApp settings the delivery is simulated and counted. Sends are paced (20 a second) and counted as they go.
+3. **Dashboard.** "WhatsApp alerts" on `/authority.html` shows the subscribers by language, whether sending is live or simulated, and each delivery: reached, failed, still running.
+4. **Demo subscribers** (`scripts/alerts_demo.py`) have ids such as `demo-000123`, not phone numbers, and are always counted as simulated, even with WhatsApp connected.
+
+**Storage.** `data/alerts.db` (SQLite, file mode 600): each subscriber's WhatsApp number, language and join time, kept until they send STOP; and a delivery log with counts only, no numbers.
+
 ### Report inbox: `POST /api/reports`
 
 The report file is enough for a victim who files it themselves. Sending it from Haris shows the rest of the journey: the authority receives it, sorts it, and talks back to the victim. The inbox is a demo of that journey; it does not reach any real police system.
@@ -235,6 +246,7 @@ The report file is enough for a victim who files it themselves. Sending it from 
 | Dialect choice | The user's browser (localStorage) | Until the user clears site data |
 | Report sent to the campaign radar (user taps "Report it") | `data/radar.db` (SQLite): sender's phone numbers, e-mails, IBANs and link domains, the message text with the reporter's personal data redacted, the scam category, and a keyed hash of a random device id | 30 days (`HARIS_RADAR_RETENTION_DAYS`) |
 | Report sent to the authority (user presses "Send it to the authority" and confirms) | `data/inbox.db` (SQLite, readable by the server's user only): the report fields, the emirate, the number of screenshots (not the screenshots), whether identity was confirmed, a SHA-256 hash of the status token, and the case log | 7 days (`HARIS_INBOX_RETENTION_DAYS`) |
+| WhatsApp alert subscription (user sends «تنبيهات») | `data/alerts.db` (SQLite, readable by the server's user only): WhatsApp number, language, join time; a delivery log with counts only | Until the user sends «إيقاف» (STOP) |
 | Reports the user sent | The user's browser (localStorage): reference number and status token only | Until the user clears site data |
 | Random device id for the radar | The user's browser (localStorage); the server keeps only an HMAC of it | Until the user clears site data |
 | Conversation in the browser | The page's memory only | Until the tab is closed or the language is switched |
@@ -291,6 +303,7 @@ The design follows the data-minimisation and purpose-limitation principles of UA
 ## 7. Known limitations
 
 - The radar demo counts one browser as one person; a determined person could report many times from many browsers. Production should verify reporters (for example UAE PASS) and rate-limit per person.
+- WhatsApp alerts reach only people who subscribed, and on Meta's test number only 5 verified phones. Reaching everyone in the UAE needs the authority's own channel, such as a telecom cell broadcast.
 - The reports inbox is a demo: UAE PASS is simulated, reports stay on the Haris server instead of reaching the police, the SQLite file is not encrypted, and triage words are a short list. A launch connects to the partner's case system and its sign-in.
 - Rules only catch wording someone wrote down; new scams need the AI layer or a new rule.
 - Screenshots are read only when the AI is on; voice notes sent as audio files are not analysed yet. On WhatsApp, images and voice notes get a polite answer pointing to the app.

@@ -30,7 +30,7 @@ Haris covers the three moments of a cybercrime:
 | **After** — "I've been scammed" | A step-by-step emergency plan for ten situations: money sent, account hacked, extortion, online bullying/harassment/defamation, a fake account in your name, being filmed or having photos or personal details posted without permission, a hacked device or ransomware (including SIM swap), ID shared, a business that paid a fake invoice or a fake "boss" request, and a suspicious message only. Each comes with the official reporting channels. |
 | **Reporting** | The victim tells the story their own way: typed, spoken or as screenshots of the chat or the debit alert. For speech, the user picks their dialect once (Emirati/Gulf, Saudi, Egyptian, Levantine, Iraqi, Maghrebi; English and Urdu accents too), and after each dictation Haris suggests fixes for misheard words such as «ارا ماكس» → «أرامكس». The user approves the fix, and numbers are never changed. Haris pulls out the amount, time, payment method, steps already taken and the scammer's numbers, links and IBANs, asks only about what is still missing with ready-made answers, then shows a summary card where any line can be edited. The report opens in a new tab, downloads as a web page with the screenshots inside, or prints and saves as PDF. |
 | **Sending it** — to the authority (demo) | "Send it to the authority": the victim picks their emirate, reads exactly what will be sent and for how long it is kept, confirms their identity (UAE PASS, simulated in the demo), and the report reaches the **reports dashboard** with the same reference number as their file. Haris sorts it: **critical** (a threat to life, or a child involved), **financial** (money lost in the last 24 hours, when the bank can still freeze it), **medium**, or **indicator**. The officer receives it, asks for more information, or closes it with a note, and the victim follows every step in "My reports" and answers in the chat. |
-| **Early warning** — a message nobody fell for | "Report it to protect others" sends the sender's number, link and the redacted text to the **campaign radar** (demo). Reports that share a number, a link or the same text become one campaign. At 3 people Haris tells anyone who checks it "reported by N people"; at 10 people, or 3 with a link imitating an official body, the authority is alerted on its dashboard. Only the authority can approve a public warning, which then reaches every Haris user and sends a block request to the telecom providers (simulated). |
+| **Early warning** — a message nobody fell for | "Report it to protect others" sends the sender's number, link and the redacted text to the **campaign radar** (demo). Reports that share a number, a link or the same text become one campaign. At 3 people Haris tells anyone who checks it "reported by N people"; at 10 people, or 3 with a link imitating an official body, the authority is alerted on its dashboard. Only the authority can approve a public warning, which then reaches every Haris user, goes out as a **WhatsApp alert to everyone who subscribed** (by sending «تنبيهات» / ALERTS) in their own language, and sends a block request to the telecom providers (simulated). |
 
 ### What it covers today, and what is next
 
@@ -76,6 +76,7 @@ The same engine serves every group; the scam patterns and advice cover parcel an
    ├─ radar.py      campaign radar: groups reports, warns, escalates; the authority confirms (SQLite)
    ├─ inbox.py      reports sent to the authority (demo): triage, routing by emirate, status, auto-delete (SQLite)
    ├─ whatsapp.py   WhatsApp channel: checks Meta's signature, replies with buttons and lists
+   ├─ alerts.py     official warnings on WhatsApp: opt-in subscribers, delivery when a campaign is approved
    ├─ translations.py  loads all wording from locales/<lang>.json (one file per language)
    ├─ playbooks.py  emergency plans + official contacts
    └─ report.py     builds the police report in memory
@@ -129,6 +130,8 @@ python scripts/radar_demo.py          # 10 people report the same fake-parcel ca
 ```
 
 Open <http://127.0.0.1:8000/authority.html> (the authority dashboard), approve the warning, then reload the chat: every user now sees the official warning, and any message from those numbers or links is rated high risk.
+
+To show the WhatsApp alert going out, add fictional subscribers first: `python scripts/alerts_demo.py` (2,400 in four languages). After the approval, "WhatsApp alerts" on the same page counts the delivery. Fictional subscribers are never sent anything; a real phone that sends «تنبيهات» to the Haris number gets the warning for real once WhatsApp is connected.
 
 **Demo the reports dashboard** (with the server running):
 
@@ -190,7 +193,8 @@ Measured on 20 November 2026 with `gemini-3.5-flash-lite` on the free tier. The 
 | `GET` | `/api/authority/reports` | the queue, most urgent first, and the counters (authority only) |
 | `POST` | `/api/authority/reports/{ref}` | `{"action": "receive" \| "request_info" \| "close", "note": "..."}` (authority only) |
 | `GET` | `/api/authority/campaigns` | campaigns for the authority dashboard (this computer only, or with `X-Authority-Token`) |
-| `POST` | `/api/authority/campaigns/{id}` | `{"status": "confirmed" \| "dismissed"}`: approve the public warning and block request, or dismiss |
+| `POST` | `/api/authority/campaigns/{id}` | `{"status": "confirmed" \| "dismissed"}`: approve the public warning, the WhatsApp alert and the block request, or dismiss |
+| `GET` | `/api/authority/alerts` | WhatsApp alert subscribers by language, the delivery mode, and the last deliveries (authority only) |
 | `POST` | `/api/report` | build a police report (HTML + Markdown), nothing stored |
 | `GET` | `/api/health` | status, and whether the AI second opinion and WhatsApp are on |
 | `GET` | `/webhook/whatsapp` | Meta's one-time check of the verify token |
@@ -220,6 +224,9 @@ Measured on 20 November 2026 with `gemini-3.5-flash-lite` on the free tier. The 
 - *Trade-off:* in the demo the database is a plain SQLite file readable only by the server's user, not encrypted, and UAE PASS is simulated. A launch needs the partner's own case system, encryption at rest, UAE hosting and the real UAE PASS sign-in.
 
 **Triage by simple rules a supervisor can read.** The priority comes from the situation and a few words, not from a model: a threat to life or a child in an extortion, harassment or privacy case is critical; money lost in the last 24 hours is financial, because the first hour decides whether the bank can freeze it; older fraud and the other situations are medium; a message nobody fell for is an indicator. The officer sees why at the top of the case.
+
+**WhatsApp alerts only for people who asked.** WhatsApp lets a business message only people who opted in, and a message outside 24 hours of the user's last one must use a template Meta has approved. So a user subscribes by sending «تنبيهات» (ALERTS, or the button in the guide and after a report) and leaves with «إيقاف» (STOP); approving a campaign sends the warning to every subscriber in their language, as a template when `WHATSAPP_ALERT_TEMPLATE` is set.
+- *Trade-off:* this keeps subscribers' WhatsApp numbers, the one piece of personal data needed to send, until they leave. Reaching everyone in the UAE, not only subscribers, needs the authority's own channel (for example a telecom cell broadcast), which Haris can feed but not replace.
 
 **Reports alone never block a number.** People can report an innocent number on purpose, and scammers spoof real numbers. So the radar only warns ("reported by N people", never "this is a scammer") and alerts the authority; the public warning and the block request need a person at the authority to approve them.
 
@@ -251,6 +258,7 @@ Measured on 20 November 2026 with `gemini-3.5-flash-lite` on the free tier. The 
 ## 6. Privacy and safety summary
 
 - Nothing users send is stored or logged, except two things the user chooses to send: a report to the campaign radar (the sender's numbers and links and the redacted text, kept 30 days, with no data about the reporter), and a report sent to the authority (the report fields without screenshots, kept 7 days). API responses carry `Cache-Control: no-store`.
+- WhatsApp alert subscribers: the WhatsApp number and language of people who sent «تنبيهات», kept until they send «إيقاف», readable only by the server's user. Fictional demo subscribers are never messaged.
 - On the user's device the chat keeps only the reference numbers and status tokens of reports they sent, so they can follow them.
 - The authority dashboards open only on the computer running Haris, or anywhere with the `HARIS_AUTHORITY_TOKEN` set. Behind a tunnel or proxy (requests carrying `X-Forwarded-For` or `CF-Connecting-IP`) the token is always required.
 - Personal data is redacted from text before any AI call; link query strings are dropped.
@@ -279,6 +287,7 @@ haris/
 ├── data/samples/messages.json  labelled synthetic test messages
 ├── scripts/evaluate.py         accuracy on the samples
 ├── scripts/radar_demo.py       sends 10 reports of one campaign, for a live demo
+├── scripts/alerts_demo.py      adds fictional WhatsApp alert subscribers (never messaged)
 ├── scripts/inbox_demo.py       fills the reports dashboard with 30 fictional reports
 ├── tests/                      unit and API tests
 └── docs/
