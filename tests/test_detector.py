@@ -136,3 +136,10 @@ def test_hindi_is_detected_and_scored():
     assert r["language"] == "hi" and r["risk"] == "high"
     assert r["risk_label"] == "धोखाधड़ी का बड़ा खतरा"
     assert analyze("आपका OTP 482913 है। इसे किसी के साथ शेयर न करें।", use_llm=False)["risk"] == "low"
+
+
+def test_ai_category_is_not_shown_on_a_low_risk_message(monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test")
+    monkeypatch.setattr(llm, "assess", lambda *a, **k: {"risk": "low", "category": "job_scam", "reasons": [], "advice": []})
+    r = analyze("We would like to invite you to an interview on Sunday at 10 am.", "en")
+    assert r["risk"] == "low" and r["category"] == "unknown"

@@ -82,8 +82,8 @@ def analyze(text: str, lang: str | None = None, use_llm: bool = True) -> dict:
             if RISK_ORDER[opinion["risk"]] > RISK_ORDER[risk]:
                 risk = opinion["risk"]
                 score = max(score, LLM_SCORE[risk])
-            if category == "unknown":
-                category = opinion["category"]
+            if category == "unknown" and risk != "low":
+                category = opinion["category"]  # a scam type is named only when we warn
             reasons += [r for r in opinion["reasons"] if r not in reasons]
             advice = opinion["advice"] + [a for a in advice if a not in opinion["advice"]]
 

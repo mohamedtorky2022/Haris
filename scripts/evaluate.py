@@ -23,6 +23,9 @@ sys.path.insert(0, str(ROOT / "backend"))
 from haris.detector import analyze  # noqa: E402
 
 
+DELAY = 1.0
+
+
 def load_env() -> None:
     """Read KEY=value lines from .env, so the script uses the same keys as the server."""
     import os
@@ -36,6 +39,7 @@ def load_env() -> None:
 
 
 def main() -> int:
+    global DELAY
     use_ai = "--ai" in sys.argv
     if use_ai:
         load_env()
@@ -43,7 +47,9 @@ def main() -> int:
         if not llm.enabled():
             print("No AI key found in .env (ANTHROPIC_API_KEY or GEMINI_API_KEY).")
             return 1
-        print(f"AI on: {llm.provider()} / {llm.model_name()}\n")
+        import os
+        DELAY = float(os.getenv("HARIS_EVAL_DELAY", "4.5" if llm.provider() == "gemini" else "0.5"))
+        print(f"AI on: {llm.provider()} / {llm.model_name()} (one message every {DELAY:g} s)\n")
     name = "hard" if "--hard" in sys.argv else "messages"
     samples = json.loads((ROOT / "data" / "samples" / f"{name}.json").read_text(encoding="utf-8"))
     print(f"Set: data/samples/{name}.json ({len(samples)} messages)\n")
@@ -61,7 +67,7 @@ def main() -> int:
         mark = "" if flagged == (s["label"] == "scam") else "  <-- wrong"
         print(f"{s['id']:<22} {s['label']:<6} {rules['risk']:<7} {r['risk']:<7} {r['category']}{mark}")
         if use_ai:
-            time.sleep(1)  # stay well inside the free tier's per-minute limit
+            time.sleep(DELAY)  # stay inside the free tier's per-minute limit
 
     scams = sum(s["label"] == "scam" for s in samples)
     legit = len(samples) - scams

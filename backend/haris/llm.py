@@ -12,12 +12,15 @@ to the rules result.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
 import re
+import time
 import urllib.error
 import urllib.request
+from collections import OrderedDict
 
 log = logging.getLogger("haris.llm")
 
@@ -72,13 +75,54 @@ def model_name() -> str | None:
     return None
 
 
+# Free tiers allow only a few requests a minute. After a "too many requests" answer we
+# stop calling for the time the provider asks, so users get the rules result at once
+# instead of waiting for a call that will fail.
+_cooldown_until = 0.0
+# The same message often arrives many times (a campaign); its verdict is reused for an hour.
+_CACHE: OrderedDict[str, tuple[float, str]] = OrderedDict()
+CACHE_TTL, CACHE_SIZE = 3600, 500
+
+
+def _cooling_down() -> bool:
+    return time.monotonic() < _cooldown_until
+
+
+def _start_cooldown(seconds: float) -> None:
+    global _cooldown_until
+    _cooldown_until = time.monotonic() + max(5.0, min(seconds, 120.0))
+
+
+def _retry_delay(body: bytes) -> float:
+    """Gemini puts the wait in error.details[].retryDelay, e.g. "37s"."""
+    try:
+        for det in json.loads(body).get("error", {}).get("details", []):
+            if "retryDelay" in det:
+                return float(str(det["retryDelay"]).rstrip("s"))
+    except (ValueError, AttributeError):
+        pass
+    return 30.0
+
+
 def _call(system: str, content, max_tokens: int, timeout: float) -> str | None:
     """Send one message to the chosen model and return its text, or None on any failure."""
     p = provider()
-    if p == "gemini":
-        return _call_gemini(system, content, max_tokens, timeout)
-    if p != "anthropic":
+    if p is None or _cooling_down():
         return None
+    key = hashlib.sha256(json.dumps([p, model_name(), system, content, max_tokens], sort_keys=True,
+                                    ensure_ascii=False).encode()).hexdigest()
+    hit = _CACHE.get(key)
+    if hit and hit[0] > time.monotonic():
+        return hit[1]
+    text = _call_gemini(system, content, max_tokens, timeout) if p == "gemini" else _call_anthropic(system, content, max_tokens, timeout)
+    if text:
+        _CACHE[key] = (time.monotonic() + CACHE_TTL, text)
+        while len(_CACHE) > CACHE_SIZE:
+            _CACHE.popitem(last=False)
+    return text
+
+
+def _call_anthropic(system: str, content, max_tokens: int, timeout: float) -> str | None:
     key = os.getenv("ANTHROPIC_API_KEY")
     body = {
         "model": os.getenv("HARIS_MODEL", DEFAULT_MODEL),
@@ -96,6 +140,11 @@ def _call(system: str, content, max_tokens: int, timeout: float) -> str | None:
         with urllib.request.urlopen(request, timeout=timeout) as resp:
             payload = json.load(resp)
         return "".join(part.get("text", "") for part in payload.get("content", []))
+    except urllib.error.HTTPError as exc:
+        if exc.code == 429:
+            _start_cooldown(float(exc.headers.get("retry-after") or 30))
+        log.warning("LLM call failed: HTTP %s", exc.code)
+        return None
     except (OSError, ValueError, KeyError) as exc:
         # OSError covers URLError and socket.timeout (not a TimeoutError on Python 3.9).
         # Log the error type only: never the message content.
@@ -138,6 +187,8 @@ def _call_gemini(system: str, content, max_tokens: int, timeout: float) -> str |
         parts = payload["candidates"][0]["content"].get("parts", [])
         return "".join(p.get("text", "") for p in parts if not p.get("thought"))
     except urllib.error.HTTPError as exc:
+        if exc.code == 429:
+            _start_cooldown(_retry_delay(exc.read(4000)))
         log.warning("Gemini call failed: HTTP %s", exc.code)
     except (OSError, ValueError, KeyError, IndexError) as exc:  # OSError includes socket.timeout
         log.warning("Gemini call failed: %s", type(exc).__name__)

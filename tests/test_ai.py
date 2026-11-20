@@ -12,6 +12,8 @@ from haris import examples, llm
 def no_keys(monkeypatch):
     for k in ("ANTHROPIC_API_KEY", "GEMINI_API_KEY", "HARIS_AI_PROVIDER", "GEMINI_MODEL"):
         monkeypatch.delenv(k, raising=False)
+    llm._CACHE.clear()
+    monkeypatch.setattr(llm, "_cooldown_until", 0.0)
 
 
 def test_provider_follows_the_keys(monkeypatch):
@@ -94,3 +96,33 @@ def test_slow_reply_falls_back_instead_of_crashing(monkeypatch):
 
         monkeypatch.setattr(llm.urllib.request, "urlopen", slow)
         assert llm.assess("text", [], [], "en") is None
+
+
+def _gemini_reply(text):
+    return io.BytesIO(json.dumps({"candidates": [{"content": {"parts": [{"text": text}]}}]}).encode())
+
+
+def test_same_message_is_answered_from_memory(monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "k")
+    calls = []
+    monkeypatch.setattr(llm.urllib.request, "urlopen",
+                        lambda req, timeout: calls.append(1) or _gemini_reply('{"risk":"high","category":"unknown"}'))
+    assert llm.assess("same campaign text", [], [], "en")["risk"] == "high"
+    assert llm.assess("same campaign text", [], [], "en")["risk"] == "high"
+    assert len(calls) == 1
+
+
+def test_rate_limit_pauses_calls(monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "k")
+    calls = []
+    body = json.dumps({"error": {"code": 429, "details": [{"retryDelay": "37s"}]}}).encode()
+
+    def limited(req, timeout):
+        calls.append(1)
+        raise llm.urllib.error.HTTPError(req.full_url, 429, "Too Many Requests", {}, io.BytesIO(body))
+
+    monkeypatch.setattr(llm.urllib.request, "urlopen", limited)
+    assert llm.assess("first", [], [], "en") is None
+    assert llm.assess("second", [], [], "en") is None  # no call while cooling down
+    assert len(calls) == 1
+    assert 30 < llm._cooldown_until - llm.time.monotonic() <= 37
