@@ -1,0 +1,319 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Haris journey</title>
+<style>
+@font-face { font-family: "IBM Plex Sans Arabic"; font-weight: 400; src: url(fonts/IBMPlexSansArabic-Regular.ttf); }
+@font-face { font-family: "IBM Plex Sans Arabic"; font-weight: 500; src: url(fonts/IBMPlexSansArabic-Medium.ttf); }
+@font-face { font-family: "IBM Plex Sans Arabic"; font-weight: 600; src: url(fonts/IBMPlexSansArabic-SemiBold.ttf); }
+@font-face { font-family: "IBM Plex Sans Arabic"; font-weight: 700; src: url(fonts/IBMPlexSansArabic-Bold.ttf); }
+@font-face { font-family: "IBM Plex Sans Devanagari"; font-weight: 400; src: url(fonts/IBMPlexSansDevanagari-Regular.ttf); }
+@font-face { font-family: "IBM Plex Sans Devanagari"; font-weight: 500; src: url(fonts/IBMPlexSansDevanagari-Medium.ttf); }
+@font-face { font-family: "IBM Plex Sans Devanagari"; font-weight: 600; src: url(fonts/IBMPlexSansDevanagari-SemiBold.ttf); }
+@font-face { font-family: "IBM Plex Sans Devanagari"; font-weight: 700; src: url(fonts/IBMPlexSansDevanagari-Bold.ttf); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; }
+body { background: #F1F5F4; color: #1B2330; font-family: var(--font), "IBM Plex Sans Arabic", sans-serif; }
+.abs { position: absolute; }
+#map { width: 880px; }
+#band { left: 0; right: 0; bottom: 0; height: 74px; background: #0A4740; border-top: 6px solid #B08A3E; display: flex; align-items: center; gap: 16px; padding: 0 56px; color: #fff; font-size: 24px; }
+#band img { width: 44px; height: 44px; border-radius: 50%; background: #fff; }
+#bubble { background: #fff; border-radius: 34px; padding: 30px 38px; box-shadow: 0 14px 40px rgba(10,46,42,.14); border: 3px solid #D7E3DF; }
+#bubble .tail { position: absolute; top: 70px; width: 0; height: 0; border-top: 26px solid transparent; border-bottom: 26px solid transparent; }
+#cap { font-size: 38px; line-height: 1.55; font-weight: 600; color: #0A2E2A; }
+#panel { width: 640px; height: 880px; }
+.scene { position: absolute; inset: 0; }
+.phone { position: absolute; left: 60px; top: 0; width: 520px; height: 880px; border-radius: 60px; background: #10181A; padding: 14px; box-shadow: 0 24px 60px rgba(10,46,42,.28); }
+.screen { position: relative; width: 100%; height: 100%; border-radius: 47px; overflow: hidden; background: #EFE9E1; display: flex; flex-direction: column; }
+.wahead { display: flex; align-items: center; gap: 12px; padding: 44px 18px 14px; background: #0A4740; color: #fff; }
+.wahead img { width: 54px; height: 54px; border-radius: 50%; background: #fff; }
+.wahead b { font-size: 25px; display: flex; align-items: center; gap: 6px; }
+.wahead small { display: block; font-size: 17px; opacity: .85; }
+.chat { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 14px; overflow: hidden; }
+.in, .out { max-width: 86%; padding: 13px 16px; border-radius: 18px; font-size: 21px; line-height: 1.55; background: #fff; box-shadow: 0 1px 1px rgba(0,0,0,.08); }
+.in { align-self: flex-start; border-start-start-radius: 4px; }
+.out { align-self: flex-end; background: #D9F2DD; border-start-end-radius: 4px; }
+.fwd { font-size: 16px; color: #5B6770; font-style: italic; margin-bottom: 4px; }
+.risk { font-weight: 700; color: #A11D12; font-size: 23px; }
+.btns { align-self: flex-start; width: 86%; display: flex; flex-direction: column; gap: 6px; }
+.btn { background: #fff; border-radius: 14px; padding: 12px; text-align: center; font-size: 20px; font-weight: 600; color: #0A4740; box-shadow: 0 1px 1px rgba(0,0,0,.08); }
+.composer { display: flex; align-items: center; gap: 8px; padding: 10px 12px 26px; }
+.composer .field { flex: 1; height: 46px; border-radius: 23px; background: #fff; display: flex; align-items: center; padding: 0 16px; font-size: 20px; color: #5B6770; }
+.composer .send { width: 46px; height: 46px; border-radius: 50%; background: #0A4740; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 24px 24px 0 0; padding: 18px 18px 30px; box-shadow: 0 -8px 30px rgba(0,0,0,.18); }
+.sheet h4 { font-size: 21px; color: #5B6770; margin-bottom: 8px; }
+.rowi { padding: 15px 8px; border-bottom: 1px solid #EEF1F0; font-size: 22px; font-weight: 600; }
+.sys { align-self: center; max-width: 92%; text-align: center; font-size: 18px; padding: 8px 12px; border-radius: 10px; background: #FFF6E5; color: #6B4E12; }
+.official { align-self: stretch; border: 3px solid #B08A3E; background: #FFF8E8; border-radius: 14px; padding: 14px; font-size: 21px; font-weight: 700; color: #6B4E12; }
+.rcard { align-self: stretch; background: #fff; border-radius: 16px; padding: 14px; }
+.people { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 8px 0; }
+.chip { display: inline-block; padding: 8px 14px; border-radius: 12px; font-size: 18px; font-weight: 700; margin-top: 6px; }
+.app { flex: 1; background: #F5F6F4; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.apph { font-size: 30px; font-weight: 700; color: #0A4740; }
+.voice { display: flex; align-items: center; gap: 10px; background: #E4F2EC; border-radius: 30px; padding: 10px 14px; }
+.play { width: 40px; height: 40px; border-radius: 50%; background: #0A4740; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.bars { display: flex; gap: 4px; align-items: center; height: 34px; }
+.bars i { display: block; width: 5px; border-radius: 3px; background: #0A4740; }
+.fld { display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 12px; padding: 15px 16px; font-size: 22px; }
+.fld b { display: flex; align-items: center; gap: 8px; }
+.tick { width: 26px; height: 26px; border-radius: 50%; background: #1E8E5A; display: inline-flex; align-items: center; justify-content: center; }
+.ready { display: flex; align-items: center; gap: 10px; background: #E7F5EE; border: 3px solid #1E8E5A; color: #10633D; border-radius: 14px; padding: 16px; font-size: 23px; font-weight: 700; }
+.lang { background: #fff; border-radius: 16px; padding: 18px; font-size: 28px; font-weight: 700; color: #0A4740; text-align: center; }
+.lang.on { background: #0A4740; color: #fff; }
+.priv { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 600; background: #fff; border-radius: 14px; padding: 14px; }
+.tap { outline: 4px solid #B08A3E; outline-offset: 2px; }
+.poster { position: absolute; left: 27px; top: 0; width: 586px; border-radius: 18px; box-shadow: 0 20px 50px rgba(10,46,42,.22); }
+.cam { position: absolute; width: 330px; height: 560px; border-radius: 48px; background: #10181A; padding: 12px; box-shadow: 0 24px 60px rgba(0,0,0,.35); }
+.cam .view { position: relative; width: 100%; height: 100%; border-radius: 38px; overflow: hidden; background: #2a3436; display: flex; align-items: center; justify-content: center; }
+.cam .view img { width: 230px; height: 230px; background: #fff; padding: 10px; border-radius: 8px; }
+.corner { position: absolute; width: 270px; height: 270px; border: 5px solid #E7C77A; border-radius: 18px; }
+.scanline { position: absolute; left: 40px; right: 40px; height: 4px; background: #E7C77A; box-shadow: 0 0 18px #E7C77A; }
+.toast { position: absolute; left: 14px; right: 14px; top: 30px; background: #fff; border-radius: 16px; padding: 12px 14px; font-size: 15px; display: flex; gap: 10px; align-items: center; }
+.toast b { display: block; font-size: 16px; }
+.waicon { flex: none; width: 34px; height: 34px; border-radius: 50%; background: #1E8E5A; }
+.slogan { position: absolute; inset: 0; border-radius: 44px; background: #0A4740; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; box-shadow: 0 24px 60px rgba(10,46,42,.28); }
+.s1 { font-size: 124px; font-weight: 700; color: #E7C77A; line-height: 1.1; }
+.s2 { font-size: 70px; font-weight: 700; color: #fff; line-height: 1.2; padding: 0 30px; }
+.soon { margin-top: 34px; display: flex; align-items: center; gap: 12px; background: #1E8E5A; color: #fff; font-size: 32px; font-weight: 700; border-radius: 20px; padding: 16px 30px; }
+.note { color: #CFE3DD; font-size: 22px; margin-top: 18px; padding: 0 40px; }
+</style>
+</head>
+<body>
+<div id="stage" class="abs" style="inset:0">
+  <img id="map" class="abs" src="../poster/uae-map.svg" alt="">
+  <div id="panel" class="abs"></div>
+  <svg id="haris" class="abs" width="620" height="775" viewBox="0 0 640 800" style="overflow:visible">
+    <ellipse cx="320" cy="782" rx="190" ry="14" fill="#DCE5E2"/>
+    <path d="M232 770 h72 a8 8 0 0 1 0 16 h-72 a8 8 0 0 1 0-16 Z" fill="#6B4A2F"/>
+    <path d="M336 770 h72 a8 8 0 0 1 0 16 h-72 a8 8 0 0 1 0-16 Z" fill="#6B4A2F"/>
+    <g id="body">
+      <path d="M180 335 C186 302 236 288 320 288 C404 288 454 302 460 335 L506 760 C450 774 190 774 134 760 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="3"/>
+      <path d="M320 300 L320 400" stroke="#C9D3D0" stroke-width="5" stroke-linecap="round"/>
+      <g id="armR">
+        <path d="M442 338 C492 372 512 462 506 560 L452 566 C454 486 444 424 402 384 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="3"/>
+        <ellipse cx="480" cy="580" rx="26" ry="28" fill="#D9A47A"/>
+      </g>
+      <g id="armL">
+        <path d="M198 338 C148 372 128 462 134 560 L188 566 C186 486 196 424 238 384 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="3"/>
+        <ellipse cx="160" cy="580" rx="26" ry="28" fill="#D9A47A"/>
+      </g>
+      <g id="head">
+        <g transform="translate(320 178) scale(2.4) translate(-100 -98)">
+          <path d="M52 92 C50 60 70 38 100 38 C130 38 150 60 148 92 L156 150 C140 160 128 150 124 140 L76 140 C72 150 60 160 44 150 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="2"/>
+          <ellipse cx="100" cy="98" rx="30" ry="35" fill="#D9A47A"/>
+          <path d="M66 84 C66 60 82 52 100 52 C118 52 134 60 134 84 C128 72 116 66 100 66 C84 66 72 72 66 84 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="1.5"/>
+          <ellipse cx="100" cy="62" rx="37" ry="8" fill="none" stroke="#1F2933" stroke-width="6"/>
+          <ellipse cx="100" cy="55" rx="34" ry="6.5" fill="none" stroke="#1F2933" stroke-width="5"/>
+          <g id="brows">
+            <path d="M80 85 Q87 80 94 84" fill="none" stroke="#3B2A20" stroke-width="3" stroke-linecap="round"/>
+            <path d="M106 84 Q113 80 120 85" fill="none" stroke="#3B2A20" stroke-width="3" stroke-linecap="round"/>
+          </g>
+          <ellipse id="eyeL" cx="88" cy="94" rx="4" ry="5" fill="#1F2933"/>
+          <ellipse id="eyeR" cx="112" cy="94" rx="4" ry="5" fill="#1F2933"/>
+          <g id="shine"><circle cx="89.5" cy="92.3" r="1.4" fill="#FFFFFF"/><circle cx="113.5" cy="92.3" r="1.4" fill="#FFFFFF"/></g>
+          <ellipse cx="80" cy="106" rx="5" ry="3" fill="#E58E73" opacity=".45"/>
+          <ellipse cx="120" cy="106" rx="5" ry="3" fill="#E58E73" opacity=".45"/>
+          <path d="M71 104 C72 126 86 136 100 136 C114 136 128 126 129 104 C124 118 114 124 100 124 C86 124 76 118 71 104 Z" fill="#3B2A20"/>
+          <path d="M88 112 Q100 106 112 112 Q100 110 88 112 Z" fill="#3B2A20" stroke="#3B2A20" stroke-width="3" stroke-linejoin="round"/>
+          <path id="smile" d="M91 117 Q100 124 109 117" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+      </g>
+    </g>
+  </svg>
+  <div id="bubble" class="abs"><div class="tail"></div><div id="cap"></div></div>
+  <div id="band" class="abs"><img src="../../frontend/haris.svg" alt=""><span id="footer"></span></div>
+</div>
+<script>
+const W = 1920;
+let D, rtl = true, starts = [];
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = (x) => { x = clamp(x); return x * x * (3 - 2 * x); };
+const TICK = '<span class="tick"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>';
+const BADGE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="#E7C77A"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6" stroke="#0A4740" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>';
+const PERSON = '<svg width="46" height="54" viewBox="0 0 62 74"><circle cx="31" cy="18" r="15"/><path d="M4 72 C4 48 16 38 31 38 C46 38 58 48 58 72 Z"/></svg>';
+const LOCK = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0A4740" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+const EYE = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0A4740" stroke-width="2.2" stroke-linecap="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.2 3.9M6.6 6.6C3.9 8.4 2 12 2 12s4 7 10 7a10 10 0 0 0 5.4-1.6"/></svg>';
+const PDF = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#10633D" stroke-width="2" stroke-linecap="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 14h6M9 17h4"/></svg>';
+const LOGO = "../../frontend/haris.svg";
+
+function header(u) { return `<div class="wahead"><img src="${LOGO}" alt=""><div><b>${esc(u.title)} ${BADGE}</b><small>${esc(u.verified)}</small></div></div>`; }
+function composer(text = "") { return `<div class="composer"><div class="field" data-typed>${esc(text)}</div><div class="send"></div></div>`; }
+const at = (s, inner, extra = "") => `<div data-at="${s}" ${extra}>${inner}</div>`;
+
+function build(u) {
+  const link = (s) => esc(s).replace(/([a-z0-9-]+\.[a-z]{2,})/i, '<b style="color:#1F5FBF;font-weight:500">$1</b>');
+  const welcome = u.wa.welcome.split("\n\n")[0];
+  const S = {
+    scan: `<img class="poster" src="../poster/haris-poster.png" alt="">
+      <div class="cam" data-cam style="left:155px"><div class="view"><img src="../poster/qr.svg" alt=""><div class="corner"></div><div class="scanline" data-scan></div>
+      <div class="toast" data-at="4.0" data-tapat="5.3"><span class="waicon"></span><div><b>WhatsApp</b>${esc(u.open_wa)}</div></div></div></div>`,
+    chat: `<div class="phone"><div class="screen">${header(u)}<div class="chat">
+      <div class="out" data-at="2.3">${esc(u.greeting)}</div>
+      <div class="in" data-at="3.3">${esc(welcome)}</div>
+      <div class="btns" data-at="3.8"><div class="btn">${esc(u.wa.buttons.check)}</div><div class="btn">${esc(u.wa.buttons.scammed)}</div><div class="btn">${esc(u.wa.buttons.guide)}</div></div>
+      </div>${composer()}</div></div>`,
+    check: `<div class="phone"><div class="screen">${header(u)}<div class="chat">
+      <div class="out" data-at="0.6"><div class="fwd">↪ ${esc(u.forwarded)}</div>${link(u.scam)}</div>
+      <div class="sys" data-at="1.6" data-until="2.8">${esc(u.typing)}</div>
+      <div class="in" data-at="2.8"><div class="risk">🔴 ${esc(u.risk)}</div>
+        ${u.reasons.map((r, i) => `<div data-at="${3.4 + i * 0.5}">• ${esc(r)}</div>`).join("")}</div>
+      <div class="btns" data-at="5.0"><div class="btn">${esc(u.wa.buttons.report)}</div><div class="btn" data-tapat="8.6">${esc(u.wa.buttons.scammed)}</div><div class="btn">${esc(u.wa.buttons.again)}</div></div>
+      </div>${composer()}</div></div>`,
+    help: `<div class="phone"><div class="screen">${header(u)}<div class="chat">
+      <div class="out" data-at="3.4" style="font-weight:600">${esc(u.wa.playbooks.money_sent)}</div>
+      <div class="in" data-at="4.0"><b>${esc(u.help_title)}</b>
+        ${u.steps.map((s, i) => `<div data-at="${4.4 + i * 0.5}">${i + 1}. ${esc(s)}</div>`).join("")}
+        <div data-at="6.2" style="margin-top:8px;font-weight:700;color:#A11D12">${esc(u.emergency)} 999 · <span style="color:#0A4740">${esc(u.aman)} 800 2626</span></div></div>
+      </div>${composer()}
+      <div class="sheet" data-sheet="0.5,3.5"><h4>${esc(u.wa.list_section)}</h4>
+        ${["money_sent", "account_hacked", "extortion", "harassment", "impersonation"].map((k) => `<div class="rowi" ${k === "money_sent" ? 'data-tapat="2.9"' : ""}>${esc(u.wa.playbooks[k])}</div>`).join("")}</div>
+      </div></div>`,
+    report: `<div class="phone"><div class="screen"><div class="wahead"><img src="${LOGO}" alt=""><div><b>${esc(u.title)}</b><small>${esc(u.report_title)}</small></div></div><div class="app">
+      <div class="apph" data-at="0.2">${esc(u.report_title)}</div>
+      <div class="voice" data-at="0.5"><span class="play">▶</span><div class="bars">${Array.from({ length: 20 }, (_, i) => `<i data-wave="${i}"></i>`).join("")}</div></div>
+      ${u.fields.map((f, i) => `<div class="fld" data-at="${3.2 + i * 0.7}"><span style="color:#5B6770">${esc(f[0])}</span><b>${esc(f[1])} ${TICK}</b></div>`).join("")}
+      <div class="ready" data-at="5.8" style="margin-top:auto">${PDF}<span>${esc(u.ready)}</span></div>
+      </div></div></div>`,
+    radar: `<div class="phone"><div class="screen">${header(u)}<div class="chat">
+      <div class="btns"><div class="btn" data-tapat="0.7">${esc(u.wa.buttons.report)}</div></div>
+      <div class="in" data-at="1.6">${esc(u.wa.reported.split("\n")[0])}</div>
+      <div class="rcard" data-at="2.6"><b style="color:#0A4740;font-size:22px">${esc(u.radar_title)}</b>
+        <div class="people">${Array.from({ length: 12 }, (_, i) => `<div data-person="${i}">${PERSON}</div>`).join("")}</div>
+        <div style="font-size:21px;font-weight:700"><span data-count style="font-size:34px">0</span> ${esc(u.reports)}</div>
+        <div class="chip" data-at="4.4" style="background:#FFF1E6;color:#9A4A06">⚠️ ${esc(u.warn)}</div>
+        <div class="chip" data-at="6.8" style="background:#0A4740;color:#fff">🛡️ ${esc(u.alert)}</div></div>
+      <div class="official" data-at="8.2">📢 ${esc(u.official)}</div>
+      </div></div></div>`,
+    langs: `<div class="phone"><div class="screen">${header(u)}<div class="app">
+      <div class="apph" data-at="0.2" style="font-size:22px">${esc(u.choose_lang)}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${["العربية", "English", "اردو", "हिन्दी"].map((l, i) => `<div class="lang ${l === u.native ? "on" : ""}" data-at="${0.5 + i * 0.4}">${l}</div>`).join("")}</div>
+      <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px"><div class="priv" data-at="3.4">${LOCK}<span>${esc(u.privacy[0])}</span></div>
+      <div class="priv" data-at="4.2">${EYE}<span>${esc(u.privacy[1])}</span></div></div>
+      </div></div></div>`,
+    outro: `<div class="slogan"><div class="s1" data-at="0.3">${esc(u.slogan1)}</div><div class="s2" data-at="0.9">${esc(u.slogan2)}</div>
+      <div class="soon" data-at="2.0"><span class="waicon" style="background:#fff"></span>${esc(u.soon)}</div>
+      <div class="note" data-at="2.6">${esc(u.wa.footer)}</div></div>`,
+  };
+  const panel = document.getElementById("panel");
+  D.scenes.forEach((k, i) => {
+    const s = document.createElement("div");
+    s.className = "scene"; s.dataset.i = i; s.innerHTML = S[k];
+    panel.appendChild(s);
+  });
+}
+
+function place(id, x, y, w) {
+  const n = document.getElementById(id);
+  Object.assign(n.style, { left: (rtl ? x : W - x - w) + "px", top: y + "px", width: w + "px" });
+}
+
+function init(data) {
+  D = data;
+  rtl = D.dir === "rtl";
+  document.documentElement.dir = D.dir;
+  document.documentElement.lang = D.lang;
+  document.body.style.setProperty("--font", `"${D.font}"`);
+  document.getElementById("footer").textContent = D.ui.footer;
+  build(D.ui);
+  place("panel", 90, 96, 640);
+  place("bubble", 780, 120, 560);
+  place("haris", 1250, 200, 620);
+  place("map", 1010, 270, 880);
+  const tail = document.querySelector("#bubble .tail");
+  if (rtl) { tail.style.right = "-26px"; tail.style.borderLeft = "28px solid #fff"; }
+  else { tail.style.left = "-26px"; tail.style.borderRight = "28px solid #fff"; document.getElementById("haris").style.transform = "scaleX(-1)"; }
+  let t = D.lead;
+  starts = D.durations.map((d) => { const s = t; t += d; return s; });
+}
+
+function render(t) {
+  let k = 0;
+  starts.forEach((s, i) => { if (t >= s) k = i; });
+  const dur = D.durations[k], lt = t - starts[k];
+
+  // caption next to Haris
+  const cap = document.getElementById("cap");
+  if (cap.dataset.k !== String(k)) { cap.textContent = D.ui.captions[k]; cap.dataset.k = String(k); }
+  const co = Math.min(ease((lt - 0.2) / 0.4), ease((dur - lt) / 0.3));
+  const bub = document.getElementById("bubble");
+  bub.style.opacity = String(co);
+  bub.style.transform = `translateY(${(1 - co) * 14}px)`;
+
+  // scenes: crossfade, then items appear on time
+  document.querySelectorAll(".scene").forEach((s) => {
+    const i = +s.dataset.i, st = starts[i], d = D.durations[i], l = t - st;
+    const vis = Math.min(ease((l + 0.35) / 0.35), ease((d - l) / 0.35));
+    s.style.opacity = String(vis);
+    s.style.visibility = vis > 0 ? "visible" : "hidden";
+    s.style.transform = `translateY(${(1 - vis) * 22}px)`;
+    if (vis <= 0) return;
+    s.querySelectorAll("[data-at]").forEach((n) => {
+      const a = +n.dataset.at, u = n.dataset.until ? +n.dataset.until : Infinity;
+      const on = l >= a && l < u;
+      n.style.display = on ? "" : "none";
+      const o = ease((l - a) / 0.25);
+      n.style.opacity = String(o);
+      n.style.transform = `translateY(${(1 - o) * 10}px)`;
+    });
+    s.querySelectorAll("[data-tapat]").forEach((n) => {
+      const a = +n.dataset.tapat;
+      const on = l >= a && l < a + 0.45;
+      n.classList.toggle("tap", on);
+      n.style.scale = on ? "0.96" : "1";
+    });
+    const typed = s.querySelector("[data-typed]");
+    if (typed && i === 1) {
+      const g = D.ui.greeting, n = Math.round(clamp((l - 0.6) / 1.4) * g.length);
+      typed.textContent = l < 2.3 ? (n ? g.slice(0, n) : D.ui.composer) : D.ui.composer;
+      typed.style.color = l < 2.3 && n ? "#1B2330" : "#5B6770";
+    } else if (typed) { typed.textContent = D.ui.composer; }
+    const sheet = s.querySelector("[data-sheet]");
+    if (sheet) {
+      const [a, b] = sheet.dataset.sheet.split(",").map(Number);
+      const o = Math.min(ease((l - a) / 0.35), ease((b - l) / 0.3));
+      sheet.style.transform = `translateY(${(1 - o) * 110}%)`;
+    }
+    const cam = s.querySelector("[data-cam]");
+    if (cam) {
+      const up = ease((l - 0.8) / 1.0), away = ease((l - 5.6) / 0.8);
+      cam.style.top = (900 - up * 540 + away * 40) + "px";
+      cam.style.opacity = String(1 - away * 0.0);
+      const scan = s.querySelector("[data-scan]");
+      const sp = clamp((l - 1.9) / 1.8);
+      scan.style.top = (150 + Math.abs(Math.sin(sp * Math.PI * 2)) * 250) + "px";
+      scan.style.opacity = l > 1.9 && l < 3.8 ? "1" : "0";
+    }
+    s.querySelectorAll("[data-wave]").forEach((n) => {
+      const j = +n.dataset.wave;
+      n.style.height = (8 + 24 * Math.abs(Math.sin(j * 1.7 + t * 6)) * (l > 0.6 && l < 3 ? 1 : 0.3)) + "px";
+    });
+    const people = s.querySelectorAll("[data-person]");
+    if (people.length) {
+      const n = Math.round(clamp((l - 2.8) / 3.7) * 12);
+      const color = n >= 10 ? "#B42318" : n >= 3 ? "#C2410C" : "#0A4740";
+      people.forEach((p, j) => { p.style.opacity = j < n ? "1" : "0.15"; p.querySelector("svg").setAttribute("fill", j < n ? color : "#0A4740"); });
+      s.querySelector("[data-count]").textContent = String(n);
+    }
+  });
+
+  // Haris: silent, breathing, blinking, pointing at the phone
+  const bob = Math.sin(t * 2.1) * 4;
+  document.getElementById("body").setAttribute("transform", `translate(0 ${bob})`);
+  const blink = ((t + 0.7) % 3.9) < 0.13 || ((t + 2.3) % 7.3) < 0.12;
+  ["eyeL", "eyeR"].forEach((id) => document.getElementById(id).setAttribute("ry", blink ? "0.6" : "5"));
+  document.getElementById("shine").style.opacity = blink ? "0" : "1";
+  const nod = Math.sin(clamp(lt / 0.6) * Math.PI) * 3;
+  document.getElementById("head").setAttribute("transform", `rotate(${Math.sin(t * 1.3) * 1.2} 320 300) translate(0 ${nod})`);
+  let arm;
+  if (D.scenes[k] === "outro") arm = 125 + Math.sin(t * 8) * 14 * ease((lt - 0.2) / 0.5);
+  else {
+    const up = ease((lt - 0.1) / 0.6), down = ease((dur - lt - 0.1) / 0.5);
+    arm = 18 + 34 * Math.min(up, down) + Math.sin(t * 2.6) * 3;
+  }
+  document.getElementById("armL").setAttribute("transform", `rotate(${arm} 205 348)`);
+}
+</script>
+</body>
+</html>

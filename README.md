@@ -124,15 +124,14 @@ Open <http://127.0.0.1:8000/authority.html> (the authority dashboard), approve t
 
 The test number cannot receive messages from the public. For the poster's QR code, Haris needs its own WhatsApp Business number.
 
-**Explainer videos** (one per language). Cartoon Haris explains what he does: he blinks, his mouth follows his voice, and he points to each part of the app. The Arabic script is in Modern Standard Arabic, which the system voice pronounces correctly.
+**Journey video** (one per language). The user's journey with Haris, from scanning the poster's QR code to the official warning: WhatsApp opens, a forwarded scam gets its risk rating, "I've been scammed" gives the first steps, the report file is prepared, and the radar turns reports into a warning. Haris does not speak: he points at each step, captions appear beside him, and formal music plays. The music is composed in code (`journey.py`), so there is no licence to clear.
 
 ```bash
-bash docs/video/build_voice.sh        # on a Mac: records the lines with the system voices
 bash docs/video/fetch_fonts.sh        # IBM Plex Arabic and Devanagari (Open Font License)
-python3 docs/video/render.py all      # needs ffmpeg and Playwright's Chromium; writes docs/video/out/Haris-<lang>.mp4
+python3 docs/video/journey.py all     # needs ffmpeg and Playwright's Chromium; writes docs/video/out/Haris-journey-<lang>.mp4
 ```
 
-The scripts are in `docs/video/scripts.json` (`show` is the text on screen, `say` what the voice reads, for example digits spelled out). The voices are the macOS system voices: Majed (Arabic, standard accent), Daniel (English), Lekha (Hindi, female). macOS has no Urdu voice, so the Urdu video uses the Hindi voice reading a Devanagari spelling of the Urdu script. A recorded human voice can replace any clip in `docs/video/voice/<lang>/`.
+The captions are in `docs/video/journey.json`; the chat wording comes from the app's own locale files. An earlier narrated version (`render.py`, voices from `build_voice.sh`) is kept for reference.
 
 ### Tests and evaluation
 

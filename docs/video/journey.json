@@ -1,0 +1,98 @@
+{
+ "durations": [
+  7,
+  8,
+  10,
+  11,
+  9,
+  11,
+  7,
+  9.8
+ ],
+ "scenes": [
+  "scan",
+  "chat",
+  "check",
+  "help",
+  "report",
+  "radar",
+  "langs",
+  "outro"
+ ],
+ "ar": {
+  "captions": [
+   "امسح رمز الملصق بكاميرا هاتفك.",
+   "تُفتح محادثة «حارس» على واتساب مباشرة، والتحية جاهزة.",
+   "أعد توجيه أي رسالة مشبوهة، فيخبرك بدرجة الخطورة والسبب وماذا تفعل.",
+   "وإن وقعت المشكلة، اختر حالتك لتحصل على الخطوات الفورية وأرقام البلاغ.",
+   "احكِ ما حدث بصوتك أو بصورة، فيجهّز لك ملف البلاغ كاملاً.",
+   "بلاغك يحمي غيرك: تتجمّع البلاغات وتصل إلى الجهة المختصة، وهي التي تعتمد التحذير للجميع.",
+   "بأربع لغات، ولا يحفظ رسائلك.",
+   "«حارس»… إماراتي وأفتخر."
+  ],
+  "greeting": "مرحباً حارس",
+  "verified": "حساب أعمال موثّق",
+  "open_wa": "افتح المحادثة في واتساب",
+  "forwarded": "معاد توجيهها",
+  "typing": "يكتب…",
+  "composer": "اكتب رسالة",
+  "choose_lang": "اختر لغتك"
+ },
+ "en": {
+  "captions": [
+   "Scan the poster's code with your phone camera.",
+   "A chat with Haris opens on WhatsApp, with the greeting ready.",
+   "Forward any suspicious message: Haris tells you the risk, why, and what to do.",
+   "If something went wrong, choose your case for the first steps and the reporting numbers.",
+   "Tell what happened by voice or with a screenshot, and Haris prepares the full report.",
+   "Your report protects others: reports add up and reach the authority, which decides on the warning for everyone.",
+   "Four languages, and your messages are not kept.",
+   "Haris: Emirati and proud."
+  ],
+  "greeting": "Hi Haris",
+  "verified": "Verified business account",
+  "open_wa": "Open the chat in WhatsApp",
+  "forwarded": "Forwarded",
+  "typing": "typing…",
+  "composer": "Message",
+  "choose_lang": "Choose your language"
+ },
+ "ur": {
+  "captions": [
+   "پوسٹر کا کوڈ اپنے فون کے کیمرے سے اسکین کریں۔",
+   "واٹس ایپ پر «حارس» کی چیٹ فوراً کھل جاتی ہے، سلام پہلے سے لکھا ہوتا ہے۔",
+   "کوئی بھی مشکوک پیغام فارورڈ کریں: «حارس» خطرہ، وجہ اور کیا کرنا ہے بتاتا ہے۔",
+   "اگر کچھ غلط ہو گیا تو اپنی صورت چنیں: فوری قدم اور رپورٹ کے نمبر ملیں گے۔",
+   "جو ہوا آواز یا اسکرین شاٹ سے بتائیں، «حارس» پوری رپورٹ تیار کرتا ہے۔",
+   "آپ کی رپورٹ دوسروں کو بچاتی ہے: رپورٹیں جمع ہو کر متعلقہ ادارے تک پہنچتی ہیں، اور وہی سب کے لیے انتباہ جاری کرتا ہے۔",
+   "چار زبانیں، اور آپ کے پیغامات محفوظ نہیں کیے جاتے۔",
+   "«حارس»: اماراتی، اور اس پر فخر ہے۔"
+  ],
+  "greeting": "السلام علیکم حارس",
+  "verified": "تصدیق شدہ بزنس اکاؤنٹ",
+  "open_wa": "واٹس ایپ میں چیٹ کھولیں",
+  "forwarded": "فارورڈ شدہ",
+  "typing": "لکھ رہا ہے…",
+  "composer": "پیغام",
+  "choose_lang": "اپنی زبان چنیں"
+ },
+ "hi": {
+  "captions": [
+   "पोस्टर का कोड अपने फ़ोन के कैमरे से स्कैन करें।",
+   "WhatsApp पर हारिस की चैट तुरंत खुलती है, नमस्ते पहले से लिखा होता है।",
+   "कोई भी संदिग्ध मैसेज फ़ॉरवर्ड करें: हारिस ख़तरा, वजह और क्या करना है बताता है।",
+   "अगर कुछ गलत हो गया, तो अपना मामला चुनें: तुरंत कदम और रिपोर्ट के नंबर मिलेंगे।",
+   "जो हुआ बोलकर या स्क्रीनशॉट से बताएँ, हारिस पूरी रिपोर्ट तैयार करता है।",
+   "आपकी रिपोर्ट दूसरों को बचाती है: रिपोर्टें जुड़कर संबंधित संस्था तक पहुँचती हैं, और वही सबके लिए चेतावनी तय करती है।",
+   "चार भाषाएँ, और आपके मैसेज सेव नहीं होते।",
+   "हारिस: अमीराती, और इस पर गर्व है।"
+  ],
+  "greeting": "नमस्ते हारिस",
+  "verified": "सत्यापित बिज़नेस अकाउंट",
+  "open_wa": "WhatsApp में चैट खोलें",
+  "forwarded": "फ़ॉरवर्ड किया गया",
+  "typing": "लिख रहा है…",
+  "composer": "मैसेज",
+  "choose_lang": "अपनी भाषा चुनें"
+ }
+}
