@@ -115,6 +115,8 @@ async def protect(request: Request, call_next):
     )
     if request.url.path.startswith("/api/"):
         response.headers["Cache-Control"] = "no-store"
+    else:  # pages and scripts: the browser checks for a newer copy each time, so an update is never half-loaded
+        response.headers.setdefault("Cache-Control", "no-cache")
     return response
 
 
