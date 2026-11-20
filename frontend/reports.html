@@ -23,6 +23,13 @@
   </header>
 
   <main>
+    <form id="login" class="login" hidden>
+      <label for="token">رمز الدخول للجهة المختصة</label>
+      <input id="token" type="password" autocomplete="off">
+      <button type="submit">دخول</button>
+      <p id="login-error" class="err" role="alert"></p>
+    </form>
+
     <section class="explain">
       <p><strong>كيف تعمل:</strong> يصل البلاغ فقط بعد أن يراجعه صاحبه ويوافق على إرساله. يُرتَّب تلقائياً حسب الخطورة، ويُوجَّه حسب إمارة المُبلّغ. كل إجراء هنا يظهر لصاحب البلاغ في «حارس» برقم بلاغه.</p>
       <ul class="steps">
@@ -33,12 +40,6 @@
       </ul>
       <p class="privacy">🔒 يُحفظ البلاغ في صندوق مؤقت ويُحذف تلقائياً بعد <b id="retention">7</b> أيام. لقطات الشاشة لا تُحفظ هنا، فهي في ملف البلاغ عند صاحبه.</p>
     </section>
-
-    <form id="login" class="login" hidden>
-      <label for="token">رمز الدخول للجهة المختصة</label>
-      <input id="token" type="password" autocomplete="off">
-      <button type="submit">دخول</button>
-    </form>
 
     <section class="counters five" aria-live="polite">
       <div><b id="n-new">0</b><span>جديدة</span></div>

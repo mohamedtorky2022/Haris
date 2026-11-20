@@ -59,10 +59,16 @@
       headers: { "Content-Type": "application/json", ...(token ? { "X-Authority-Token": token } : {}) },
       body: body ? JSON.stringify(body) : undefined,
     });
-    if (res.status === 401 || res.status === 403) { login.hidden = false; throw new Error("auth"); }
+    if (res.status === 401 || res.status === 403) {
+      login.hidden = false;
+      document.getElementById("login-error").textContent = token ? "رمز الدخول غير صحيح، تأكد منه وحاول مرة أخرى." : "";
+      list.replaceChildren(el("p", { class: "empty", text: "أدخل رمز الدخول في الأعلى لعرض البلاغات." }));
+      throw new Error("auth");
+    }
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.detail || String(res.status));
     login.hidden = true;
+    document.getElementById("login-error").textContent = "";
     return data;
   }
 

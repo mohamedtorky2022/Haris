@@ -67,3 +67,5 @@ textarea:focus-visible, select:focus-visible, .case:focus-visible, .tabs a:focus
   .tabs { margin-inline-start: 0; }
   .bar { flex-wrap: wrap; }
 }
+.login .err { flex-basis: 100%; margin: 4px 0 0; color: var(--high); font-size: 14px; }
+.login { flex-wrap: wrap; margin: 0 0 16px; border-color: var(--brand); }
