@@ -119,7 +119,7 @@ async def protect(request: Request, call_next):
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "version": __version__, "ai_enabled": llm.enabled(), "whatsapp_enabled": whatsapp.enabled()}
+    return {"status": "ok", "version": __version__, "ai_enabled": llm.enabled(), "ai_provider": llm.provider(), "ai_model": llm.model_name(), "whatsapp_enabled": whatsapp.enabled()}
 
 
 @app.post("/api/check")

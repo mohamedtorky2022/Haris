@@ -68,7 +68,8 @@ The same engine serves every group; the scam patterns and advice cover parcel an
    ├─ rules.py      30 weighted scam signals in 4 languages, with "unless" exceptions
    ├─ urls.py       offline link analysis: look-alike brands, risky TLDs, shorteners, raw IPs
    ├─ detector.py   combines the above into a score, risk level and category
-   ├─ llm.py        optional Claude second opinion on the REDACTED text
+   ├─ llm.py        the AI layer (Claude or Gemini) on the REDACTED text
+   ├─ examples.py   teaching by example: similar labelled messages shown to the model
    ├─ intake.py     turns a free story and screenshots into report fields
    ├─ polish.py     fixes misheard words in dictated text (glossary + optional AI), never digits
    ├─ radar.py      campaign radar: groups reports, warns, escalates; the authority confirms (SQLite)
@@ -96,15 +97,28 @@ uvicorn app.main:app --reload
 
 Open <http://127.0.0.1:8000>. The API docs are at <http://127.0.0.1:8000/docs>.
 
-**Optional — turn on the AI second opinion:**
+**Turn on the AI** (Claude or Gemini):
 
 ```bash
-cp .env.example .env                  # from the repo root, then put your key in .env
+cp .env.example .env                  # from the repo root, then put one key in .env
 cd backend
 uvicorn app.main:app --reload --env-file ../.env
 ```
 
-Without a key, Haris runs entirely on its rules engine and works offline.
+- **Claude:** `ANTHROPIC_API_KEY` from the Claude Console. Claude Max, Ultra and Team plans include monthly API credits.
+- **Gemini, free:** `GEMINI_API_KEY` from Google AI Studio (aistudio.google.com/apikey). The free tier needs no card; Google may use free-tier requests to improve its products, which is one more reason Haris redacts personal data first.
+
+`GET /api/health` shows which provider and model are answering. Without a key, Haris runs entirely on its rules engine and works offline.
+
+**Teach Haris by example.** Fine-tuning is not offered on Gemini's free API, so Haris learns from labelled examples instead: before each check, the most similar examples and their correct answers are shown to the model. A new example changes the next answer, with no training run:
+
+```bash
+python scripts/teach.py scam "message text" --category bank_impersonation --why "asks for the OTP"
+python scripts/teach.py legit "a real message" --why "no link, asks for nothing"
+python scripts/evaluate.py --ai       # measure rules + AI on the labelled set
+```
+
+Examples are redacted before they are saved in `data/training/examples.jsonl`. The model never sees the message it is judging among its examples, so the evaluation stays honest.
 
 **Demo the campaign radar** (with the server running):
 
@@ -163,15 +177,18 @@ On the 59 labelled samples in `data/samples/messages.json` (37 scams, 22 legitim
 
 ## 5. Technical choices and trade-offs
 
-**Rules first, AI second.** The core verdict comes from a transparent rules engine, and Claude is an optional second opinion.
+**Rules first, AI second.** The core verdict comes from a transparent rules engine, and an AI model (Claude, or Gemini on its free tier) is the second opinion.
 - *Why:* every warning can be explained in one sentence, the system works with no internet or API key, it costs nothing per check, and it answers in milliseconds. That matters for a public-safety service where a partner authority must review what it says.
 - *Trade-off:* rules only catch patterns someone wrote down. New scam wording slips through until a rule is added. The AI layer covers that gap when enabled.
 
 **The AI can only raise the risk, never lower it.** If the rules say "high" and the model says "low", the user still sees "high". A missed scam costs far more than an extra warning.
 
-**Redact before the model sees anything.** Card numbers, Emirates IDs, IBANs, phones and e-mails are replaced with placeholders, and link query strings are dropped, before any text is sent to Claude. The model doesn't need them to judge a scam.
+**Redact before the model sees anything.** Card numbers, Emirates IDs, IBANs, phones and e-mails are replaced with placeholders, and link query strings are dropped, before any text is sent to the model. The model doesn't need them to judge a scam.
 
-**No AI SDK dependency.** `llm.py` calls the Claude API with the Python standard library, so the core installs with no third-party packages and the AI layer can be swapped without touching the rest.
+**No AI SDK dependency.** `llm.py` calls the Claude and Gemini APIs with the Python standard library, so the core installs with no third-party packages and the provider is one setting (`HARIS_AI_PROVIDER`).
+
+**Teach by example, not by fine-tuning.** Fine-tuning needs a large labelled set of real UAE messages and, for Gemini, a paid cloud account. Showing the model the most similar labelled examples works with any provider, costs nothing, and a correction takes effect on the next check.
+- *Trade-off:* the examples make each prompt a little longer, and the model can still disagree with them; the rules engine stays the safety net.
 
 **Web chat first, WhatsApp on the test number.** A public WhatsApp Business number needs Meta's approval, so the main demo is a WhatsApp-style web chat. The WhatsApp channel is built and runs on Meta's free test number, which reaches up to 5 verified phones: it calls the same engine, so a check gives the same answer on both channels.
 
@@ -246,7 +263,7 @@ haris/
 
 ## 8. Third-party software and ownership
 
-The code in this repository was written for the hackathon by Mohamed Ibrahim, with Claude (Anthropic) used as an AI coding assistant; the idea, the product decisions and the review of every change are his. It uses these open-source packages under their licences: FastAPI (MIT), Uvicorn (BSD-3-Clause), Pydantic (MIT), and for tests pytest (MIT) and HTTPX (BSD-3-Clause). The optional AI layer calls the Anthropic Claude API under Anthropic's terms. The official contact numbers come from public Abu Dhabi Police and Dubai Police announcements and should be confirmed by the partner authority before launch.
+The code in this repository was written for the hackathon by Mohamed Ibrahim, with Claude (Anthropic) used as an AI coding assistant; the idea, the product decisions and the review of every change are his. It uses these open-source packages under their licences: FastAPI (MIT), Uvicorn (BSD-3-Clause), Pydantic (MIT), and for tests pytest (MIT) and HTTPX (BSD-3-Clause). The optional AI layer calls the Anthropic Claude API or the Google Gemini API under each provider's terms. The official contact numbers come from public Abu Dhabi Police and Dubai Police announcements and should be confirmed by the partner authority before launch.
 
 ## Team
 
