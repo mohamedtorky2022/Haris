@@ -9,96 +9,198 @@
 @font-face { font-family: "IBM Plex Sans Arabic"; font-weight: 600; src: url(fonts/IBMPlexSansArabic-SemiBold.ttf); }
 @font-face { font-family: "IBM Plex Sans Arabic"; font-weight: 700; src: url(fonts/IBMPlexSansArabic-Bold.ttf); }
 @font-face { font-family: "IBM Plex Sans Devanagari"; font-weight: 400; src: url(fonts/IBMPlexSansDevanagari-Regular.ttf); }
-@font-face { font-family: "IBM Plex Sans Devanagari"; font-weight: 500; src: url(fonts/IBMPlexSansDevanagari-Medium.ttf); }
 @font-face { font-family: "IBM Plex Sans Devanagari"; font-weight: 600; src: url(fonts/IBMPlexSansDevanagari-SemiBold.ttf); }
 @font-face { font-family: "IBM Plex Sans Devanagari"; font-weight: 700; src: url(fonts/IBMPlexSansDevanagari-Bold.ttf); }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { width: 1920px; height: 1080px; overflow: hidden; }
-body { background: #F1F5F4; color: #1B2330; font-family: var(--font), "IBM Plex Sans Arabic", sans-serif; }
+body { background: #F1F5F4; color: #1B2330; font-family: var(--font), "IBM Plex Sans Arabic", "Inter", "IBM Plex Sans Devanagari", sans-serif; }
 .abs { position: absolute; }
+:root { --brand: #0A4740; --gold: #B08A3E; --gold2: #E7C77A; --muted: #5B6770; --line: #DCE4E1; --high: #B42318; --warn: #B54708; --ok: #10633D; }
 #map { width: 880px; }
-#band { left: 0; right: 0; bottom: 0; height: 74px; background: #0A4740; border-top: 6px solid #B08A3E; display: flex; align-items: center; gap: 16px; padding: 0 56px; color: #fff; font-size: 24px; }
+#band { left: 0; right: 0; bottom: 0; height: 74px; background: var(--brand); border-top: 6px solid var(--gold); display: flex; align-items: center; gap: 16px; padding: 0 56px; color: #fff; font-size: 23px; z-index: 20; }
 #band img { width: 44px; height: 44px; border-radius: 50%; background: #fff; }
-#bubble { background: #fff; border-radius: 34px; padding: 30px 38px; box-shadow: 0 14px 40px rgba(10,46,42,.14); border: 3px solid #D7E3DF; }
-#bubble .tail { position: absolute; top: 70px; width: 0; height: 0; border-top: 26px solid transparent; border-bottom: 26px solid transparent; }
-#cap { font-size: 38px; line-height: 1.55; font-weight: 600; color: #0A2E2A; }
-#panel { width: 640px; height: 880px; }
-.scene { position: absolute; inset: 0; }
-.phone { position: absolute; left: 60px; top: 0; width: 520px; height: 880px; border-radius: 60px; background: #10181A; padding: 14px; box-shadow: 0 24px 60px rgba(10,46,42,.28); }
+#bubble { background: #fff; border-radius: 32px; padding: 26px 34px 30px; box-shadow: 0 14px 40px rgba(10,46,42,.14); border: 3px solid #D7E3DF; z-index: 12; }
+#bubble .tail { position: absolute; width: 0; height: 0; }
+#persona { display: inline-block; font-size: 23px; font-weight: 700; color: var(--brand); background: #E4F2EC; border-radius: 12px; padding: 4px 14px; margin-bottom: 12px; }
+#cap { font-size: 36px; line-height: 1.55; font-weight: 600; color: #0A2E2A; }
+#haris { z-index: 11; }
+.scene { position: absolute; }
+.ltr { direction: ltr; unicode-bidi: isolate; }
+
+/* phones */
+.phone { position: absolute; width: 520px; height: 880px; border-radius: 60px; background: #10181A; padding: 14px; box-shadow: 0 24px 60px rgba(10,46,42,.28); }
 .screen { position: relative; width: 100%; height: 100%; border-radius: 47px; overflow: hidden; background: #EFE9E1; display: flex; flex-direction: column; }
-.wahead { display: flex; align-items: center; gap: 12px; padding: 44px 18px 14px; background: #0A4740; color: #fff; }
+.wahead { display: flex; align-items: center; gap: 12px; padding: 44px 18px 14px; background: var(--brand); color: #fff; flex: none; }
 .wahead img { width: 54px; height: 54px; border-radius: 50%; background: #fff; }
 .wahead b { font-size: 25px; display: flex; align-items: center; gap: 6px; }
 .wahead small { display: block; font-size: 17px; opacity: .85; }
-.chat { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 14px; overflow: hidden; }
-.in, .out { max-width: 86%; padding: 13px 16px; border-radius: 18px; font-size: 21px; line-height: 1.55; background: #fff; box-shadow: 0 1px 1px rgba(0,0,0,.08); }
+.chat { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding: 14px; overflow: hidden; }
+.chat > * { flex: none; }
+.in, .out { max-width: 88%; padding: 12px 16px; border-radius: 18px; font-size: 21px; line-height: 1.5; background: #fff; box-shadow: 0 1px 1px rgba(0,0,0,.08); }
 .in { align-self: flex-start; border-start-start-radius: 4px; }
 .out { align-self: flex-end; background: #D9F2DD; border-start-end-radius: 4px; }
-.fwd { font-size: 16px; color: #5B6770; font-style: italic; margin-bottom: 4px; }
-.risk { font-weight: 700; color: #A11D12; font-size: 23px; }
-.btns { align-self: flex-start; width: 86%; display: flex; flex-direction: column; gap: 6px; }
-.btn { background: #fff; border-radius: 14px; padding: 12px; text-align: center; font-size: 20px; font-weight: 600; color: #0A4740; box-shadow: 0 1px 1px rgba(0,0,0,.08); }
-.composer { display: flex; align-items: center; gap: 8px; padding: 10px 12px 26px; }
-.composer .field { flex: 1; height: 46px; border-radius: 23px; background: #fff; display: flex; align-items: center; padding: 0 16px; font-size: 20px; color: #5B6770; }
-.composer .send { width: 46px; height: 46px; border-radius: 50%; background: #0A4740; }
-.sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 24px 24px 0 0; padding: 18px 18px 30px; box-shadow: 0 -8px 30px rgba(0,0,0,.18); }
-.sheet h4 { font-size: 21px; color: #5B6770; margin-bottom: 8px; }
+.fwd { font-size: 16px; color: var(--muted); font-style: italic; margin-bottom: 4px; }
+.risk { font-weight: 700; color: #A11D12; font-size: 23px; margin-bottom: 4px; }
+.btns { align-self: flex-start; width: 88%; display: flex; flex-direction: column; gap: 6px; }
+.btn { background: #fff; border-radius: 14px; padding: 11px; text-align: center; font-size: 20px; font-weight: 600; color: var(--brand); box-shadow: 0 1px 1px rgba(0,0,0,.08); }
+.composer { flex: none; display: flex; align-items: center; gap: 8px; padding: 10px 12px 26px; }
+.composer .field { flex: 1; min-height: 46px; border-radius: 23px; background: #fff; display: flex; align-items: center; padding: 6px 16px; font-size: 19px; color: var(--muted); }
+.composer .send { flex: none; width: 46px; height: 46px; border-radius: 50%; background: var(--brand); }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 24px 24px 0 0; padding: 18px 18px 30px; box-shadow: 0 -8px 30px rgba(0,0,0,.18); z-index: 3; }
+.sheet h4 { font-size: 21px; color: var(--muted); margin-bottom: 8px; }
 .rowi { padding: 15px 8px; border-bottom: 1px solid #EEF1F0; font-size: 22px; font-weight: 600; }
-.sys { align-self: center; max-width: 92%; text-align: center; font-size: 18px; padding: 8px 12px; border-radius: 10px; background: #FFF6E5; color: #6B4E12; }
-.official { align-self: stretch; border: 3px solid #B08A3E; background: #FFF8E8; border-radius: 14px; padding: 14px; font-size: 21px; font-weight: 700; color: #6B4E12; }
-.rcard { align-self: stretch; background: #fff; border-radius: 16px; padding: 14px; }
-.people { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 8px 0; }
-.chip { display: inline-block; padding: 8px 14px; border-radius: 12px; font-size: 18px; font-weight: 700; margin-top: 6px; }
-.app { flex: 1; background: #F5F6F4; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
-.apph { font-size: 30px; font-weight: 700; color: #0A4740; }
-.voice { display: flex; align-items: center; gap: 10px; background: #E4F2EC; border-radius: 30px; padding: 10px 14px; }
-.play { width: 40px; height: 40px; border-radius: 50%; background: #0A4740; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.sys { align-self: center; max-width: 92%; text-align: center; font-size: 18px; padding: 6px 14px; border-radius: 10px; background: #FFF6E5; color: #6B4E12; }
+.card { align-self: stretch; background: #fff; border-radius: 16px; padding: 14px 16px; font-size: 20px; line-height: 1.5; }
+.card.gold { border: 3px solid var(--gold); background: #FFF8E8; }
+.card.green { border: 3px solid #1E8E5A; background: #E7F5EE; color: #10633D; font-weight: 700; }
+.card.dark { background: var(--brand); color: #fff; font-weight: 700; }
+.line { padding: 6px 0; font-weight: 600; }
+.voice { display: flex; align-items: center; gap: 10px; background: #E4F2EC; border-radius: 30px; padding: 10px 14px; align-self: stretch; }
+.play { width: 40px; height: 40px; border-radius: 50%; background: var(--brand); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 .bars { display: flex; gap: 4px; align-items: center; height: 34px; }
-.bars i { display: block; width: 5px; border-radius: 3px; background: #0A4740; }
-.fld { display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 12px; padding: 15px 16px; font-size: 22px; }
-.fld b { display: flex; align-items: center; gap: 8px; }
-.tick { width: 26px; height: 26px; border-radius: 50%; background: #1E8E5A; display: inline-flex; align-items: center; justify-content: center; }
-.ready { display: flex; align-items: center; gap: 10px; background: #E7F5EE; border: 3px solid #1E8E5A; color: #10633D; border-radius: 14px; padding: 16px; font-size: 23px; font-weight: 700; }
-.lang { background: #fff; border-radius: 16px; padding: 18px; font-size: 28px; font-weight: 700; color: #0A4740; text-align: center; }
-.lang.on { background: #0A4740; color: #fff; }
-.priv { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 600; background: #fff; border-radius: 14px; padding: 14px; }
-.tap { outline: 4px solid #B08A3E; outline-offset: 2px; }
-.poster { position: absolute; left: 27px; top: 0; width: 586px; border-radius: 18px; box-shadow: 0 20px 50px rgba(10,46,42,.22); }
+.bars i { display: block; width: 5px; border-radius: 3px; background: var(--brand); }
+.fld { align-self: stretch; display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 12px; padding: 12px 16px; font-size: 21px; }
+.fld span { color: var(--muted); }
+.tick { width: 24px; height: 24px; border-radius: 50%; background: #1E8E5A; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; }
+.tap { outline: 4px solid var(--gold); outline-offset: 2px; }
+
+/* the dashboard */
+.dash { position: absolute; inset: 0; background: #F4F6F5; border-radius: 22px; overflow: hidden; box-shadow: 0 24px 60px rgba(10,46,42,.22); border: 1px solid #D5DFDB; }
+.dbar { height: 78px; background: var(--brand); color: #fff; display: flex; align-items: center; gap: 14px; padding: 0 24px; }
+.dbar img { width: 46px; height: 46px; border-radius: 50%; background: #fff; }
+.dbar b { font-size: 26px; white-space: nowrap; }
+.narrow .dtabs { display: none; }
+.dtabs { display: flex; gap: 6px; margin-inline-start: 18px; }
+.dtabs span { white-space: nowrap; font-size: 19px; padding: 6px 14px; border-radius: 10px; opacity: .8; }
+.dtabs span.on { background: rgba(255,255,255,.16); opacity: 1; font-weight: 700; }
+.demo { white-space: nowrap; margin-inline-start: auto; background: var(--gold2); color: #3A2A06; font-weight: 700; font-size: 18px; border-radius: 10px; padding: 5px 14px; }
+.dbody { position: absolute; top: 78px; inset-inline: 0; bottom: 0; padding: 22px; display: grid; grid-template-columns: 480px 1fr; gap: 20px; }
+.queue { position: relative; overflow: hidden; }
+.qrow { position: absolute; inset-inline: 0; min-height: 134px; background: #fff; border: 1px solid var(--line); border-inline-start: 8px solid #98a2ab; border-radius: 14px; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; }
+.qrow.critical { border-inline-start-color: #8e1414; } .qrow.financial { border-inline-start-color: var(--high); } .qrow.medium { border-inline-start-color: var(--warn); }
+.qtop { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
+.pr { display: inline-block; font-size: 16px; font-weight: 700; padding: 2px 12px; border-radius: 999px; color: #fff; white-space: nowrap; }
+.pr.critical { background: #8e1414; } .pr.financial { background: var(--high); } .pr.medium { background: var(--warn); } .pr.indicator { background: #98a2ab; }
+.sts { font-size: 15px; font-weight: 700; padding: 1px 10px; border-radius: 999px; border: 2px solid currentColor; white-space: nowrap; }
+.sts.new { color: var(--high); } .sts.received { color: var(--brand); } .sts.info { color: var(--warn); }
+.ref { margin-inline-start: auto; font-size: 15px; font-weight: 700; color: var(--muted); }
+.qwhat { font-size: 22px; font-weight: 700; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.qmeta { font-size: 18px; color: var(--muted); }
+.chip { display: inline-block; font-size: 16px; font-weight: 700; border-radius: 8px; padding: 2px 10px; background: #E4F2EC; color: var(--brand); white-space: nowrap; }
+.chip.soon { background: #FFF1D6; color: #8A5A00; }
+.glow { box-shadow: 0 0 0 4px var(--gold2), 0 10px 26px rgba(176,138,62,.35); }
+.detail { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; display: flex; flex-direction: column; gap: 10px; font-size: 20px; overflow: hidden; }
+.dhead { display: flex; align-items: center; gap: 8px; }
+.dhead h2 { font-size: 22px; margin-inline-start: auto; color: var(--muted); }
+.dtitle { font-size: 27px; font-weight: 700; color: #1B2330; }
+.verified { align-self: flex-start; font-size: 18px; font-weight: 700; color: var(--ok); background: #E7F5EE; border-radius: 8px; padding: 3px 12px; }
+.hint { border-radius: 10px; padding: 10px 14px; font-size: 20px; font-weight: 600; background: #FEF3F2; color: var(--high); line-height: 1.5; }
+.banner { border-radius: 10px; padding: 10px 14px; font-size: 19px; line-height: 1.5; background: #FFF6E2; border: 2px solid var(--gold2); color: #5A3E06; }
+.banner b { display: block; }
+.langb { border-radius: 10px; padding: 8px 14px; font-size: 18px; background: #EAF1FB; color: #1F4E8C; line-height: 1.5; }
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; font-size: 20px; }
+.facts dt { color: var(--muted); } .facts dd { font-weight: 600; }
+.detail h3 { font-size: 19px; color: var(--muted); margin-top: 4px; }
+blockquote { border-inline-start: 5px solid var(--brand); background: #F4F7F6; border-radius: 8px; padding: 10px 14px; font-size: 21px; line-height: 1.55; }
+.orig { border: 2px dashed #C9D3D0; border-radius: 10px; padding: 8px 14px; font-size: 18px; color: var(--muted); }
+.orig blockquote { margin-top: 8px; border-inline-start-color: #98a2ab; color: #1B2330; font-size: 20px; }
+.acts { display: flex; gap: 10px; margin-top: auto; border-top: 1px solid var(--line); padding-top: 14px; }
+.dbtn { font-size: 20px; font-weight: 700; border-radius: 10px; padding: 10px 20px; border: 2px solid var(--brand); color: var(--brand); background: #fff; }
+.dbtn.primary { background: var(--brand); color: #fff; }
+.timeline { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 19px; }
+.timeline li { border-inline-start: 4px solid var(--line); padding-inline-start: 12px; }
+.timeline li.reply { border-inline-start-color: var(--brand); }
+.timeline .note { display: block; background: #F4F7F6; border-radius: 8px; padding: 8px 12px; margin-top: 4px; font-size: 20px; }
+.ta { border: 2px solid var(--line); border-radius: 10px; padding: 10px 12px; min-height: 64px; font-size: 21px; background: #fff; }
+.dnotif { position: absolute; inset-inline-start: 30px; bottom: 30px; width: 476px; background: rgba(255,255,255,.98); border-radius: 22px; padding: 16px 18px; box-shadow: 0 16px 40px rgba(0,0,0,.28); z-index: 4; border: 1px solid #E2E8E6; }
+.napp { display: flex; align-items: center; gap: 8px; font-size: 16px; color: var(--muted); }
+.waicon { flex: none; width: 30px; height: 30px; border-radius: 50%; background: #1E8E5A; display: inline-block; }
+.dnotif b { display: block; font-size: 21px; margin-top: 6px; line-height: 1.45; }
+
+/* full scenes */
+.fullbg { position: absolute; inset: 0; }
+.row { position: absolute; inset: 0; display: flex; align-items: center; gap: 90px; padding: 40px 150px 40px; }
+.ptxt h1 { font-size: 150px; color: var(--gold); line-height: 1.1; }
+.ptxt .tag { font-size: 40px; font-weight: 700; color: var(--brand); margin-top: 10px; line-height: 1.4; }
+.ptxt .step { font-size: 34px; font-weight: 600; color: #1B2330; margin-top: 40px; line-height: 1.55; background: #fff; border-radius: 22px; padding: 22px 28px; border: 3px solid #D7E3DF; }
+.pbox { position: relative; flex: none; width: 637px; height: 900px; }
+.pbox > img { width: 637px; height: 900px; border-radius: 18px; box-shadow: 0 20px 50px rgba(10,46,42,.22); }
 .cam { position: absolute; width: 330px; height: 560px; border-radius: 48px; background: #10181A; padding: 12px; box-shadow: 0 24px 60px rgba(0,0,0,.35); }
 .cam .view { position: relative; width: 100%; height: 100%; border-radius: 38px; overflow: hidden; background: #2a3436; display: flex; align-items: center; justify-content: center; }
 .cam .view img { width: 230px; height: 230px; background: #fff; padding: 10px; border-radius: 8px; }
-.corner { position: absolute; width: 270px; height: 270px; border: 5px solid #E7C77A; border-radius: 18px; }
-.scanline { position: absolute; left: 40px; right: 40px; height: 4px; background: #E7C77A; box-shadow: 0 0 18px #E7C77A; }
+.corner { position: absolute; width: 270px; height: 270px; border: 5px solid var(--gold2); border-radius: 18px; }
+.scanline { position: absolute; left: 40px; right: 40px; height: 4px; background: var(--gold2); box-shadow: 0 0 18px var(--gold2); }
 .toast { position: absolute; left: 14px; right: 14px; top: 30px; background: #fff; border-radius: 16px; padding: 12px 14px; font-size: 15px; display: flex; gap: 10px; align-items: center; }
 .toast b { display: block; font-size: 16px; }
-.waicon { flex: none; width: 34px; height: 34px; border-radius: 50%; background: #1E8E5A; }
-.slogan { position: absolute; inset: 0; border-radius: 44px; background: #0A4740; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; box-shadow: 0 24px 60px rgba(10,46,42,.28); }
-.s1 { font-size: 124px; font-weight: 700; color: #E7C77A; line-height: 1.1; }
-.s2 { font-size: 70px; font-weight: 700; color: #fff; line-height: 1.2; padding: 0 30px; }
-.soon { margin-top: 34px; display: flex; align-items: center; gap: 12px; background: #1E8E5A; color: #fff; font-size: 32px; font-weight: 700; border-radius: 20px; padding: 16px 30px; }
-.casepanel { position: absolute; inset: 0; background: #fff; border-radius: 44px; padding: 38px 34px; box-shadow: 0 24px 60px rgba(10,46,42,.18); }
-.casepanel h3 { font-size: 38px; color: #0A4740; margin-bottom: 26px; }
-.cases { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.case { display: flex; align-items: center; gap: 12px; background: #F1F5F4; border-radius: 18px; padding: 16px 16px; font-size: 25px; font-weight: 600; min-height: 124px; line-height: 1.35; }
-.case .ic { flex: none; width: 58px; height: 58px; border-radius: 50%; background: #0A4740; display: flex; align-items: center; justify-content: center; font-size: 26px; }
-.badge { display: inline-block; margin-top: 14px; padding: 6px 14px; border-radius: 12px; background: #FFF1D6; color: #8A5A00; font-size: 22px; font-weight: 700; }
-.uae { display: flex; align-items: center; justify-content: center; gap: 10px; background: #0A4740; color: #fff; border-radius: 14px; padding: 15px; font-size: 21px; font-weight: 700; }
-.okrow { display: flex; align-items: center; gap: 10px; font-size: 21px; font-weight: 700; color: #10633D; }
-.notif { position: absolute; left: 12px; right: 12px; top: 12px; z-index: 5; background: rgba(255,255,255,.97); border-radius: 22px; padding: 14px 16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-.notif .app { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #5B6770; }
-.notif b { display: block; font-size: 19px; margin-top: 4px; }
-.notif p { font-size: 17px; line-height: 1.45; color: #1B2330; }
-.alertmsg { align-self: stretch; background: #fff; border: 3px solid #B08A3E; border-radius: 16px; padding: 14px 16px; font-size: 20px; line-height: 1.55; }
-.alertmsg b { color: #6B4E12; display: block; margin-bottom: 4px; }
-.more { border: 3px dashed #9FC3B8; border-radius: 16px; padding: 14px; font-size: 20px; font-weight: 600; color: #0A4740; text-align: center; line-height: 1.6; }
-.guards { font-size: 34px; font-weight: 700; color: #E7C77A; padding: 0 30px; line-height: 1.4; }
-.note { color: #CFE3DD; font-size: 22px; margin-top: 18px; padding: 0 40px; }
+.lock { position: relative; flex: none; width: 470px; height: 860px; border-radius: 60px; background: #10181A; padding: 14px; box-shadow: 0 24px 60px rgba(0,0,0,.4); }
+.lock .scr { width: 100%; height: 100%; border-radius: 47px; background: linear-gradient(170deg, #2C5E57, #12302C); padding: 90px 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+.clock { text-align: center; color: #fff; font-size: 76px; font-weight: 300; margin-bottom: 20px; font-family: "Inter", sans-serif; }
+.sms { background: rgba(255,255,255,.93); border-radius: 20px; padding: 13px 16px; font-size: 19px; line-height: 1.45; }
+.sms b { display: flex; align-items: center; gap: 8px; font-size: 18px; }
+.sms b::before { content: ""; width: 26px; height: 26px; border-radius: 7px; background: #34C759; display: inline-block; }
+.ptext { color: #fff; display: flex; flex-direction: column; gap: 40px; }
+.ptext div { font-size: 58px; font-weight: 700; line-height: 1.4; }
+.ptext .gold { color: var(--gold2); font-size: 70px; }
+
+/* wide info scenes */
+.panel { position: absolute; inset: 0; background: #fff; border-radius: 28px; box-shadow: 0 24px 60px rgba(10,46,42,.16); padding: 52px 60px; border: 1px solid #DCE5E2; display: flex; flex-direction: column; justify-content: center; }
+.panel h2 { font-size: 54px; color: var(--brand); margin-bottom: 40px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+.pcard { display: flex; align-items: center; gap: 24px; background: #F1F5F4; border-radius: 24px; padding: 34px; font-size: 35px; font-weight: 700; line-height: 1.45; min-height: 260px; }
+.ic { flex: none; width: 92px; height: 92px; border-radius: 50%; background: var(--brand); display: flex; align-items: center; justify-content: center; font-size: 44px; }
+.flow { display: flex; align-items: stretch; gap: 0; }
+.node { flex: 1; background: #F1F5F4; border-radius: 24px; padding: 26px 18px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.node .ic { width: 96px; height: 96px; }
+.node b { font-size: 29px; color: var(--brand); line-height: 1.3; }
+.node > span:not(.ic) { font-size: 22px; color: var(--muted); line-height: 1.45; }
+.node.haris { background: var(--brand); } .node.haris b { color: var(--gold2); } .node.haris > span:not(.ic) { color: #CFE3DD; } .node.haris .ic { background: #fff; }
+.arrow { flex: none; width: 70px; display: flex; align-items: center; justify-content: center; position: relative; }
+.arrow svg { width: 48px; height: 48px; }
+[dir="rtl"] .arrow svg { transform: scaleX(-1); }
+.fallback { margin-top: 36px; background: #FFF6E2; border: 3px solid var(--gold2); color: #5A3E06; border-radius: 20px; padding: 22px 28px; font-size: 30px; font-weight: 700; }
+.tech { margin-top: 26px; display: flex; gap: 12px; flex-wrap: wrap; }
+.tech span { direction: ltr; font-size: 22px; font-weight: 600; background: #EEF2F1; color: #33424D; border-radius: 12px; padding: 8px 18px; font-family: "Inter", sans-serif; }
+.roles { display: flex; flex-direction: column; gap: 22px; }
+.roles .pcard { min-height: 0; padding: 26px 34px; font-size: 44px; }
+.tl { display: flex; flex-direction: column; gap: 34px; position: relative; }
+.tli { display: flex; gap: 24px; align-items: flex-start; }
+.tli .ic { width: 96px; height: 96px; font-size: 44px; }
+.tli b { display: block; font-size: 40px; color: var(--brand); }
+.tli div > span { display: block; font-size: 29px; color: #33424D; line-height: 1.5; margin-top: 2px; }
+.minis { display: flex; justify-content: space-between; gap: 18px; }
+.mini { flex: 1; height: 720px; border-radius: 40px; background: #10181A; padding: 10px; box-shadow: 0 18px 40px rgba(10,46,42,.25); }
+.mini .scr { width: 100%; height: 100%; border-radius: 31px; background: linear-gradient(170deg, #2C5E57, #12302C); padding: 26px 10px 10px; display: flex; flex-direction: column; gap: 12px; }
+.mini .lname { text-align: center; color: #fff; font-size: 24px; font-weight: 700; padding: 6px 0 14px; }
+.mini .sms { font-size: 19px; padding: 14px 13px; line-height: 1.5; }
+.mini .sms b { font-size: 17px; margin-bottom: 4px; }
+.mini .sms b::before { background: #1E8E5A; border-radius: 50%; }
+.stopline { margin-top: 26px; text-align: center; font-size: 28px; font-weight: 700; color: var(--brand); }
+.prev { display: flex; flex-direction: column; gap: 10px; }
+.pv { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; font-size: 18px; line-height: 1.5; }
+.pv .chip { margin-bottom: 4px; }
+.camp { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.camp .big { font-size: 80px; font-weight: 700; color: var(--high); line-height: 1; font-family: "Inter", sans-serif; }
+.spark { display: flex; align-items: flex-end; gap: 8px; height: 150px; padding: 10px; background: #F7F9F8; border-radius: 12px; }
+.spark i { flex: 1; background: var(--high); border-radius: 4px 4px 0 0; opacity: .85; }
+.approved { background: #E7F5EE; border: 3px solid #1E8E5A; color: #10633D; border-radius: 12px; padding: 12px 16px; font-size: 21px; font-weight: 700; }
+
+/* the end */
+.hero { position: absolute; inset: 0; background: var(--brand); overflow: hidden; }
+.hero .mapbg { position: absolute; width: 1100px; opacity: .14; }
+.heroc { position: absolute; top: 0; bottom: 0; justify-content: center; width: 1150px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+.heroc .s1 { font-size: 130px; font-weight: 700; color: var(--gold2); line-height: 1.1; }
+.heroc .s2 { font-size: 72px; font-weight: 700; color: #fff; line-height: 1.2; }
+.heroc .guards { font-size: 38px; font-weight: 700; color: var(--gold2); }
+.qrcard { margin-top: 26px; display: flex; align-items: center; gap: 30px; background: #fff; border-radius: 30px; padding: 22px 34px; border: 6px solid var(--gold); }
+.qrcard img { width: 230px; height: 230px; }
+.qrcard b { font-size: 46px; color: var(--brand); display: block; }
+.qrcard span { font-size: 26px; color: #33424D; display: block; margin-top: 8px; max-width: 400px; line-height: 1.45; }
 </style>
 </head>
 <body>
 <div id="stage" class="abs" style="inset:0">
   <img id="map" class="abs" src="../poster/uae-map.svg" alt="">
-  <div id="panel" class="abs"></div>
+  <div id="scenes"></div>
   <svg id="haris" class="abs" width="620" height="775" viewBox="0 0 640 800" style="overflow:visible">
     <ellipse cx="320" cy="782" rx="135" ry="12" fill="#DCE5E2"/>
     <path d="M254 770 h56 a8 8 0 0 1 0 16 h-56 a8 8 0 0 1 0-16 Z" fill="#6B4A2F"/>
@@ -122,10 +224,8 @@ body { background: #F1F5F4; color: #1B2330; font-family: var(--font), "IBM Plex 
           <path d="M66 84 C66 60 82 52 100 52 C118 52 134 60 134 84 C128 72 116 66 100 66 C84 66 72 72 66 84 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="1.5"/>
           <ellipse cx="100" cy="62" rx="37" ry="8" fill="none" stroke="#1F2933" stroke-width="6"/>
           <ellipse cx="100" cy="55" rx="34" ry="6.5" fill="none" stroke="#1F2933" stroke-width="5"/>
-          <g id="brows">
-            <path d="M80 85 Q87 80 94 84" fill="none" stroke="#3B2A20" stroke-width="3" stroke-linecap="round"/>
-            <path d="M106 84 Q113 80 120 85" fill="none" stroke="#3B2A20" stroke-width="3" stroke-linecap="round"/>
-          </g>
+          <path d="M80 85 Q87 80 94 84" fill="none" stroke="#3B2A20" stroke-width="3" stroke-linecap="round"/>
+          <path d="M106 84 Q113 80 120 85" fill="none" stroke="#3B2A20" stroke-width="3" stroke-linecap="round"/>
           <ellipse id="eyeL" cx="88" cy="94" rx="4" ry="5" fill="#1F2933"/>
           <ellipse id="eyeR" cx="112" cy="94" rx="4" ry="5" fill="#1F2933"/>
           <g id="shine"><circle cx="89.5" cy="92.3" r="1.4" fill="#FFFFFF"/><circle cx="113.5" cy="92.3" r="1.4" fill="#FFFFFF"/></g>
@@ -133,180 +233,319 @@ body { background: #F1F5F4; color: #1B2330; font-family: var(--font), "IBM Plex 
           <ellipse cx="120" cy="106" rx="5" ry="3" fill="#E58E73" opacity=".45"/>
           <path d="M71 104 C72 126 86 136 100 136 C114 136 128 126 129 104 C124 118 114 124 100 124 C86 124 76 118 71 104 Z" fill="#3B2A20"/>
           <path d="M88 112 Q100 106 112 112 Q100 110 88 112 Z" fill="#3B2A20" stroke="#3B2A20" stroke-width="3" stroke-linejoin="round"/>
-          <path id="smile" d="M91 117 Q100 124 109 117" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M91 117 Q100 124 109 117" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
         </g>
       </g>
     </g>
   </svg>
-  <div id="bubble" class="abs"><div class="tail"></div><div id="cap"></div></div>
+  <div id="bubble" class="abs"><div class="tail"></div><div id="persona"></div><div id="cap"></div></div>
   <div id="band" class="abs"><img src="../../frontend/haris.svg" alt=""><span id="footer"></span></div>
 </div>
 <script>
 const W = 1920;
-let D, rtl = true, starts = [];
+let D, U, R, rtl = true, starts = [];
 const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 const ease = (x) => { x = clamp(x); return x * x * (3 - 2 * x); };
-const TICK = '<span class="tick"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>';
+const lerp = (a, b, x) => a + (b - a) * x;
+const TICK = '<span class="tick"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>';
 const BADGE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="#E7C77A"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6" stroke="#0A4740" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>';
-const PERSON = '<svg width="46" height="54" viewBox="0 0 62 74"><circle cx="31" cy="18" r="15"/><path d="M4 72 C4 48 16 38 31 38 C46 38 58 48 58 72 Z"/></svg>';
-const LOCK = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0A4740" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
-const EYE = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0A4740" stroke-width="2.2" stroke-linecap="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.2 3.9M6.6 6.6C3.9 8.4 2 12 2 12s4 7 10 7a10 10 0 0 0 5.4-1.6"/></svg>';
-const PDF = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#10633D" stroke-width="2" stroke-linecap="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 14h6M9 17h4"/></svg>';
+const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="#B08A3E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>';
 const LOGO = "../../frontend/haris.svg";
-const CASES = [["money_sent", "💳"], ["account_hacked", "🔓"], ["extortion", "⚠️"], ["harassment", "🗣️"], ["impersonation", "🎭"],
-  ["privacy_violation", "📷"], ["device_hacked", "💻"], ["identity_shared", "🆔"], ["business_fraud", "🏢"], ["suspicious_only", "✉️"]];
 
-function header(u) { return `<div class="wahead"><img src="${LOGO}" alt=""><div><b>${esc(u.title)} ${BADGE}</b><small>${esc(u.verified)}</small></div></div>`; }
-function composer(text = "") { return `<div class="composer"><div class="field" data-typed>${esc(text)}</div><div class="send"></div></div>`; }
-const at = (s, inner, extra = "") => `<div data-at="${s}" ${extra}>${inner}</div>`;
+// Where the scene, Haris, his speech bubble and the map sit, per layout (x is measured from the left in Arabic and mirrored in English).
+const MODES = {
+  full:  { box: [0, 0, 1920, 1006], haris: null, bubble: null, map: 0 },
+  hero:  { box: [0, 0, 1920, 1006], haris: [1260, 215, 600], bubble: null, map: 0 },
+  phone: { box: [90, 96, 640, 880], haris: [1250, 200, 620], bubble: [780, 110, 560, "side"], map: 1 },
+  wide:  { box: [56, 60, 1240, 926], haris: [1480, 575, 345], bubble: [1330, 80, 560, "down"], map: 0 },
+};
+const X = (x, w) => (rtl ? x : W - x - w);
 
-function build(u) {
-  const link = (s) => esc(s).replace(/([a-z0-9-]+\.[a-z]{2,})/i, '<b style="color:#1F5FBF;font-weight:500">$1</b>');
-  const welcome = u.wa.welcome.split("\n\n")[0];
+const at = (s, inner, extra = "", cls = "") => `<div data-at="${s}" class="${cls}" ${extra}>${inner}</div>`;
+function header(title, sub) { return `<div class="wahead"><img src="${LOGO}" alt=""><div><b>${esc(title)} ${BADGE}</b><small>${esc(sub)}</small></div></div>`; }
+function composer(text, typed = "") { return `<div class="composer"><div class="field" ${typed}>${esc(text)}</div><div class="send"></div></div>`; }
+function phone(inner, style = "") { return `<div class="phone" style="${style}"><div class="screen">${inner}</div></div>`; }
+function dbar(tab) {
+  const d = U.dash;
+  return `<div class="dbar"><img src="${LOGO}" alt=""><b>${esc(d.title)}</b><div class="dtabs">${d.tabs.map((t, i) => `<span class="${i === tab ? "on" : ""}">${esc(t)}</span>`).join("")}</div><span class="demo">${esc(d.demo)}</span></div>`;
+}
+// A queue row; `slots` is "t:slot,t:slot" (the row slides to each slot at that time).
+function qrow(pr, st, what, meta, ref, slots, extra = "", chips = "") {
+  const d = U.dash;
+  const sts = Array.isArray(st) ? st.map(([a, b, s]) => `<span class="sts ${s}" data-at="${a}" ${b ? `data-until="${b}"` : ""}>${esc(d.st[s])}</span>`).join("") : `<span class="sts ${st}">${esc(d.st[st])}</span>`;
+  return `<div class="qrow ${pr}" data-slots="${slots}" ${extra}><div class="qtop"><span class="pr ${pr}">${esc(d.pr[pr])}</span>${sts}<span class="ref ltr">${esc(ref)}</span></div>
+    <div class="qwhat">${esc(what)}</div>${chips ? `<div style="display:flex;gap:6px">${chips}</div>` : ""}<div class="qmeta">${esc(meta)}</div></div>`;
+}
+const facts = (pairs) => `<dl class="facts">${pairs.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>`;
+
+function build() {
+  const u = U, d = u.dash, ru = R.ru, refs = R.refs;
+  const link = (s) => esc(s).replace(/([a-z0-9-]+\.[a-z]{2,})/i, '<b class="ltr" style="color:#1F5FBF;font-weight:500">$1</b>');
+  const fake = ["HRS-20261121-91C0D2", "HRS-20261121-3E77A1", "HRS-20261121-C4180B", "HRS-20261121-0A9F5E"];
   const S = {
-    scan: `<img class="poster" src="../poster/haris-poster.png" alt="">
-      <div class="cam" data-cam style="left:155px"><div class="view"><img src="../poster/qr.svg" alt=""><div class="corner"></div><div class="scanline" data-scan></div>
-      <div class="toast" data-at="4.0" data-tapat="5.3"><span class="waicon"></span><div><b>WhatsApp</b>${esc(u.open_wa)}</div></div></div></div>`,
-    chat: `<div class="phone"><div class="screen">${header(u)}<div class="chat">
-      <div class="out" data-at="2.3">${esc(u.greeting)}</div>
-      <div class="in" data-at="3.3">${esc(welcome)}</div>
-      <div class="btns" data-at="3.8"><div class="btn">${esc(u.wa.buttons.check)}</div><div class="btn">${esc(u.wa.buttons.scammed)}</div><div class="btn">${esc(u.wa.buttons.guide)}</div></div>
-      </div>${composer()}</div></div>`,
-    check: `<div class="phone"><div class="screen">${header(u)}<div class="chat">
-      <div class="out" data-at="0.6"><div class="fwd">↪ ${esc(u.forwarded)}</div>${link(u.scam)}</div>
-      <div class="sys" data-at="1.6" data-until="2.8">${esc(u.typing)}</div>
-      <div class="in" data-at="2.8"><div class="risk">🔴 ${esc(u.risk)}</div>
-        ${u.reasons.map((r, i) => `<div data-at="${3.4 + i * 0.5}">• ${esc(r)}</div>`).join("")}</div>
-      <div class="btns" data-at="5.0"><div class="btn">${esc(u.wa.buttons.report)}</div><div class="btn" data-tapat="8.6">${esc(u.wa.buttons.scammed)}</div><div class="btn">${esc(u.wa.buttons.again)}</div></div>
-      </div>${composer()}</div></div>`,
-    cases: `<div class="casepanel"><h3 data-at="0.1">${esc(u.cases_title)}</h3><div class="cases">
-      ${CASES.map(([k, ic], i) => `<div class="case" data-at="${0.5 + i * 0.45}"><span class="ic">${ic}</span><span>${esc(u.wa.playbooks[k])}</span></div>`).join("")}</div></div>`,
-    help: `<div class="phone"><div class="screen">${header(u)}<div class="chat">
-      <div class="out" data-at="3.4" style="font-weight:600">${esc(u.wa.playbooks.money_sent)}</div>
-      <div class="in" data-at="4.0"><b>${esc(u.help_title)}</b>
-        ${u.steps.map((s, i) => `<div data-at="${4.4 + i * 0.5}">${i + 1}. ${esc(s)}</div>`).join("")}
-        <div data-at="6.2" style="margin-top:8px;font-weight:700;color:#A11D12">${esc(u.emergency)} 999 · <span style="color:#0A4740">${esc(u.aman)} 800 2626</span></div></div>
-      </div>${composer()}
-      <div class="sheet" data-sheet="0.5,3.5"><h4>${esc(u.wa.list_section)}</h4>
-        ${["money_sent", "account_hacked", "extortion", "harassment", "impersonation"].map((k) => `<div class="rowi" ${k === "money_sent" ? 'data-tapat="2.9"' : ""}>${esc(u.wa.playbooks[k])}</div>`).join("")}</div>
-      </div></div>`,
-    report: `<div class="phone"><div class="screen"><div class="wahead"><img src="${LOGO}" alt=""><div><b>${esc(u.title)}</b><small>${esc(u.report_title)}</small></div></div><div class="app">
-      <div class="apph" data-at="0.2">${esc(u.report_title)}</div>
-      <div class="voice" data-at="0.5"><span class="play">▶</span><div class="bars">${Array.from({ length: 20 }, (_, i) => `<i data-wave="${i}"></i>`).join("")}</div></div>
-      ${u.fields.map((f, i) => `<div class="fld" data-at="${2.6 + i * 0.6}"><span style="color:#5B6770">${esc(f[0])}</span><b>${esc(f[1])} ${TICK}</b></div>`).join("")}
-      <div class="ready" data-at="4.6">${PDF}<span>${esc(u.ready)}</span></div>
-      <div class="uae" data-at="5.6" data-tapat="6.6">🪪 ${esc(u.uaepass)}</div>
-      <div class="okrow" data-at="7.2">${TICK}<span>${esc(u.id_ok)}</span></div>
-      <div class="ready" data-at="8.2" style="background:#0A4740;border-color:#0A4740;color:#fff">📨 <span>${esc(u.sent)}</span></div>
+    poster: `<div class="fullbg"><img src="../poster/uae-map-light.svg" alt="" style="position:absolute;inset-inline-start:-80px;top:120px;width:1200px;opacity:.5"></div>
+      <div class="row"><div class="pbox"><img src="../poster/haris-poster.png" alt="">
+        <div class="cam" data-cam style="left:153px"><div class="view"><img src="../poster/qr.svg" alt=""><div class="corner"></div><div class="scanline" data-scan></div>
+        <div class="toast" data-at="4.4" data-tapat="6.0"><span class="waicon"></span><div><b>WhatsApp</b>${esc(u.poster.open_wa)}</div></div></div></div></div>
+        <div class="ptxt"><h1 data-at="0.3">${esc(u.poster.title)}</h1><div class="tag" data-at="0.8">${esc(u.poster.tagline)}</div>
+        <div class="step" data-at="2.0">📱 ${esc(u.poster.step)}</div></div></div>`,
+    problem: `<div class="fullbg" style="background:#0A4740"></div><div class="row" style="gap:110px">
+      <div class="lock"><div class="scr"><div class="clock ltr">8:12</div>
+        ${u.problem.sms.map(([a, b], i) => `<div class="sms" data-at="${0.4 + i * 0.9}"><b>${esc(a)}</b>${esc(b)}</div>`).join("")}</div></div>
+      <div class="ptext"><div data-at="0.8">${esc(u.problem.l1)}</div><div data-at="4.4">${esc(u.problem.l2)}</div><div class="gold" data-at="8.2">${esc(u.problem.l3)}</div></div></div>`,
+    a_check: phone(`${header(u.wa.title, u.wa.verified)}<div class="chat">
+      <div class="out" data-at="0.6"><div class="fwd">↪ ${esc(u.wa.forwarded)}</div>${link(u.check.scam)}</div>
+      <div class="sys" data-at="1.6" data-until="2.8">${esc(u.wa.typing)}</div>
+      <div class="in" data-at="2.8"><div class="risk">🔴 ${esc(u.check.risk)}</div>
+        ${u.check.reasons.map((r, i) => `<div data-at="${3.3 + i * 0.6}">• ${esc(r)}</div>`).join("")}</div>
+      <div class="in" data-at="6.2">💡 ${esc(u.check.advice)}</div>
+      <div class="btns" data-at="8.6"><div class="btn" data-tapat="10.4">${esc(u.wa.report)}</div><div class="btn">${esc(u.wa.scammed)}</div><div class="btn">${esc(u.wa.again)}</div></div>
+      </div>${composer(u.wa.composer)}`, "left:60px"),
+    a_help: phone(`${header(u.wa.title, u.wa.verified)}<div class="chat">
+      <div class="sys" data-at="0.4">🗓️ ${esc(u.help.later)}</div>
+      <div class="btns" data-at="0.8"><div class="btn" data-tapat="1.6">${esc(u.wa.scammed)}</div></div>
+      <div class="out" data-at="4.6" style="font-weight:600">${esc(u.wa.cases[0])}</div>
+      <div class="in" data-at="5.4"><b>${esc(u.help.title)}</b>
+        ${u.help.steps.map((s, i) => `<div data-at="${5.9 + i * 0.7}">${i + 1}. ${esc(s)}</div>`).join("")}
+        <div data-at="8.2" style="margin-top:8px;font-weight:700;color:#A11D12">${esc(u.help.emergency)}</div></div>
+      </div>${composer(u.wa.composer)}
+      <div class="sheet" data-sheet="2.0,4.5"><h4>${esc(u.wa.list_section)}</h4>
+        ${u.wa.cases.map((c, i) => `<div class="rowi" ${i === 0 ? 'data-tapat="3.8"' : ""}>${esc(c)}</div>`).join("")}</div>`, "left:60px"),
+    a_report: phone(`<div class="wahead"><img src="${LOGO}" alt=""><div><b>${esc(u.wa.title)}</b><small>${esc(u.report.head)}</small></div></div><div class="chat" style="background:#F5F6F4">
+      <div class="voice" data-at="0.5"><span class="play">▶</span><div class="bars">${Array.from({ length: 22 }, (_, i) => `<i data-wave="${i}"></i>`).join("")}</div></div>
+      ${u.report.fields.map((f, i) => `<div class="fld" data-at="${2.4 + i * 0.5}"><span>${esc(f[0])}</span><b>${esc(f[1])} ${TICK}</b></div>`).join("")}
+      <div class="card green" data-at="4.6">📄 ${esc(u.report.ready)}</div>
+      <div class="card" data-at="5.6" style="font-weight:600">${esc(u.report.consent)}</div>
+      <div class="card dark" data-at="6.6" data-tapat="7.6" style="text-align:center">${esc(u.report.uaepass)}</div>
+      <div class="card" data-at="8.4" style="color:#10633D;font-weight:700">${TICK} ${esc(u.report.id_ok)}</div>
+      <div class="card gold" data-at="9.6" style="font-weight:700">${esc(u.report.sent)}<div class="ltr" style="font-size:17px;color:#6B4E12;text-align:start">${esc(refs.ahmed)}</div></div>
+      </div>`, "left:60px"),
+    a_auth: `<div class="dash">${dbar(0)}<div class="dbody"><div class="queue">
+      ${qrow("financial", [[0, 9.2, "new"], [9.2, 0, "received"]], d.money, d.a_meta, refs.ahmed, "0:-1,1.2:0", 'data-at="1.2" data-glow="1.2,3.4" data-tapat="3.4"')}
+      ${d.queue.map((q, i) => qrow(q[0], q[1], q[2], q[3], fake[i], `0:${i},1.2:${i + 1}`)).join("")}
+      </div><div class="detail" data-at="3.8">
+        <div class="dhead"><span class="pr financial">${esc(d.pr.financial)}</span><span class="sts new" data-until="9.2">${esc(d.st.new)}</span><span class="sts received" data-at="9.2">${esc(d.st.received)}</span><h2 class="ltr">${esc(refs.ahmed)}</h2></div>
+        <div class="dtitle">${esc(d.money)}</div>
+        <span class="verified">${esc(d.a_verified)}</span>
+        <div class="hint" data-at="5.4" data-glow="5.4,9">${esc(d.a_hint)}</div>
+        ${facts(d.a_facts)}
+        <h3>${esc(d.story_h)}</h3><blockquote>${esc(d.a_story)}</blockquote>
+        <div class="acts"><span class="dbtn primary" data-tapat="8.8">${esc(d.receive)}</span><span class="dbtn">${esc(d.ask)}</span></div>
+      </div></div>
+      <div class="dnotif" data-at="10.2"><div class="napp"><span class="waicon" style="width:22px;height:22px"></span>${esc(d.notif_app)}</div><b>${esc(d.a_notif)}</b></div></div>`,
+    n_chat: phone(`${header(ru.title, ru.status)}<div class="chat">
+      <div class="out" data-at="0.6" dir="ltr">${esc(ru.story)}</div>
+      <div class="in" data-at="2.2" dir="ltr">${esc(ru.residencyQ)}</div>
+      <div class="btns" data-at="2.8" data-until="5.0" dir="ltr"><div class="btn">${esc(ru.resident)}</div><div class="btn" data-tapat="4.0">${esc(ru.visitor)}</div><div class="btn">${esc(ru.minor)}</div></div>
+      <div class="out" data-at="5.0" dir="ltr">${esc(ru.visitor)}</div>
+      <div class="in" data-at="5.6" dir="ltr">${esc(ru.departureQ)}</div>
+      <div class="btns" data-at="6.2" data-until="7.8" dir="ltr"><div class="btn" data-tapat="7.2">${esc(ru.dep3)}</div><div class="btn">${esc(ru.depWeek)}</div></div>
+      <div class="out" data-at="7.8" dir="ltr">${esc(ru.dep3)}</div>
+      <div class="card dark" data-at="8.6" data-tapat="9.6" style="text-align:center" dir="ltr">🛂 ${esc(ru.passport)}</div>
+      <div class="card" data-at="10.4" style="color:#10633D;font-weight:700" dir="ltr">${TICK} ${esc(ru.passportDone)}</div>
+      <div class="card gold" data-at="11.6" dir="ltr" style="font-weight:600">${esc(ru.sent)}<div style="font-size:17px">${esc(refs.anna)}</div></div>
+      </div>${composer(ru.composer)}`, "left:60px"),
+    n_auth: `<div class="dash">${dbar(0)}<div class="dbody"><div class="queue">
+      ${qrow("financial", "new", d.n_what, d.n_meta, refs.anna, "0:4,2.6:0", 'data-at="1.0" data-glow="1.0,3.6" data-tapat="3.4"', `<span class="chip">${esc(d.lang_ru)}</span><span class="chip soon">${esc(d.visitor_soon)}</span>`)}
+      ${qrow("financial", "received", d.money, d.a_meta2, refs.ahmed, "0:0,2.6:1")}
+      ${d.queue.map((q, i) => qrow(q[0], q[1], q[2], q[3], fake[i], `0:${i + 1},2.6:${i + 2}`)).join("")}
+      </div><div class="detail" data-at="3.8" style="gap:9px">
+        <div class="dhead"><span class="pr financial">${esc(d.pr.financial)}</span><span class="sts new">${esc(d.st.new)}</span><h2 class="ltr">${esc(refs.anna)}</h2></div>
+        <span class="verified">${esc(d.n_verified)}</span>
+        <div class="banner" data-glow="9.6,13"><b>${esc(d.n_banner)}</b>${esc(d.n_tourism)}</div>
+        <div class="langb">${esc(d.n_lang)}</div>
+        <h3>${esc(d.story_h)}</h3><blockquote data-glow="5.0,7">${esc(d.n_story)}</blockquote>
+        <div class="orig">▾ ${esc(d.original)}<blockquote dir="ltr" data-at="6.6">${esc(ru.story)}</blockquote></div>
       </div></div></div>`,
-    radar: `<div class="phone"><div class="screen">${header(u)}<div class="chat">
-      <div class="btns"><div class="btn" data-tapat="0.7">${esc(u.wa.buttons.report)}</div></div>
-      <div class="in" data-at="1.6">${esc(u.wa.reported.split("\n")[0])}</div>
-      <div class="rcard" data-at="2.6"><b style="color:#0A4740;font-size:22px">${esc(u.radar_title)}</b>
-        <div class="people">${Array.from({ length: 12 }, (_, i) => `<div data-person="${i}">${PERSON}</div>`).join("")}</div>
-        <div style="font-size:21px;font-weight:700"><span data-count style="font-size:34px">0</span> ${esc(u.reports)}</div>
-        <div class="chip" data-at="4.4" style="background:#FFF1E6;color:#9A4A06">⚠️ ${esc(u.warn)}</div>
-        <div class="chip" data-at="6.8" style="background:#0A4740;color:#fff">🛡️ ${esc(u.alert)}</div></div>
-      <div class="official" data-at="8.2">📢 ${esc(u.official)}</div>
+    n_reply: `<div style="position:absolute;inset:0;display:flex;gap:30px">
+      <div style="position:relative;flex:1"><div class="dash narrow">${dbar(0)}<div class="dbody" style="grid-template-columns:1fr"><div class="detail" style="gap:12px">
+        <div class="dhead"><span class="pr financial">${esc(d.pr.financial)}</span><span class="sts received" data-until="3.8">${esc(d.st.received)}</span><span class="sts info" data-at="3.8" data-until="10.4">${esc(d.st.info)}</span><span class="sts received" data-at="10.4">${esc(d.st.received)}</span><h2 class="ltr">${esc(refs.anna)}</h2></div>
+        <div style="display:flex;gap:8px"><span class="chip">${esc(d.lang_ru)}</span><span class="chip soon">${esc(d.visitor_soon)}</span></div>
+        <h3>${esc(d.log)}</h3>
+        <ol class="timeline"><li>${esc(d.submitted)}</li><li>${esc(d.received_ev)}</li>
+          <li data-at="3.8">${esc(d.asked)}<span class="note">${esc(d.question)}</span></li>
+          <li class="reply" data-at="10.4" data-glow="10.4,14">${esc(d.replied)}<span class="note">${esc(d.answer)}</span></li></ol>
+        <div class="acts" style="flex-direction:column;gap:8px" data-until="3.8"><b style="font-size:19px">${esc(d.ask_label)}</b>
+          <div class="ta" data-type="0.6,2.4" data-full="${esc(d.question)}"></div>
+          <div><span class="dbtn primary" data-tapat="3.2">${esc(d.ask)}</span></div></div>
+      </div></div></div></div>
+      ${phone(`${header(ru.title, ru.status)}<div class="chat" dir="ltr">
+        <div class="card gold" style="font-size:18px;opacity:.75">${esc(ru.sent)}</div>
+        <div class="in" data-at="4.4"><b>${esc(ru.infoWaiting)}</b><div style="margin:6px 0;font-weight:700">«${esc(ru.question)}»</div>${esc(ru.infoAsk)}</div>
+        <div class="in" data-at="5.8" style="font-size:18px">${esc(ru.safety)}</div>
+        <div class="out" data-at="9.0">${esc(ru.answer)}</div>
+        <div class="in" data-at="9.6">${esc(ru.passed)}</div>
+      </div>${composer(ru.composer, `data-type="7.0,1.8" data-full="${esc(ru.answer)}" data-clear="9.0" dir="ltr"`)}`, "position:relative;flex:none;width:420px;height:880px;margin-top:22px")}</div>`,
+    child: phone(`${header(u.wa.title, u.wa.verified)}<div class="chat">
+      <div class="out" data-at="0.6">${esc(u.child.msg)}</div>
+      <div class="in" data-at="2.0">${esc(u.child.residencyQ)}</div>
+      <div class="btns" data-at="2.5" data-until="4.4"><div class="btn">${esc(u.child.resident)}</div><div class="btn">${esc(u.child.visitor)}</div><div class="btn" data-tapat="3.7">${esc(u.child.minor)}</div></div>
+      <div class="out" data-at="4.4">${esc(u.child.minor)}</div>
+      <div class="in" data-at="5.0" style="font-weight:700">💚 ${esc(u.child.calm)}</div>
+      <div class="card" data-at="7.0" style="border:3px solid #1E8E5A">${esc(u.child.handoff)}<div class="line" data-at="7.8">${esc(u.child.moi)}</div><div class="line" data-at="8.4">${esc(u.child.moe)}</div></div>
+      <div class="btns" data-at="9.4"><div class="btn">${esc(u.child.parent)}</div></div>
+      <div class="card" data-at="10.8" style="font-weight:700">${esc(u.child.nodata)}<br>${esc(u.child.nophoto)}</div>
+      </div>${composer(u.wa.composer)}`, "left:60px"),
+    radar: `<div class="dash">${dbar(1)}<div class="dbody" style="grid-template-columns:460px 1fr"><div class="camp">
+        <b style="font-size:25px">${esc(u.radar.campaign)}</b><span class="ltr" style="font-size:21px;color:#1F5FBF;font-weight:600;text-align:start">${esc(u.radar.domain)}</span>
+        <div><span class="big" data-count="0.6,3.0,37">0</span> <span style="font-size:22px;font-weight:700">${esc(u.radar.reports)}</span></div>
+        <div class="spark" dir="ltr">${[2, 3, 2, 5, 4, 7, 6, 9, 11, 14, 12].map((h, i) => `<i data-grow="${0.6 + i * 0.22},${h}"></i>`).join("")}</div>
+        <span class="chip soon" style="align-self:flex-start;font-size:19px" data-until="9.4">⏳ ${esc(u.radar.pending)}</span>
+        <div class="approved" data-at="9.4">${esc(u.radar.approved)}</div>
+      </div><div class="detail" data-at="3.6" style="gap:10px"><b style="font-size:23px">${esc(u.radar.preview)}</b><div class="prev">
+        ${R.alerts.map(([l, name, title, text], i) => `<div class="pv" data-at="${4.0 + i * 0.8}" dir="${["ar", "ur"].includes(l) ? "rtl" : "ltr"}"><span class="chip">${esc(name)}</span><div><b>${esc(title)}</b> ${esc(text)}</div></div>`).join("")}</div>
+        <div class="acts" style="margin-top:6px"><span class="dbtn primary" data-tapat="8.9">${esc(u.radar.approve)}</span></div>
       </div></div></div>`,
-    broadcast: `<div class="phone"><div class="screen">${header(u)}
-      <div class="notif" data-at="0.5" data-until="3.4"><div class="app"><span class="waicon" style="width:22px;height:22px"></span>${esc(u.notif_app)}</div>
-        <b>📢 ${esc(u.alert_title)}</b><p>${esc(u.alert_text)}</p></div>
-      <div class="chat"><div class="sys" data-at="3.0">${esc(u.official)}</div>
-      <div class="alertmsg" data-at="3.4"><b>📢 ${esc(u.alert_title)}</b>${esc(u.alert_text)}</div>
-      <div class="btns" data-at="4.2"><div class="btn">${esc(u.alert_btn)}</div></div>
-      <div class="in" data-at="6.0" style="max-width:92%">${esc(u.tip)}</div>
-      </div>${composer()}</div></div>`,
-    langs: `<div class="phone"><div class="screen">${header(u)}<div class="app">
-      <div class="apph" data-at="0.2" style="font-size:22px">${esc(u.choose_lang)}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${["العربية", "English", "اردو", "हिन्दी"].map((l, i) => `<div class="lang ${l === u.native ? "on" : ""}" data-at="${0.5 + i * 0.4}">${l}</div>`).join("")}</div>
-      <div class="more" data-at="2.4">+ ${esc(u.more_langs)}<div style="font-size:17px;color:#5B6770;font-weight:500">${esc(u.more_note)}</div></div>
-      <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px"><div class="priv" data-at="4.4">${LOCK}<span>${esc(u.privacy[0])}</span></div>
-      <div class="priv" data-at="5.2">${EYE}<span>${esc(u.privacy[1])}</span></div></div>
-      </div></div></div>`,
-    outro: `<div class="slogan"><div class="s1" data-at="0.3">${esc(u.slogan1)}</div><div class="s2" data-at="0.9">${esc(u.slogan2)}</div>
-      <div class="guards" data-at="1.6">${esc(u.guards)}</div>
-      <div class="soon" data-at="2.6"><span class="waicon" style="background:#fff"></span>${esc(u.soon)}</div>
-      <div class="note" data-at="3.2">${esc(u.wa.footer)}</div></div>`,
+    broadcast: `<div class="panel" style="padding:44px 40px"><div class="minis">
+      ${R.alerts.map(([l, name, title, text], i) => `<div class="mini" data-at="${0.6 + i * 0.7}"><div class="scr"><div class="lname">${esc(name)}</div>
+        <div class="sms" dir="${["ar", "ur"].includes(l) ? "rtl" : "ltr"}" data-at="${1.0 + i * 0.7}"><b>${esc(u.broadcast.app)}</b><div style="font-weight:700;margin-bottom:4px">${esc(title)}</div>${esc(text)}</div></div></div>`).join("")}
+      </div><div class="stopline" data-at="5.0">${esc(u.broadcast.stop)}</div></div>`,
+    privacy: `<div class="panel"><h2 data-at="0.2">🔒 ${esc(u.privacy.title)}</h2><div class="grid2">
+      ${u.privacy.items.map(([ic, t], i) => `<div class="pcard" data-at="${0.8 + i * 1.3}"><span class="ic">${ic}</span><span>${esc(t)}</span></div>`).join("")}</div></div>`,
+    how: `<div class="panel"><h2 data-at="0.2">⚙️ ${esc(u.how.title)}</h2><div class="flow">
+      ${u.how.nodes.map(([ic, b, s], i) => (i ? `<div class="arrow" data-at="${0.4 + i * 1.1}">${ARROW}</div>` : "") + `<div class="node ${i === 1 ? "haris" : ""}" data-at="${0.6 + i * 1.1}"><span class="ic">${i === 1 ? `<img src="${LOGO}" style="width:96px;height:96px;border-radius:50%">` : ic}</span><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join("")}</div>
+      <div class="fallback" data-at="5.6">${esc(u.how.fallback)}</div>
+      <div class="tech" data-at="7.0">${u.how.tech.map((t) => `<span>${esc(t)}</span>`).join("")}</div></div>`,
+    role: `<div class="panel"><h2 data-at="0.2">${esc(u.role.title)}</h2><div class="roles">
+      ${u.role.items.map(([ic, t], i) => `<div class="pcard" data-at="${0.8 + i * 1.2}"><span class="ic">${ic}</span><span>${esc(t)}</span></div>`).join("")}</div></div>`,
+    future: `<div class="panel"><h2 data-at="0.2">🚀 ${esc(u.future.title)}</h2><div class="tl">
+      ${u.future.items.map(([ic, b, s], i) => `<div class="tli" data-at="${0.9 + i * 1.6}"><span class="ic">${ic}</span><div><b>${esc(b)}</b><span>${esc(s)}</span></div></div>`).join("")}</div></div>`,
+    outro: `<div class="hero"><img class="mapbg" src="../poster/uae-map-light.svg" alt="" style="inset-inline-start:40px;top:160px">
+      <div class="heroc" style="inset-inline-end:60px"><div class="s1" data-at="0.3">${esc(u.outro.s1)}</div><div class="s2" data-at="0.8">${esc(u.outro.s2)}</div>
+      <div class="guards" data-at="1.4">${esc(u.outro.guards)}</div>
+      <div class="qrcard" data-at="2.2"><img src="../poster/qr.svg" alt=""><div style="text-align:start"><b>${esc(u.outro.try)}</b><span>${esc(u.outro.scan)}</span></div></div></div></div>`,
   };
-  const panel = document.getElementById("panel");
-  D.scenes.forEach((k, i) => {
+  const root = document.getElementById("scenes");
+  D.scenes.forEach((sc, i) => {
     const s = document.createElement("div");
-    s.className = "scene"; s.dataset.i = i; s.innerHTML = S[k];
-    panel.appendChild(s);
+    s.className = "scene"; s.dataset.i = i; s.innerHTML = S[sc.k];
+    const [x, y, w, h] = MODES[sc.mode].box;
+    Object.assign(s.style, { left: X(x, w) + "px", top: y + "px", width: w + "px", height: h + "px" });
+    root.appendChild(s);
   });
 }
 
-function place(id, x, y, w) {
-  const n = document.getElementById(id);
-  Object.assign(n.style, { left: (rtl ? x : W - x - w) + "px", top: y + "px", width: w + "px" });
+function init(data) {
+  D = data; U = D.ui; R = D.shared;
+  rtl = U.dir === "rtl";
+  document.documentElement.dir = U.dir;
+  document.documentElement.lang = D.lang;
+  document.body.style.setProperty("--font", `"${U.font}"`);
+  document.getElementById("footer").textContent = U.footer;
+  build();
+  let t = D.lead;
+  starts = D.scenes.map((s) => { const a = t; t += s.dur; return a; });
+  const m = document.getElementById("map");
+  Object.assign(m.style, { left: X(1010, 880) + "px", top: "270px" });
+  if (!rtl) document.getElementById("haris").style.transform = "scaleX(-1)";
 }
 
-function init(data) {
-  D = data;
-  rtl = D.dir === "rtl";
-  document.documentElement.dir = D.dir;
-  document.documentElement.lang = D.lang;
-  document.body.style.setProperty("--font", `"${D.font}"`);
-  document.getElementById("footer").textContent = D.ui.footer;
-  build(D.ui);
-  place("panel", 90, 96, 640);
-  place("bubble", 780, 120, 560);
-  place("haris", 1250, 200, 620);
-  place("map", 1010, 270, 880);
-  const tail = document.querySelector("#bubble .tail");
-  if (rtl) { tail.style.right = "-26px"; tail.style.borderLeft = "28px solid #fff"; }
-  else { tail.style.left = "-26px"; tail.style.borderRight = "28px solid #fff"; document.getElementById("haris").style.transform = "scaleX(-1)"; }
-  let t = D.lead;
-  starts = D.durations.map((d) => { const s = t; t += d; return s; });
-}
+function layout(mode) { return MODES[mode]; }
 
 function render(t) {
   let k = 0;
   starts.forEach((s, i) => { if (t >= s) k = i; });
-  const dur = D.durations[k], lt = t - starts[k];
+  const sc = D.scenes[k], dur = sc.dur, lt = t - starts[k];
+  const cur = layout(sc.mode), prev = layout((D.scenes[k - 1] || sc).mode);
+  const mv = k ? ease((lt + 0.2) / 0.9) : 1;
 
-  // caption next to Haris
-  const cap = document.getElementById("cap");
-  if (cap.dataset.k !== String(k)) {
-    cap.innerHTML = esc(D.ui.captions[k]) + ((D.future || []).includes(D.scenes[k]) ? `<br><span class="badge">⏳ ${esc(D.ui.coming)}</span>` : "");
-    cap.dataset.k = String(k);
-  }
-  const co = Math.min(ease((lt - 0.2) / 0.4), ease((dur - lt) / 0.3));
-  const bub = document.getElementById("bubble");
-  bub.style.opacity = String(co);
-  bub.style.transform = `translateY(${(1 - co) * 14}px)`;
+  // Haris: moves between layouts
+  const H = document.getElementById("haris");
+  const hp = prev.haris || cur.haris, hc = cur.haris || prev.haris;
+  const hop = lerp(prev.haris ? 1 : 0, cur.haris ? 1 : 0, mv);
+  if (hc) {
+    const w = lerp(hp[2], hc[2], mv), x = lerp(hp[0], hc[0], mv), y = lerp(hp[1], hc[1], mv);
+    Object.assign(H.style, { left: X(x, w) + "px", top: y + "px", width: w + "px", height: w * 1.25 + "px", opacity: String(hop), display: hop > 0.01 ? "" : "none" });
+  } else H.style.display = "none";
+  document.getElementById("map").style.opacity = String(lerp(prev.map, cur.map, mv));
+
+  // speech bubble: persona and timed captions
+  const bub = document.getElementById("bubble"), cap = document.getElementById("cap"), per = document.getElementById("persona");
+  const caps = U.captions[sc.k] || [];
+  let ci = -1;
+  caps.forEach(([a], i) => { if (lt >= a) ci = i; });
+  if (cur.bubble && caps.length) {
+    const [bx, by, bw, tailMode] = cur.bubble;
+    Object.assign(bub.style, { left: X(bx, bw) + "px", top: by + "px", width: bw + "px", display: "" });
+    const tail = bub.querySelector(".tail");
+    tail.removeAttribute("style");
+    if (tailMode === "side") {
+      Object.assign(tail.style, { top: "70px", borderTop: "26px solid transparent", borderBottom: "26px solid transparent" });
+      if (rtl) Object.assign(tail.style, { right: "-26px", borderLeft: "28px solid #fff" }); else Object.assign(tail.style, { left: "-26px", borderRight: "28px solid #fff" });
+    } else {
+      const off = cur.haris[0] + cur.haris[2] * 0.5 - bx - 26;
+      Object.assign(tail.style, { bottom: "-26px", borderLeft: "26px solid transparent", borderRight: "26px solid transparent", borderTop: "28px solid #fff" });
+      tail.style.left = (rtl ? off : bw - off - 52) + "px";
+    }
+    const key = `${k}:${ci}`;
+    if (cap.dataset.k !== key) {
+      cap.textContent = ci >= 0 ? caps[ci][1] : "";
+      const p = (U.persona || {})[sc.k];
+      per.textContent = p || ""; per.style.display = p ? "" : "none";
+      cap.dataset.k = key;
+    }
+    const nextAt = ci + 1 < caps.length ? caps[ci + 1][0] : Infinity;
+    const co = ci >= 0 ? Math.min(ease((lt - caps[ci][0]) / 0.35), ease((nextAt - lt) / 0.25)) : 0;
+    cap.style.opacity = String(co);
+    const bo = Math.min(ease((lt - 0.1) / 0.4), ease((dur - lt) / 0.3));
+    bub.style.opacity = String(bo);
+    bub.style.transform = `translateY(${(1 - bo) * 14}px)`;
+  } else bub.style.display = "none";
 
   // scenes: crossfade, then items appear on time
   document.querySelectorAll(".scene").forEach((s) => {
-    const i = +s.dataset.i, st = starts[i], d = D.durations[i], l = t - st;
-    const vis = Math.min(ease((l + 0.35) / 0.35), ease((d - l) / 0.35));
+    const i = +s.dataset.i, st = starts[i], d = D.scenes[i].dur, r = t - st;
+    const vis = Math.min(ease((r + 0.4) / 0.4), ease((d - r) / 0.4));
     s.style.opacity = String(vis);
     s.style.visibility = vis > 0 ? "visible" : "hidden";
-    s.style.transform = `translateY(${(1 - vis) * 22}px)`;
+    s.style.transform = `translateY(${(1 - vis) * 20}px)`;
     if (vis <= 0) return;
-    const r = l / D.slow;  // reading time: items appear and stay longer, fades keep their speed
-    s.querySelectorAll("[data-at]").forEach((n) => {
-      const a = +n.dataset.at, u = n.dataset.until ? +n.dataset.until : Infinity;
+    s.querySelectorAll("[data-at],[data-until]").forEach((n) => {
+      const a = n.dataset.at ? +n.dataset.at : -1, u = n.dataset.until ? +n.dataset.until : Infinity;
       const on = r >= a && r < u;
       n.style.display = on ? "" : "none";
-      const o = ease((r - a) / 0.25);
-      n.style.opacity = String(o);
-      n.style.transform = `translateY(${(1 - o) * 10}px)`;
+      if (!n.dataset.slots) {
+        const o = ease((r - a) / 0.3);
+        n.style.opacity = String(o);
+        n.style.transform = `translateY(${(1 - o) * 10}px)`;
+      }
+    });
+    s.querySelectorAll("[data-slots]").forEach((n) => {
+      const steps = n.dataset.slots.split(",").map((p) => p.split(":").map(Number));
+      let slot = steps[0][1];
+      steps.forEach(([a, v], j) => { if (j && r >= a) slot = lerp(steps[j - 1][1], v, ease((r - a) / 0.6)); });
+      n.style.top = slot * 150 + "px";
+      const a = n.dataset.at ? +n.dataset.at : -1;
+      n.style.opacity = String(ease((r - a) / 0.4));
     });
     s.querySelectorAll("[data-tapat]").forEach((n) => {
-      const a = +n.dataset.tapat;
-      const on = r >= a && r < a + 0.45;
+      const a = +n.dataset.tapat, on = r >= a && r < a + 0.45;
       n.classList.toggle("tap", on);
-      n.style.scale = on ? "0.96" : "1";
+      n.style.scale = on ? "0.97" : "1";
     });
-    const typed = s.querySelector("[data-typed]");
-    if (typed && i === 1) {
-      const g = D.ui.greeting, n = Math.round(clamp((r - 0.6) / 1.4) * g.length);
-      typed.textContent = r < 2.3 ? (n ? g.slice(0, n) : D.ui.composer) : D.ui.composer;
-      typed.style.color = r < 2.3 && n ? "#1B2330" : "#5B6770";
-    } else if (typed) { typed.textContent = D.ui.composer; }
+    s.querySelectorAll("[data-glow]").forEach((n) => {
+      const [a, b] = n.dataset.glow.split(",").map(Number);
+      n.classList.toggle("glow", r >= a && r < b);
+    });
+    s.querySelectorAll("[data-type]").forEach((n) => {
+      const [a, len] = n.dataset.type.split(",").map(Number), full = n.dataset.full;
+      const c = n.dataset.clear ? +n.dataset.clear : Infinity;
+      const m = Math.round(clamp((r - a) / len) * full.length);
+      const typing = r >= a && r < c && m > 0;
+      if (n.classList.contains("field")) {
+        n.textContent = typing ? full.slice(0, m) : (n.dataset.ph || (n.dataset.ph = n.textContent));
+        n.style.color = typing ? "#1B2330" : "#5B6770";
+      } else n.textContent = r >= a ? full.slice(0, m) : "";
+    });
+    s.querySelectorAll("[data-count]").forEach((n) => {
+      const [a, len, to] = n.dataset.count.split(",").map(Number);
+      n.textContent = String(Math.round(ease((r - a) / len) * to));
+    });
+    s.querySelectorAll("[data-grow]").forEach((n) => {
+      const [a, h] = n.dataset.grow.split(",").map(Number);
+      n.style.height = ease((r - a) / 0.5) * h * 9 + "px";
+    });
     const sheet = s.querySelector("[data-sheet]");
     if (sheet) {
       const [a, b] = sheet.dataset.sheet.split(",").map(Number);
@@ -315,28 +554,20 @@ function render(t) {
     }
     const cam = s.querySelector("[data-cam]");
     if (cam) {
-      const up = ease((r - 0.8) / 1.0), away = ease((r - 5.6) / 0.8);
-      cam.style.top = (900 - up * 540 + away * 40) + "px";
-      cam.style.opacity = String(1 - away * 0.0);
+      const up = ease((r - 1.0) / 1.1), away = ease((r - 7.4) / 1.2);
+      cam.style.top = (1000 - up * 690 + away * 900) + "px";
       const scan = s.querySelector("[data-scan]");
-      const sp = clamp((r - 1.9) / 1.8);
+      const sp = clamp((r - 2.2) / 2.0);
       scan.style.top = (150 + Math.abs(Math.sin(sp * Math.PI * 2)) * 250) + "px";
-      scan.style.opacity = r > 1.9 && r < 3.8 ? "1" : "0";
+      scan.style.opacity = r > 2.2 && r < 4.3 ? "1" : "0";
     }
     s.querySelectorAll("[data-wave]").forEach((n) => {
       const j = +n.dataset.wave;
-      n.style.height = (8 + 24 * Math.abs(Math.sin(j * 1.7 + t * 6)) * (r > 0.6 && r < 3 ? 1 : 0.3)) + "px";
+      n.style.height = (8 + 24 * Math.abs(Math.sin(j * 1.7 + t * 6)) * (r > 0.6 && r < 2.4 ? 1 : 0.3)) + "px";
     });
-    const people = s.querySelectorAll("[data-person]");
-    if (people.length) {
-      const n = Math.round(clamp((r - 2.8) / 3.7) * 12);
-      const color = n >= 10 ? "#B42318" : n >= 3 ? "#C2410C" : "#0A4740";
-      people.forEach((p, j) => { p.style.opacity = j < n ? "1" : "0.15"; p.querySelector("svg").setAttribute("fill", j < n ? color : "#0A4740"); });
-      s.querySelector("[data-count]").textContent = String(n);
-    }
   });
 
-  // Haris: silent, breathing, blinking, pointing at the phone
+  // Haris: silent, breathing, blinking, pointing at the screen (and waving at the end)
   const bob = Math.sin(t * 2.1) * 4;
   document.getElementById("body").setAttribute("transform", `translate(0 ${bob})`);
   const blink = ((t + 0.7) % 3.9) < 0.13 || ((t + 2.3) % 7.3) < 0.12;
@@ -345,7 +576,7 @@ function render(t) {
   const nod = Math.sin(clamp(lt / 0.6) * Math.PI) * 3;
   document.getElementById("head").setAttribute("transform", `rotate(${Math.sin(t * 1.3) * 1.2} 320 300) translate(0 ${nod})`);
   let arm;
-  if (D.scenes[k] === "outro") arm = 125 + Math.sin(t * 8) * 14 * ease((lt - 0.2) / 0.5);
+  if (sc.mode === "hero") arm = 125 + Math.sin(t * 7) * 14 * ease((lt - 0.4) / 0.6);
   else {
     const up = ease((lt - 0.1) / 0.6), down = ease((dur - lt - 0.1) / 0.5);
     arm = 18 + 34 * Math.min(up, down) + Math.sin(t * 2.6) * 3;

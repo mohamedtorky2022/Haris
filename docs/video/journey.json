@@ -1,166 +1,1154 @@
 {
- "durations": [
-  7,
-  8,
-  10,
-  10,
-  11,
-  11,
-  11,
-  10,
-  8,
-  9.8
- ],
  "scenes": [
-  "scan",
-  "chat",
-  "check",
-  "cases",
-  "help",
-  "report",
-  "radar",
-  "broadcast",
-  "langs",
-  "outro"
+  {
+   "k": "poster",
+   "mode": "full",
+   "dur": 10
+  },
+  {
+   "k": "problem",
+   "mode": "full",
+   "dur": 12
+  },
+  {
+   "k": "a_check",
+   "mode": "phone",
+   "dur": 13
+  },
+  {
+   "k": "a_help",
+   "mode": "phone",
+   "dur": 13
+  },
+  {
+   "k": "a_report",
+   "mode": "phone",
+   "dur": 13
+  },
+  {
+   "k": "a_auth",
+   "mode": "wide",
+   "dur": 15
+  },
+  {
+   "k": "n_chat",
+   "mode": "phone",
+   "dur": 15
+  },
+  {
+   "k": "n_auth",
+   "mode": "wide",
+   "dur": 14
+  },
+  {
+   "k": "n_reply",
+   "mode": "wide",
+   "dur": 16
+  },
+  {
+   "k": "child",
+   "mode": "phone",
+   "dur": 15
+  },
+  {
+   "k": "radar",
+   "mode": "wide",
+   "dur": 13
+  },
+  {
+   "k": "broadcast",
+   "mode": "wide",
+   "dur": 11
+  },
+  {
+   "k": "privacy",
+   "mode": "wide",
+   "dur": 10
+  },
+  {
+   "k": "how",
+   "mode": "wide",
+   "dur": 11
+  },
+  {
+   "k": "role",
+   "mode": "wide",
+   "dur": 12
+  },
+  {
+   "k": "future",
+   "mode": "wide",
+   "dur": 15
+  },
+  {
+   "k": "outro",
+   "mode": "hero",
+   "dur": 10
+  }
+ ],
+ "refs": {
+  "ahmed": "HRS-20261121-4F2A91",
+  "anna": "HRS-20261121-B7C3E0"
+ },
+ "ru": {
+  "title": "Харис",
+  "status": "ИИ-помощник · не официальный орган",
+  "story": "Я забронировала отель на сайте и заплатила 2 400 дирхамов. Бронирования нет, а сайт исчез.",
+  "residencyQ": "Вы живёте в ОАЭ или приехали в гости?",
+  "resident": "Я живу здесь",
+  "visitor": "Гость или турист",
+  "minor": "Мне меньше 18",
+  "departureQ": "Когда вы уезжаете из ОАЭ? Если скоро, ваше заявление поднимется в очереди.",
+  "dep3": "В течение 3 дней",
+  "depWeek": "В течение недели",
+  "passport": "Нет UAE PASS: подтвердить паспортом",
+  "passportDone": "Личность подтверждена паспортом",
+  "send": "Отправить в компетентный орган",
+  "sent": "🧳 Отправлено. Туристическая полиция ведёт дело даже после вашего отъезда из ОАЭ.",
+  "question": "У вас есть номер бронирования или чек об оплате?",
+  "infoWaiting": "🛡️ Компетентный орган задал мне вопрос о вашем заявлении:",
+  "infoAsk": "Напишите ответ здесь, и я передам его.",
+  "safety": "🔒 Компетентный орган никогда не попросит у вас код подтверждения, пароль или номер карты.",
+  "answer": "Да, номер брони 58213, чек об оплате сохранила.",
+  "passed": "Я передал им ваш ответ ✅",
+  "composer": "Сообщение",
+  "alert_title": "📢 Предупреждение от «Хариса»",
+  "alert_text": "Сообщения от имени службы доставки просят оплатить сбор по ссылке. Не платите и не открывайте ссылку."
+ },
+ "alerts": [
+  [
+   "ar",
+   "العربية",
+   "📢 تحذير من «حارس»",
+   "رسائل تنتحل شركة توصيل وتطلب دفع رسوم عبر رابط. لا تدفع ولا تضغط على الرابط."
+  ],
+  [
+   "en",
+   "English",
+   "📢 Warning from Haris",
+   "Messages pretending to be a delivery company ask you to pay a fee through a link. Don't pay and don't tap the link."
+  ],
+  [
+   "ur",
+   "اردو",
+   "📢 «حارس» کا انتباہ",
+   "ڈیلیوری کمپنی کے نام سے پیغامات لنک کے ذریعے فیس مانگ رہے ہیں۔ ادائیگی نہ کریں اور لنک نہ کھولیں۔"
+  ],
+  [
+   "hi",
+   "हिन्दी",
+   "📢 हारिस की चेतावनी",
+   "डिलीवरी कंपनी के नाम से मैसेज लिंक के ज़रिए फ़ीस माँग रहे हैं। भुगतान न करें और लिंक न खोलें।"
+  ],
+  [
+   "ru",
+   "Русский",
+   "📢 Предупреждение от «Хариса»",
+   "Сообщения от имени службы доставки просят оплатить сбор по ссылке. Не платите и не открывайте ссылку."
+  ]
  ],
  "ar": {
-  "captions": [
-   "امسح رمز الملصق بكاميرا هاتفك.",
-   "تُفتح محادثة «حارس» على واتساب مباشرة، والتحية جاهزة.",
-   "قبل أن تضغط أو تدفع: أعد توجيه الرسالة، فيحذّرك «حارس» قبل وقوع الجريمة.",
-   "يغطي «حارس» عشر حالات يمكنك الإبلاغ عنها، ولكل حالة خطوات فورية.",
-   "اختر حالتك، فتحصل على الخطوات الفورية وأرقام البلاغ الرسمية.",
-   "احكِ ما حدث، ثم أكّد هويتك بالهوية الرقمية UAE PASS، فيُرسَل البلاغ إلى الجهة المختصة.",
-   "بلاغك يحمي غيرك: تتجمّع البلاغات وتصل إلى الجهة المختصة، وهي التي تعتمد التحذير.",
-   "يرسل «حارس» تحذيراً استباقياً على واتساب لكل المشتركين، ونصائح توعوية تحمي قبل وقوع الجريمة.",
-   "أربع لغات اليوم، وإضافة لغة جديدة سهلة لخدمة كل زوار الإمارات.",
-   "«حارس» يحرس كل مواطن ومقيم وزائر."
-  ],
-  "greeting": "مرحباً حارس",
-  "verified": "حساب أعمال موثّق",
-  "open_wa": "افتح المحادثة في واتساب",
-  "forwarded": "معاد توجيهها",
-  "typing": "يكتب…",
-  "composer": "اكتب رسالة",
-  "choose_lang": "اختر لغتك",
-  "coming": "مرحلة قادمة",
-  "cases_title": "كل ما يمكنك الإبلاغ عنه",
-  "uaepass": "تأكيد الهوية عبر UAE PASS",
-  "id_ok": "تم التحقق من هويتك",
-  "sent": "أُرسل البلاغ إلى الجهة المختصة",
-  "alert_title": "تحذير من «حارس»",
-  "alert_text": "رسائل تنتحل شركة توصيل وتطلب دفع رسوم عبر رابط. لا تدفع ولا تضغط على الرابط.",
-  "alert_btn": "كيف أحمي نفسي؟",
-  "tip": "💡 نصيحة: البنك لا يطلب منك رمز التحقق أبداً، لا في رسالة ولا في اتصال.",
-  "notif_app": "واتساب · حارس",
-  "more_langs": "الفارسية · البنغالية · الفلبينية · الروسية · الصينية…",
-  "more_note": "لغة جديدة = ملف ترجمة واحد",
-  "guards": "يحرس كل مواطن ومقيم وزائر"
+  "dir": "rtl",
+  "font": "IBM Plex Sans Arabic",
+  "footer": "«حارس» · مساعد ذكي وليس جهة رسمية · العرض تجريبي والأسماء والأرقام خيالية",
+  "persona": {
+   "a_check": "👤 أحمد · مقيم في أبوظبي",
+   "a_help": "👤 أحمد · مقيم في أبوظبي",
+   "a_report": "👤 أحمد · مقيم في أبوظبي",
+   "a_auth": "🏛️ شاشة الجهة المختصة",
+   "n_chat": "👤 آنا · زائرة من روسيا",
+   "n_auth": "🏛️ شاشة الجهة المختصة",
+   "n_reply": "🏛️ الجهة المختصة ↔ 👤 آنا",
+   "child": "👤 طالب · 15 سنة",
+   "radar": "🏛️ رادار الحملات",
+   "broadcast": "📢 حماية المجتمع"
+  },
+  "captions": {
+   "a_check": [
+    [
+     0.3,
+     "أحمد مقيم في أبوظبي، ووصلته رسالة إن طرده متوقف."
+    ],
+    [
+     4.2,
+     "قبل لا يدفع، حوّلها لـ«حارس»، وطلع له إنها احتيال، ووضّح له ليش."
+    ],
+    [
+     9.2,
+     "وبضغطة وحدة يقدر يبلّغ عنها، عشان يحمي غيره."
+    ]
+   ],
+   "a_help": [
+    [
+     0.3,
+     "بعد فترة، انصاب أحمد ودفع من بطاقته."
+    ],
+    [
+     5.6,
+     "«حارس» عطاه خطة طوارئ واضحة: كلّم البنك، وقّف البطاقة، واحفظ الأدلة."
+    ]
+   ],
+   "a_report": [
+    [
+     0.3,
+     "حكى اللي صار برسالة صوتية، و«حارس» رتّب له ملف البلاغ."
+    ],
+    [
+     6.2,
+     "وبموافقته، وبعد ما أكّد هويته بـUAE PASS، راح البلاغ للجهة المختصة."
+    ]
+   ],
+   "a_auth": [
+    [
+     0.3,
+     "عند الجهة، يوصل البلاغ مرتّب: «عاجلة مالياً» في أول الطابور."
+    ],
+    [
+     5.4,
+     "ووياه الخطوة اللي لازم تصير الحين: بلّغوا البنك، الساعة الأولى هي الأهم."
+    ],
+    [
+     10.2,
+     "وأول ما يستلمه الموظف، يوصل أحمد إشعار إن بلاغه وصل."
+    ]
+   ],
+   "n_chat": [
+    [
+     0.3,
+     "آنا زايرة من روسيا، وما عندها هوية إماراتية."
+    ],
+    [
+     4.4,
+     "كتبت اللي صار بالروسي، و«حارس» كلّمها بلغتها، وسألها متى بتسافر."
+    ],
+    [
+     9.6,
+     "أكّدت هويتها بالجواز، وراح البلاغ للجهة."
+    ]
+   ],
+   "n_auth": [
+    [
+     0.3,
+     "عند الجهة، شارة «زائر · يغادر خلال 3 أيام» تقدّم بلاغها في الطابور."
+    ],
+    [
+     5.0,
+     "قصتها مترجمة للعربي، والأصل الروسي تحتها لو احتاجوه."
+    ],
+    [
+     9.6,
+     "و«حارس» يقترح تحويله لشرطة السياحة، اللي تتابع حتى بعد ما تسافر."
+    ]
+   ],
+   "n_reply": [
+    [
+     0.3,
+     "الموظف يسأل بالعربي…"
+    ],
+    [
+     4.4,
+     "ويوصل السؤال لآنا بالروسي على لسان «حارس»، ووياه تنبيه إن الجهة ما تطلب رمز تحقق."
+    ],
+    [
+     10.4,
+     "وردّها يرجع للموظف بالعربي. كل واحد يتكلم بلغته."
+    ]
+   ],
+   "child": [
+    [
+     0.3,
+     "وإذا اللي يبلّغ عمره أقل من 18…"
+    ],
+    [
+     4.8,
+     "«حارس» يطمّنه إنه مب غلطان، وما ياخذ منه أي بيانات."
+    ],
+    [
+     9.4,
+     "ويوصّله بمختصين حماية الطفل على 116111، أو يرسل البلاغ ولي أمره."
+    ]
+   ],
+   "radar": [
+    [
+     0.3,
+     "البلاغات عن نفس الرسالة تتجمّع في «رادار الحملات»."
+    ],
+    [
+     4.2,
+     "«حارس» يترجم التحذير لخمس لغات، والموظف يراجعه قبل لا يعتمده."
+    ],
+    [
+     9.4,
+     "والقرار دايماً للجهة المختصة."
+    ]
+   ],
+   "broadcast": [
+    [
+     0.3,
+     "ويوصل التحذير على الواتساب لكل مشترك، كلٍّ بلغته…"
+    ],
+    [
+     5.8,
+     "قبل لا ينصاب غيرك."
+    ]
+   ],
+   "privacy": [
+    [
+     0.3,
+     "وخصوصيتك أول شي."
+    ]
+   ],
+   "how": [
+    [
+     0.3,
+     "كيف يشتغل «حارس»؟"
+    ],
+    [
+     5.6,
+     "ولو تعطّل الذكاء الاصطناعي، ما يوقف: يكمّل بالقواعد المحلية."
+    ]
+   ],
+   "role": [
+    [
+     0.3,
+     "«حارس» يحرس كل مواطن ومقيم وزائر…"
+    ],
+    [
+     6.0,
+     "…من أول رسالة مشبوهة، لين يوصل البلاغ للجهة المختصة."
+    ]
+   ],
+   "future": [
+    [
+     0.3,
+     "وهذي البداية بس."
+    ],
+    [
+     7.6,
+     "كل ما زادت البيانات والحالات، صار «حارس» أذكى وأقرب للناس."
+    ]
+   ]
+  },
+  "poster": {
+   "title": "«حارس»",
+   "tagline": "مساعد ذكي يحميك من الاحتيال والجرائم الإلكترونية",
+   "step": "امسح الرمز بكاميرا تيلفونك، وتنفتح محادثة «حارس» على الواتساب.",
+   "open_wa": "افتح المحادثة في واتساب"
+  },
+  "problem": {
+   "l1": "كل يوم توصل الناس رسايل احتيال…",
+   "l2": "واللي ينصاب، ما يدري شو يسوي في أول ساعة.",
+   "l3": "وهني ييي دور «حارس».",
+   "sms": [
+    [
+     "البنك",
+     "تم إيقاف بطاقتك. حدّث بياناتك عبر الرابط خلال ساعة."
+    ],
+    [
+     "شركة التوصيل",
+     "طردك متوقف. ادفع 5 دراهم رسوم توصيل."
+    ],
+    [
+     "مبروك!",
+     "ربحت جائزة، أرسل رمز التحقق لاستلامها."
+    ],
+    [
+     "فرصة عمل",
+     "وظيفة من البيت براتب 900 درهم يومياً."
+    ]
+   ]
+  },
+  "wa": {
+   "title": "حارس",
+   "verified": "حساب أعمال موثّق",
+   "forwarded": "معاد توجيهها",
+   "typing": "يكتب…",
+   "composer": "اكتب رسالة",
+   "check": "افحص رسالة",
+   "again": "افحص رسالة أخرى",
+   "scammed": "تعرضت لاحتيال",
+   "report": "أبلغ لحماية غيري",
+   "list_section": "ما الذي حدث؟",
+   "cases": [
+    "دفعت مالاً لمحتال",
+    "اختُرق حسابي",
+    "أتعرض لابتزاز",
+    "أتعرض لتحرّش أو تهديد",
+    "انتحل أحد شخصيتي"
+   ]
+  },
+  "check": {
+   "scam": "طردك متوقف في المستودع. ادفع 5 دراهم رسوم توصيل عبر uae-post-track.top خلال 24 ساعة.",
+   "risk": "مؤشرات احتيال عالية",
+   "reasons": [
+    "تتحدث عن طرد أو شحنة، وهذا أسلوب احتيال منتشر.",
+    "تطلب مبلغاً صغيراً، وهي حيلة لسرقة بيانات بطاقتك.",
+    "تضغط عليك بالاستعجال حتى لا تفكر."
+   ],
+   "advice": "لا تدفع ولا تضغط على الرابط. شركات التوصيل الرسمية لا تطلب رسوماً برسالة."
+  },
+  "help": {
+   "later": "بعد أسبوعين",
+   "msg": "انخصم من بطاقتي 1,000 درهم بعد ما دخلت رابط باسم البنك",
+   "title": "دفعت مالاً؟ افعل الآن:",
+   "steps": [
+    "اتصل بالبنك من الرقم خلف بطاقتك",
+    "أوقف البطاقة وغيّر كلمات المرور",
+    "بلّغ الشرطة واحتفظ بالأدلة"
+   ],
+   "emergency": "الطوارئ 999 · أمان 800 2626"
+  },
+  "report": {
+   "head": "ملف البلاغ",
+   "fields": [
+    [
+     "المبلغ",
+     "1,000 درهم"
+    ],
+    [
+     "طريقة الدفع",
+     "بطاقة"
+    ],
+    [
+     "الوقت",
+     "اليوم 8:12 م"
+    ],
+    [
+     "الإمارة",
+     "أبوظبي"
+    ]
+   ],
+   "ready": "ملف البلاغ جاهز",
+   "consent": "🔒 لا يُرسل شيء للجهة إلا بموافقتك",
+   "uaepass": "🪪 تأكيد الهوية عبر UAE PASS",
+   "id_ok": "تم التحقق من هويتك",
+   "sent": "📨 أُرسل بلاغك إلى الجهة المختصة في أبوظبي"
+  },
+  "dash": {
+   "title": "البلاغات الواردة",
+   "tabs": [
+    "البلاغات",
+    "رادار الحملات",
+    "تنبيهات واتساب"
+   ],
+   "demo": "نسخة تجريبية",
+   "pr": {
+    "critical": "حرجة",
+    "financial": "عاجلة مالياً",
+    "medium": "متوسطة",
+    "indicator": "مؤشر"
+   },
+   "st": {
+    "new": "جديد",
+    "received": "قيد المعالجة",
+    "info": "بانتظار معلومات"
+   },
+   "queue": [
+    [
+     "medium",
+     "received",
+     "اختراق حساب",
+     "الشارقة · قبل 3 ساعات"
+    ],
+    [
+     "indicator",
+     "new",
+     "رسالة مشبوهة",
+     "دبي · قبل ساعتين"
+    ],
+    [
+     "medium",
+     "new",
+     "ابتزاز إلكتروني",
+     "عجمان · قبل 40 دقيقة"
+    ]
+   ],
+   "money": "احتيال مالي (دفع أو خصم)",
+   "a_meta": "أبوظبي · 1,000 درهم · قبل دقيقة",
+   "a_verified": "✔ هوية مؤكدة عبر UAE PASS",
+   "a_hint": "⏱️ عاجلة مالياً: أبلغ وحدة الاحتيال في البنك الآن، فالساعة الأولى هي الأهم لتجميد المبلغ.",
+   "a_facts": [
+    [
+     "المبلغ",
+     "1,000 درهم"
+    ],
+    [
+     "طريقة الدفع",
+     "بطاقة"
+    ],
+    [
+     "وقت الحادثة",
+     "اليوم 8:12 م (UTC+4)"
+    ],
+    [
+     "الإمارة",
+     "أبوظبي"
+    ],
+    [
+     "لغة المُبلّغ",
+     "العربية"
+    ]
+   ],
+   "story_h": "ما حدث بكلمات المُبلّغ",
+   "a_story": "وصلتني رسالة باسم البنك تطلب تحديث البطاقة. دخلت الرابط وأدخلت بياناتها، وبعدها انخصم مني 1,000 درهم.",
+   "receive": "استلام البلاغ",
+   "ask": "طلب معلومات",
+   "notif_app": "واتساب · حارس",
+   "a_notif": "✅ استلمت الجهة المختصة بلاغك، وهو الآن قيد المراجعة.",
+   "n_what": "احتيال مالي (دفع أو خصم)",
+   "lang_ru": "🗣️ الروسية",
+   "visitor_soon": "🧳 زائر · يغادر خلال 3 أيام",
+   "n_meta": "دبي · 2,400 درهم · الآن",
+   "n_verified": "✔ هوية زائر مؤكدة بجواز السفر",
+   "n_banner": "🧳 المُبلّغ زائر وليس مقيماً · الجنسية: روسيا · يغادر الدولة خلال 3 أيام",
+   "n_tourism": "يُقترح تحويله لشرطة السياحة في دبي (‎+971 50 453 8107)، فهي تتابع قضايا الزوار حتى بعد مغادرتهم.",
+   "n_lang": "🗣️ لغة المُبلّغ: الروسية. كلماته مترجمة آلياً إلى العربية والأصل معها، ورسائلك تصله بالروسية.",
+   "n_story": "حجزت فندقاً عبر موقع ودفعت 2,400 درهم. لا يوجد أي حجز، واختفى الموقع.",
+   "original": "النص الأصلي (الروسية)",
+   "log": "سجل البلاغ",
+   "ask_label": "سؤالك للمُبلّغ (يصله بلغته)",
+   "question": "هل لديك رقم الحجز أو إيصال الدفع؟",
+   "asked": "❓ طُلبت معلومات إضافية",
+   "replied": "💬 ردّ المُبلّغ · مترجم من الروسية",
+   "answer": "نعم، رقم الحجز 58213، واحتفظت بإيصال الدفع.",
+   "submitted": "أرسل المُبلّغ البلاغ",
+   "received_ev": "تم الاستلام",
+   "a_meta2": "أبوظبي · 1,000 درهم · قبل 20 دقيقة"
+  },
+  "child": {
+   "msg": "في ناس في المدرسة يتنمرون علي في قروب، ونشروا صورتي وهم يضحكون علي",
+   "residencyQ": "هل أنت مقيم في الدولة أم زائر؟",
+   "resident": "مقيم أو مواطن",
+   "visitor": "زائر أو سائح",
+   "minor": "عمري أقل من 18",
+   "calm": "شكراً لأنك تحدثت. لست مخطئاً، والمخطئ هو من يؤذيك.",
+   "handoff": "لحمايتك، يتولى بلاغك مختصو حماية الطفل، وبسرية تامة.",
+   "moi": "📞 116111 · مركز حماية الطفل (وتطبيق «حمايتي»)",
+   "moe": "📞 80085 · وحدة حماية الطفل - وزارة التربية والتعليم",
+   "parent": "ولي أمري سيرسله الآن",
+   "nodata": "🔒 لا أطلب منك أي بيانات شخصية",
+   "nophoto": "🚫 لا ترسل أي صورة خاصة لك لأحد"
+  },
+  "radar": {
+   "campaign": "رسائل طرد مزيف تطلب رسوم توصيل",
+   "domain": "uae-post-track.top",
+   "reports": "بلاغ خلال 24 ساعة",
+   "pending": "بانتظار قرار الجهة",
+   "preview": "معاينة التحذير بكل اللغات",
+   "approve": "اعتماد وإرسال",
+   "approved": "✅ اعتُمد · يُرسل الآن لكل المشتركين بلغاتهم"
+  },
+  "broadcast": {
+   "app": "واتساب · حارس",
+   "stop": "🔔 الاشتراك برسالة «تنبيهات»، والإيقاف بكلمة STOP"
+  },
+  "privacy": {
+   "title": "خصوصيتك أولاً",
+   "items": [
+    [
+     "🤝",
+     "ما يوصل شي للجهة المختصة إلا بموافقتك"
+    ],
+    [
+     "🙈",
+     "«حارس» ما يحفظ رسايلك، ويخفي بياناتك قبل الفحص"
+    ],
+    [
+     "🗓️",
+     "البلاغ ينحذف من صندوق الجهة بعد 7 أيام"
+    ],
+    [
+     "✋",
+     "توقّف التنبيهات بكلمة STOP"
+    ]
+   ]
+  },
+  "how": {
+   "title": "كيف يشتغل «حارس»",
+   "nodes": [
+    [
+     "💬",
+     "واتساب وصفحة البلاغ",
+     "بخمس لغات"
+    ],
+    [
+     "🛡️",
+     "«حارس»",
+     "قواعد كشف محلية + ذكاء اصطناعي"
+    ],
+    [
+     "🏛️",
+     "صندوق الجهة المختصة",
+     "مرتّب حسب الخطورة ومترجم للعربي"
+    ],
+    [
+     "📢",
+     "تنبيه المجتمع",
+     "بعد اعتماد الجهة"
+    ]
+   ],
+   "fallback": "🛟 لو تعطّل الذكاء الاصطناعي، يكمّل «حارس» شغله بالقواعد المحلية",
+   "tech": [
+    "Python · FastAPI",
+    "WhatsApp Cloud API",
+    "Gemini",
+    "SQLite"
+   ]
+  },
+  "role": {
+   "title": "دور «حارس»",
+   "items": [
+    [
+     "🛡️",
+     "يحذّرك قبل الجريمة"
+    ],
+    [
+     "🧭",
+     "يرشدك في أول ساعة"
+    ],
+    [
+     "🗣️",
+     "يوصّل بلاغك بلغتك"
+    ],
+    [
+     "📢",
+     "يحمي المجتمع بالتنبيهات"
+    ]
+   ]
+  },
+  "future": {
+   "title": "الخطوات الجاية",
+   "items": [
+    [
+     "🎓",
+     "التدريب على بيانات حقيقية",
+     "مع الجهة الشريكة، عشان يكشف أدق"
+    ],
+    [
+     "🧩",
+     "حالات أكثر",
+     "استدراج الأطفال · الأصوات المزيّفة بالذكاء الاصطناعي · رموز QR الاحتيالية · الهجمات على الشركات"
+    ],
+    [
+     "🔗",
+     "ربط مباشر",
+     "مع الشرطة والبنوك وشركات الاتصالات"
+    ],
+    [
+     "🌍",
+     "لغات أكثر",
+     "الفارسية · البنغالية · الفلبينية · الصينية…"
+    ]
+   ]
+  },
+  "outro": {
+   "s1": "«حارس»",
+   "s2": "إماراتي وأفتخر",
+   "guards": "يحرس كل مواطن ومقيم وزائر",
+   "try": "جرّبه الآن",
+   "scan": "امسح الرمز وأضف «حارس» على واتساب"
+  }
  },
  "en": {
-  "captions": [
-   "Scan the poster's code with your phone camera.",
-   "A chat with Haris opens on WhatsApp, with the greeting ready.",
-   "Before you tap or pay, forward the message: Haris warns you before the crime happens.",
-   "Haris covers ten situations you can report, each with first steps.",
-   "Choose your case for the first steps and the official reporting numbers.",
-   "Tell what happened, confirm who you are with UAE PASS, and the report goes to the authority.",
-   "Your report protects others: reports add up and reach the authority, which decides on the warning.",
-   "Haris sends early warnings on WhatsApp to every subscriber, and awareness tips that protect before the crime.",
-   "Four languages today, and adding a new one is easy, to serve every visitor to the UAE.",
-   "Haris guards every citizen, resident and visitor."
-  ],
-  "greeting": "Hi Haris",
-  "verified": "Verified business account",
-  "open_wa": "Open the chat in WhatsApp",
-  "forwarded": "Forwarded",
-  "typing": "typing…",
-  "composer": "Message",
-  "choose_lang": "Choose your language",
-  "coming": "Coming next",
-  "cases_title": "Everything you can report",
-  "uaepass": "Confirm identity with UAE PASS",
-  "id_ok": "Identity confirmed",
-  "sent": "Report sent to the authority",
-  "alert_title": "Warning from Haris",
-  "alert_text": "Messages pretending to be a delivery company ask you to pay a fee through a link. Don't pay and don't tap the link.",
-  "alert_btn": "How do I stay safe?",
-  "tip": "💡 Tip: your bank never asks for your verification code, by message or by call.",
-  "notif_app": "WhatsApp · Haris",
-  "more_langs": "Persian · Bengali · Tagalog · Russian · Chinese…",
-  "more_note": "A new language = one translation file",
-  "guards": "Guarding every citizen, resident and visitor"
- },
- "ur": {
-  "captions": [
-   "پوسٹر کا کوڈ اپنے فون کے کیمرے سے اسکین کریں۔",
-   "واٹس ایپ پر «حارس» کی چیٹ فوراً کھل جاتی ہے، سلام پہلے سے لکھا ہوتا ہے۔",
-   "ٹیپ یا ادائیگی سے پہلے پیغام فارورڈ کریں: «حارس» جرم ہونے سے پہلے خبردار کرتا ہے۔",
-   "«حارس» دس صورتوں کا احاطہ کرتا ہے جن کی آپ رپورٹ کر سکتے ہیں، ہر ایک کے فوری قدم کے ساتھ۔",
-   "اپنی صورت چنیں: فوری قدم اور رپورٹ کے سرکاری نمبر ملیں گے۔",
-   "جو ہوا بتائیں، UAE PASS سے اپنی شناخت کی تصدیق کریں، اور رپورٹ متعلقہ ادارے کو چلی جاتی ہے۔",
-   "آپ کی رپورٹ دوسروں کو بچاتی ہے: رپورٹیں جمع ہو کر متعلقہ ادارے تک پہنچتی ہیں، اور وہی انتباہ جاری کرتا ہے۔",
-   "«حارس» واٹس ایپ پر ہر سبسکرائبر کو پیشگی انتباہ اور آگاہی کے مشورے بھیجتا ہے جو جرم سے پہلے بچاتے ہیں۔",
-   "آج چار زبانیں، اور نئی زبان شامل کرنا آسان ہے تاکہ امارات کے ہر مہمان کی خدمت ہو۔",
-   "«حارس» ہر شہری، رہائشی اور مہمان کی حفاظت کرتا ہے۔"
-  ],
-  "greeting": "السلام علیکم حارس",
-  "verified": "تصدیق شدہ بزنس اکاؤنٹ",
-  "open_wa": "واٹس ایپ میں چیٹ کھولیں",
-  "forwarded": "فارورڈ شدہ",
-  "typing": "لکھ رہا ہے…",
-  "composer": "پیغام",
-  "choose_lang": "اپنی زبان چنیں",
-  "coming": "اگلا مرحلہ",
-  "cases_title": "ہر وہ چیز جس کی آپ رپورٹ کر سکتے ہیں",
-  "uaepass": "UAE PASS سے شناخت کی تصدیق",
-  "id_ok": "شناخت کی تصدیق ہو گئی",
-  "sent": "رپورٹ متعلقہ ادارے کو بھیج دی گئی",
-  "alert_title": "«حارس» کا انتباہ",
-  "alert_text": "ڈیلیوری کمپنی کے نام سے پیغامات لنک کے ذریعے فیس مانگ رہے ہیں۔ ادائیگی نہ کریں اور لنک نہ کھولیں۔",
-  "alert_btn": "میں خود کو کیسے بچاؤں؟",
-  "tip": "💡 مشورہ: بینک کبھی بھی آپ سے تصدیقی کوڈ نہیں مانگتا، نہ پیغام میں نہ کال پر۔",
-  "notif_app": "واٹس ایپ · حارس",
-  "more_langs": "فارسی · بنگالی · تگالوگ · روسی · چینی…",
-  "more_note": "نئی زبان = ایک ترجمہ فائل",
-  "guards": "ہر شہری، رہائشی اور مہمان کی حفاظت"
- },
- "hi": {
-  "captions": [
-   "पोस्टर का कोड अपने फ़ोन के कैमरे से स्कैन करें।",
-   "WhatsApp पर हारिस की चैट तुरंत खुलती है, नमस्ते पहले से लिखा होता है।",
-   "टैप या भुगतान से पहले मैसेज फ़ॉरवर्ड करें: हारिस अपराध होने से पहले चेतावनी देता है।",
-   "हारिस उन दस मामलों को कवर करता है जिनकी आप रिपोर्ट कर सकते हैं, हर एक के तुरंत कदमों के साथ।",
-   "अपना मामला चुनें: तुरंत कदम और रिपोर्ट के आधिकारिक नंबर मिलेंगे।",
-   "जो हुआ बताइए, UAE PASS से अपनी पहचान की पुष्टि कीजिए, और रिपोर्ट संबंधित संस्था को चली जाती है।",
-   "आपकी रिपोर्ट दूसरों को बचाती है: रिपोर्टें जुड़कर संबंधित संस्था तक पहुँचती हैं, और वही चेतावनी तय करती है।",
-   "हारिस WhatsApp पर हर सब्सक्राइबर को पहले से चेतावनी और जागरूकता टिप्स भेजता है, जो अपराध से पहले बचाते हैं।",
-   "आज चार भाषाएँ, और नई भाषा जोड़ना आसान है, ताकि UAE के हर मेहमान की सेवा हो।",
-   "हारिस हर नागरिक, निवासी और मेहमान की रक्षा करता है।"
-  ],
-  "greeting": "नमस्ते हारिस",
-  "verified": "सत्यापित बिज़नेस अकाउंट",
-  "open_wa": "WhatsApp में चैट खोलें",
-  "forwarded": "फ़ॉरवर्ड किया गया",
-  "typing": "लिख रहा है…",
-  "composer": "मैसेज",
-  "choose_lang": "अपनी भाषा चुनें",
-  "coming": "अगला चरण",
-  "cases_title": "आप किन बातों की रिपोर्ट कर सकते हैं",
-  "uaepass": "UAE PASS से पहचान की पुष्टि",
-  "id_ok": "पहचान की पुष्टि हो गई",
-  "sent": "रिपोर्ट संबंधित संस्था को भेजी गई",
-  "alert_title": "हारिस की चेतावनी",
-  "alert_text": "डिलीवरी कंपनी के नाम से मैसेज लिंक के ज़रिए फ़ीस माँग रहे हैं। भुगतान न करें और लिंक न खोलें।",
-  "alert_btn": "मैं खुद को कैसे बचाऊँ?",
-  "tip": "💡 टिप: आपका बैंक कभी वेरिफ़िकेशन कोड नहीं माँगता, न मैसेज में न कॉल पर।",
-  "notif_app": "WhatsApp · हारिस",
-  "more_langs": "फ़ारसी · बांग्ला · तागालोग · रूसी · चीनी…",
-  "more_note": "नई भाषा = एक अनुवाद फ़ाइल",
-  "guards": "हर नागरिक, निवासी और मेहमान की रक्षा"
- },
- "future": [
-  "report",
-  "broadcast"
- ]
+  "dir": "ltr",
+  "font": "IBM Plex Sans Arabic",
+  "footer": "Haris · an AI assistant, not an official body · a demo: names and numbers are fictional",
+  "persona": {
+   "a_check": "👤 Ahmed · resident of Abu Dhabi",
+   "a_help": "👤 Ahmed · resident of Abu Dhabi",
+   "a_report": "👤 Ahmed · resident of Abu Dhabi",
+   "a_auth": "🏛️ The authority's screen",
+   "n_chat": "👤 Anna · visitor from Russia",
+   "n_auth": "🏛️ The authority's screen",
+   "n_reply": "🏛️ Authority ↔ 👤 Anna",
+   "child": "👤 Student · 15",
+   "radar": "🏛️ Campaign radar",
+   "broadcast": "📢 Protecting the community"
+  },
+  "captions": {
+   "a_check": [
+    [
+     0.3,
+     "Ahmed lives in Abu Dhabi. A message says his parcel is on hold."
+    ],
+    [
+     4.2,
+     "Before paying, he forwards it to Haris: it's a scam, and Haris explains why."
+    ],
+    [
+     9.2,
+     "With one tap he can report it, to protect others."
+    ]
+   ],
+   "a_help": [
+    [
+     0.3,
+     "Later, Ahmed is scammed and pays with his card."
+    ],
+    [
+     5.6,
+     "Haris gives him a clear emergency plan: call the bank, block the card, keep the evidence."
+    ]
+   ],
+   "a_report": [
+    [
+     0.3,
+     "He tells what happened in a voice note, and Haris builds the report file."
+    ],
+    [
+     6.2,
+     "With his consent, and after confirming his identity with UAE PASS, the report goes to the authority."
+    ]
+   ],
+   "a_auth": [
+    [
+     0.3,
+     "At the authority, the report arrives organised: “urgent, money” at the top of the queue."
+    ],
+    [
+     5.4,
+     "With the step to take now: tell the bank, the first hour matters most."
+    ],
+    [
+     10.2,
+     "As soon as the officer takes it, Ahmed is told his report was received."
+    ]
+   ],
+   "n_chat": [
+    [
+     0.3,
+     "Anna is visiting from Russia and has no Emirates ID."
+    ],
+    [
+     4.4,
+     "She writes in Russian, Haris answers in Russian, and asks when she flies home."
+    ],
+    [
+     9.6,
+     "She confirms her identity with her passport, and the report is sent."
+    ]
+   ],
+   "n_auth": [
+    [
+     0.3,
+     "At the authority, a “visitor, leaving within 3 days” badge moves her report up the queue."
+    ],
+    [
+     5.0,
+     "Her story is translated (into Arabic for the officer), with the Russian original below."
+    ],
+    [
+     9.6,
+     "Haris suggests the Tourism Police, who follow the case even after she leaves."
+    ]
+   ],
+   "n_reply": [
+    [
+     0.3,
+     "The officer asks a question in Arabic…"
+    ],
+    [
+     4.4,
+     "Anna receives it in Russian, in Haris's voice, with a reminder that the authority never asks for codes."
+    ],
+    [
+     10.4,
+     "Her reply reaches the officer in Arabic. Everyone speaks their own language."
+    ]
+   ],
+   "child": [
+    [
+     0.3,
+     "And if the person reporting is under 18…"
+    ],
+    [
+     4.8,
+     "Haris reassures them it's not their fault, and asks for no personal data."
+    ],
+    [
+     9.4,
+     "Then connects them with child-protection specialists on 116111, or a parent sends the report."
+    ]
+   ],
+   "radar": [
+    [
+     0.3,
+     "Reports about the same message add up in the campaign radar."
+    ],
+    [
+     4.2,
+     "Haris translates the warning into five languages, and the officer reviews it before approving."
+    ],
+    [
+     9.4,
+     "The decision always stays with the authority."
+    ]
+   ],
+   "broadcast": [
+    [
+     0.3,
+     "The warning reaches every subscriber on WhatsApp, each in their language…"
+    ],
+    [
+     5.8,
+     "before anyone else gets scammed."
+    ]
+   ],
+   "privacy": [
+    [
+     0.3,
+     "Your privacy comes first."
+    ]
+   ],
+   "how": [
+    [
+     0.3,
+     "How does Haris work?"
+    ],
+    [
+     5.6,
+     "And if the AI is down, Haris keeps going with its local rules."
+    ]
+   ],
+   "role": [
+    [
+     0.3,
+     "Haris guards every citizen, resident and visitor…"
+    ],
+    [
+     6.0,
+     "…from the first suspicious message to the report reaching the authority."
+    ]
+   ],
+   "future": [
+    [
+     0.3,
+     "And this is only the start."
+    ],
+    [
+     7.6,
+     "The more data and cases it learns, the smarter and closer to people Haris becomes."
+    ]
+   ]
+  },
+  "poster": {
+   "title": "Haris",
+   "tagline": "An AI assistant that protects you from fraud and cybercrime",
+   "step": "Scan the code with your phone camera, and a Haris chat opens on WhatsApp.",
+   "open_wa": "Open the chat in WhatsApp"
+  },
+  "problem": {
+   "l1": "Every day, people receive scam messages…",
+   "l2": "and victims don't know what to do in the first hour.",
+   "l3": "That's where Haris comes in.",
+   "sms": [
+    [
+     "Bank",
+     "Your card is blocked. Update your details via the link within an hour."
+    ],
+    [
+     "Delivery",
+     "Your parcel is on hold. Pay a 5 dirham delivery fee."
+    ],
+    [
+     "Congratulations!",
+     "You won a prize. Send the verification code to claim it."
+    ],
+    [
+     "Job offer",
+     "Work from home for 900 dirhams a day."
+    ]
+   ]
+  },
+  "wa": {
+   "title": "Haris",
+   "verified": "Verified business account",
+   "forwarded": "Forwarded",
+   "typing": "typing…",
+   "composer": "Message",
+   "check": "Check a message",
+   "again": "Check another",
+   "scammed": "I was scammed",
+   "report": "Report to protect others",
+   "list_section": "What happened?",
+   "cases": [
+    "I paid a scammer",
+    "My account was hacked",
+    "I'm being blackmailed",
+    "I'm being harassed or threatened",
+    "Someone is impersonating me"
+   ]
+  },
+  "check": {
+   "scam": "Your parcel is held at the warehouse. Pay a 5 AED delivery fee at uae-post-track.top within 24 hours.",
+   "risk": "High signs of fraud",
+   "reasons": [
+    "It talks about a parcel or delivery, a very common scam.",
+    "It asks for a small amount, a trick to steal your card details.",
+    "It rushes you so you don't think."
+   ],
+   "advice": "Don't pay and don't tap the link. Real delivery companies don't ask for fees by text."
+  },
+  "help": {
+   "later": "Two weeks later",
+   "msg": "",
+   "title": "Paid money? Do this now:",
+   "steps": [
+    "Call your bank on the number on your card",
+    "Block the card and change your passwords",
+    "Report to the police and keep the evidence"
+   ],
+   "emergency": "Emergency 999 · Aman 800 2626"
+  },
+  "report": {
+   "head": "Report file",
+   "fields": [
+    [
+     "Amount",
+     "1,000 AED"
+    ],
+    [
+     "Paid by",
+     "Card"
+    ],
+    [
+     "When",
+     "Today 8:12 pm"
+    ],
+    [
+     "Emirate",
+     "Abu Dhabi"
+    ]
+   ],
+   "ready": "Report file ready",
+   "consent": "🔒 Nothing goes to the authority without your consent",
+   "uaepass": "🪪 Confirm identity with UAE PASS",
+   "id_ok": "Identity confirmed",
+   "sent": "📨 Your report was sent to the authority in Abu Dhabi"
+  },
+  "dash": {
+   "title": "Incoming reports",
+   "tabs": [
+    "Reports",
+    "Campaign radar",
+    "WhatsApp alerts"
+   ],
+   "demo": "Demo · the real screen is in Arabic",
+   "pr": {
+    "critical": "Critical",
+    "financial": "Urgent · money",
+    "medium": "Medium",
+    "indicator": "Indicator"
+   },
+   "st": {
+    "new": "New",
+    "received": "In progress",
+    "info": "Awaiting info"
+   },
+   "queue": [
+    [
+     "medium",
+     "received",
+     "Account hacked",
+     "Sharjah · 3 hours ago"
+    ],
+    [
+     "indicator",
+     "new",
+     "Suspicious message",
+     "Dubai · 2 hours ago"
+    ],
+    [
+     "medium",
+     "new",
+     "Online blackmail",
+     "Ajman · 40 min ago"
+    ]
+   ],
+   "money": "Fraud (money paid or taken)",
+   "a_meta": "Abu Dhabi · 1,000 AED · 1 min ago",
+   "a_meta2": "Abu Dhabi · 1,000 AED · 20 min ago",
+   "a_verified": "✔ Identity confirmed with UAE PASS",
+   "a_hint": "⏱️ Urgent, money: alert the bank's fraud unit now, the first hour matters most to freeze the money.",
+   "a_facts": [
+    [
+     "Amount",
+     "1,000 AED"
+    ],
+    [
+     "Paid by",
+     "Card"
+    ],
+    [
+     "When",
+     "Today 8:12 pm (UTC+4)"
+    ],
+    [
+     "Emirate",
+     "Abu Dhabi"
+    ],
+    [
+     "Language",
+     "Arabic"
+    ]
+   ],
+   "story_h": "What happened, in the reporter's words",
+   "a_story": "I got a message in the bank's name asking me to update my card. I opened the link and entered the card details, then 1,000 AED was taken.",
+   "receive": "Take the report",
+   "ask": "Ask for info",
+   "notif_app": "WhatsApp · Haris",
+   "a_notif": "✅ The authority received your report and is now reviewing it.",
+   "n_what": "Fraud (money paid or taken)",
+   "lang_ru": "🗣️ Russian",
+   "visitor_soon": "🧳 Visitor · leaving within 3 days",
+   "n_meta": "Dubai · 2,400 AED · now",
+   "n_verified": "✔ Visitor identity confirmed by passport",
+   "n_banner": "🧳 The reporter is a visitor · Nationality: Russia · leaving the UAE within 3 days",
+   "n_tourism": "Suggested: the Tourism Police in Dubai (+971 50 453 8107), who follow visitors' cases even after they leave.",
+   "n_lang": "🗣️ Reporter's language: Russian. Their words are machine-translated with the original beside them, and your messages reach them in Russian.",
+   "n_story": "I booked a hotel on a website and paid 2,400 AED. There is no booking, and the website has disappeared.",
+   "original": "Original text (Russian)",
+   "log": "Case log",
+   "ask_label": "Your question to the reporter (sent in their language)",
+   "question": "Do you have the booking number or the payment receipt?",
+   "asked": "❓ More information requested",
+   "replied": "💬 Reporter's reply · translated from Russian",
+   "answer": "Yes, booking number 58213, and I kept the payment receipt.",
+   "submitted": "The reporter sent the report",
+   "received_ev": "Received"
+  },
+  "child": {
+   "msg": "Some kids at school are bullying me in a group chat, and they posted my photo to laugh at me",
+   "residencyQ": "Do you live in the UAE, or are you visiting?",
+   "resident": "Resident or citizen",
+   "visitor": "Visitor or tourist",
+   "minor": "I'm under 18",
+   "calm": "Thank you for telling me. It's not your fault: the one hurting you is.",
+   "handoff": "To protect you, child-protection specialists will handle your report, in full confidence.",
+   "moi": "📞 116111 · Child Protection Centre (and the Hemayati app)",
+   "moe": "📞 80085 · Child Protection Unit, Ministry of Education",
+   "parent": "My parent will send it now",
+   "nodata": "🔒 I don't ask you for any personal data",
+   "nophoto": "🚫 Never send a private photo of yourself to anyone"
+  },
+  "radar": {
+   "campaign": "Fake parcel messages asking for a delivery fee",
+   "domain": "uae-post-track.top",
+   "reports": "reports in 24 hours",
+   "pending": "Awaiting the authority's decision",
+   "preview": "Preview the warning in every language",
+   "approve": "Approve and send",
+   "approved": "✅ Approved · now going to every subscriber in their language"
+  },
+  "broadcast": {
+   "app": "WhatsApp · Haris",
+   "stop": "🔔 Subscribe by sending ALERTS, stop any time with STOP"
+  },
+  "privacy": {
+   "title": "Your privacy first",
+   "items": [
+    [
+     "🤝",
+     "Nothing reaches the authority without your consent"
+    ],
+    [
+     "🙈",
+     "Haris doesn't keep your messages, and hides your personal data before checking"
+    ],
+    [
+     "🗓️",
+     "Reports are deleted from the authority's inbox after 7 days"
+    ],
+    [
+     "✋",
+     "Stop the alerts any time with STOP"
+    ]
+   ]
+  },
+  "how": {
+   "title": "How Haris works",
+   "nodes": [
+    [
+     "💬",
+     "WhatsApp and the report page",
+     "in five languages"
+    ],
+    [
+     "🛡️",
+     "Haris",
+     "local detection rules + AI"
+    ],
+    [
+     "🏛️",
+     "The authority's inbox",
+     "sorted by urgency, translated into Arabic"
+    ],
+    [
+     "📢",
+     "Community warning",
+     "after the authority approves"
+    ]
+   ],
+   "fallback": "🛟 If the AI is down, Haris keeps working with its local rules",
+   "tech": [
+    "Python · FastAPI",
+    "WhatsApp Cloud API",
+    "Gemini",
+    "SQLite"
+   ]
+  },
+  "role": {
+   "title": "What Haris does",
+   "items": [
+    [
+     "🛡️",
+     "Warns you before the crime"
+    ],
+    [
+     "🧭",
+     "Guides you in the first hour"
+    ],
+    [
+     "🗣️",
+     "Carries your report in your language"
+    ],
+    [
+     "📢",
+     "Protects the community with warnings"
+    ]
+   ]
+  },
+  "future": {
+   "title": "What comes next",
+   "items": [
+    [
+     "🎓",
+     "Training on real data",
+     "with the partner authority, for sharper detection"
+    ],
+    [
+     "🧩",
+     "More cases",
+     "child grooming · AI-cloned voices · QR-code scams · attacks on businesses"
+    ],
+    [
+     "🔗",
+     "Direct links",
+     "with the police, banks and telecom providers"
+    ],
+    [
+     "🌍",
+     "More languages",
+     "Persian · Bengali · Tagalog · Chinese…"
+    ]
+   ]
+  },
+  "outro": {
+   "s1": "Haris",
+   "s2": "Emirati and proud",
+   "guards": "Guarding every citizen, resident and visitor",
+   "try": "Try it now",
+   "scan": "Scan the code and add Haris on WhatsApp"
+  }
+ }
 }

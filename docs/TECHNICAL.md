@@ -305,7 +305,7 @@ The design follows the data-minimisation and purpose-limitation principles of UA
 - **Fix a new mishearing:** add the spoken variants and the written form to `GLOSSARY` in `polish.py`, with a test in `tests/test_polish.py`.
 - **Train speech recognition for the pilot:** move transcription to a server-side service such as Azure Speech with Custom Speech, hosted in a UAE region. Train it on the glossary terms (plain-text data) and on anonymised recordings with transcripts from the partner authority. `/api/polish` stays as the safety net.
 - **Add another channel (a voice line, Telegram):** follow `whatsapp.py`: check the sender's signature, call `detector.analyze` and `radar.annotate`, and format `risk_label`, `summary`, `reasons` and `advice` for that channel. No change to the core is needed.
-- **Go live with the campaign poster:** once the WhatsApp number is approved, regenerate `docs/poster/qr.svg` with `https://wa.me/<number>?text=مرحباً حارس` (same size and colour), check that it scans, and render `poster.html` to `haris-poster.png` (for example with headless Chrome at 2x).
+- **Go live with the campaign poster:** once the WhatsApp number is approved, regenerate `docs/poster/qr.svg` with `https://wa.me/<number>?text=مرحباً حارس` (same size and colour), check that it scans, and render `poster.html` to `haris-poster.png` with `python3 docs/poster/render.py docs/poster/poster.html docs/poster/haris-poster.png` (2x, local fonts). Then re-render the journey video: its first and last scenes show the poster and the QR code.
 
 ## 7. Known limitations
 

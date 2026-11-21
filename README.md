@@ -154,14 +154,21 @@ Open <http://127.0.0.1:8000/reports.html>. The queue puts the critical cases fir
 
 The test number cannot receive messages from the public. For the poster's QR code, Haris needs its own WhatsApp Business number.
 
-**Journey video** (one per language). The user's journey with Haris, from scanning the poster's QR code to the official warning: WhatsApp opens, a forwarded scam gets its risk rating, "I've been scammed" gives the first steps, the report file is prepared, and the radar turns reports into a warning. Haris does not speak: he points at each step, captions appear beside him, and formal music plays. The pace leaves time to read every line (`SLOW` in `journey.py`; about 2:33). Ten scenes: the QR scan, the chat opening, a check that warns before the crime, the ten situations people can report, a plan, the report file and identity confirmation with UAE PASS, the radar, early WhatsApp warnings and awareness tips, the languages (and how a new one is one translation file), and the closing line "Haris guards every citizen, resident and visitor". The UAE PASS submission and the WhatsApp warnings are marked "Coming next" in the video, because they need the official agreements. The music is composed in code (`journey.py`), so there is no licence to clear.
+**Journey video** (Arabic and English, about 3:40). It opens on the campaign poster and its QR code, shows the problem in a few seconds, then follows three people, each in their own scene:
+
+- **Ahmed, a resident of Abu Dhabi:** a forwarded parcel scam gets a "high risk" rating before he pays; later a card scam gets the emergency plan, a voice note becomes the report file, and he sends it with his consent and UAE PASS. The authority's screen then shows the report at the top of the queue as "urgent, money", with the step to take now, and Ahmed is told when the officer takes it.
+- **Anna, a visitor from Russia with no Emirates ID:** she writes in Russian, confirms her identity with her passport and says she leaves within 3 days. On the authority's screen the visitor badge moves her report up, her story is in Arabic with the Russian original below, and the Tourism Police are suggested. The officer asks in Arabic, Anna gets the question in Russian in Haris's voice, and her reply comes back in Arabic.
+- **A 15-year-old student:** Haris tells him it is not his fault, asks for no personal data, and hands him to child protection (116111) or to a parent.
+
+Then the community part (the campaign radar, the warning previewed in five languages and approved by the officer, the WhatsApp alert reaching every subscriber in their language), privacy, how Haris works (with the local rules carrying on if the AI is down), what Haris does, what comes next (training on real data, more cases, direct links with the police, banks and telecom providers, more languages), and a closing card with the QR code. The captions are in light Emirati Arabic in the Arabic version. In the English version the authority's screen is shown in English and labelled as such, because the real screen is in Arabic. Haris does not speak: he points at each step and captions appear beside him. The music is calm and composed in code (`journey.py`), so there is no licence to clear. Names, numbers and reference codes are fictional, and every screen is labelled as a demo.
 
 ```bash
 bash docs/video/fetch_fonts.sh        # IBM Plex Arabic and Devanagari (Open Font License)
 python3 docs/video/journey.py all     # needs ffmpeg and Playwright's Chromium; writes docs/video/out/Haris-journey-<lang>.mp4
+python3 docs/video/journey.py ar --stills 33,73   # draw single frames at those seconds, to check a scene
 ```
 
-The captions are in `docs/video/journey.json`; the chat wording comes from the app's own locale files. An earlier narrated version (`render.py`, voices from `build_voice.sh`) is kept for reference.
+Scenes, timings and captions are in `docs/video/journey.json`, and the drawing is `docs/video/journey.html`. The poster is rendered from `docs/poster/poster.html` with `python3 docs/poster/render.py docs/poster/poster.html docs/poster/haris-poster.png` (it uses the local fonts, so it works offline). An earlier narrated version (`render.py`, voices from `build_voice.sh`) is kept for reference.
 
 ### Tests and evaluation
 
@@ -308,7 +315,7 @@ haris/
 └── docs/
     ├── TECHNICAL.md            architecture, model choices, privacy design
     ├── poster/                 campaign poster (HTML source, QR, UAE map, rendered PNG)
-    ├── video/                  explainer videos: scripts in 4 languages, voices, renderer
+    ├── video/                  journey video (Arabic and English) and an earlier narrated version
     ├── Haris-presentation.pptx     presentation (English)
     └── Haris-presentation-ar.pptx  presentation (Arabic)
 ```
