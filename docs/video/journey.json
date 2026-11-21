@@ -331,7 +331,7 @@
   },
   "poster": {
    "title": "«حارس»",
-   "tagline": "مساعد ذكي يحميك من الاحتيال والجرائم الإلكترونية",
+   "tagline": "درعك الذكي ضد الاحتيال والجرائم الإلكترونية",
    "step": "امسح الرمز بكاميرا تيلفونك، وتنفتح محادثة «حارس» على الواتساب.",
    "open_wa": "افتح المحادثة في واتساب"
   },
@@ -643,10 +643,15 @@
   },
   "outro": {
    "s1": "«حارس»",
-   "s2": "إماراتي وأفتخر",
+   "s2": "درعك الذكي ضد الاحتيال والجرائم الإلكترونية",
    "guards": "يحرس كل مواطن ومقيم وزائر",
    "try": "جرّبه الآن",
-   "scan": "امسح الرمز وأضف «حارس» على واتساب"
+   "scan": "امسح الرمز وأضف «حارس» على واتساب",
+   "chips": [
+    "يحذّرك",
+    "يرشدك",
+    "يوصّل بلاغك"
+   ]
   }
  },
  "en": {
@@ -833,7 +838,7 @@
   },
   "poster": {
    "title": "Haris",
-   "tagline": "An AI assistant that protects you from fraud and cybercrime",
+   "tagline": "Your smart shield against fraud and cybercrime",
    "step": "Scan the code with your phone camera, and a Haris chat opens on WhatsApp.",
    "open_wa": "Open the chat in WhatsApp"
   },
@@ -1145,10 +1150,15 @@
   },
   "outro": {
    "s1": "Haris",
-   "s2": "Emirati and proud",
+   "s2": "Your smart shield against fraud and cybercrime",
    "guards": "Guarding every citizen, resident and visitor",
    "try": "Try it now",
-   "scan": "Scan the code and add Haris on WhatsApp"
+   "scan": "Scan the code and add Haris on WhatsApp",
+   "chips": [
+    "Warns you",
+    "Guides you",
+    "Carries your report"
+   ]
   }
  }
 }
