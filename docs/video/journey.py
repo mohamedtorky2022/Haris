@@ -129,8 +129,16 @@ def music(total: float) -> np.ndarray:
     return (mix / np.max(np.abs(mix)) * 0.8)[:end]
 
 
-def write_music(total: float, path: Path) -> Path:
-    pcm = (music(total) * 32767).astype("<i2")
+def write_music(total: float, path: Path, voice=None) -> Path:
+    mix = music(total)
+    if voice is not None:  # the music steps back while Haris speaks
+        talk = np.convolve(np.abs(voice) > 0.01, np.ones(int(0.6 * SR)) / (0.6 * SR), mode="same")
+        duck = 1 - 0.65 * np.clip(talk * 4, 0, 1)
+        mix = mix * duck[: len(mix), None] * 0.8
+        n = min(len(mix), len(voice))
+        mix[:n] += voice[:n, None] * 0.9
+        mix /= max(1.0, np.max(np.abs(mix)) / 0.95)
+    pcm = (mix * 32767).astype("<i2")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "s16le", "-ar", str(SR), "-ac", "2", "-i", "-", str(path)],
                    input=pcm.tobytes(), check=True)
     return path
@@ -144,7 +152,47 @@ def data(lang: str) -> dict:
     scenes = journey["scenes"]
     total = LEAD + sum(s["dur"] for s in scenes)
     shared = {k: journey[k] for k in ("ru", "alerts", "refs")}
-    return {"lang": lang, "ui": journey[lang], "shared": shared, "scenes": scenes, "lead": LEAD, "total": total}
+    ui = journey[lang]
+    timing = OUT / f"voice-{lang}" / "timing.json"
+    if timing.exists():  # narrated: scenes last as long as their lines, captions start with them
+        tm = json.loads(timing.read_text())
+        for s in scenes:
+            s["dur"] = tm["scenes"][s["k"]]
+        for k, caps in tm["captions"].items():
+            ui["captions"][k] = [[at, ui["captions"][k][i][1]] for at, i in caps]
+        total = LEAD + sum(s["dur"] for s in scenes)
+        voice = voice_track(lang, total)
+        speech = [[c["t"], c["len"]] for c in tm["clips"]]
+        return {"lang": lang, "ui": ui, "shared": shared, "scenes": scenes, "lead": LEAD, "total": total,
+                "lips": lips(voice), "speech": speech}
+    return {"lang": lang, "ui": ui, "shared": shared, "scenes": scenes, "lead": LEAD, "total": total,
+            "lips": [], "speech": []}
+
+
+def lips(voice) -> list:
+    """How far Haris's mouth is open in each frame (0-1), from the loudness of the narration."""
+    hop = SR // FPS
+    n = len(voice) // hop
+    rms = np.sqrt(np.mean(voice[: n * hop].reshape(n, hop) ** 2, axis=1))
+    ref = np.percentile(rms[rms > 1e-4], 95) if np.any(rms > 1e-4) else 1
+    level = np.clip((rms / ref - 0.12) / 0.88, 0, 1)
+    smooth = np.convolve(level, [0.25, 0.5, 0.25], mode="same")
+    return [round(float(v), 2) for v in smooth]
+
+
+def voice_track(lang: str, total: float):
+    """The narration as one mono track, or None when the language has no recorded voice."""
+    timing = OUT / f"voice-{lang}" / "timing.json"
+    if not timing.exists():
+        return None
+    track = np.zeros(int(total * SR) + SR)
+    for c in json.loads(timing.read_text())["clips"]:
+        raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(OUT / f"voice-{lang}" / c["file"]), "-f", "s16le",
+                              "-ac", "1", "-ar", str(SR), "-"], capture_output=True, check=True).stdout
+        clip = np.frombuffer(raw, dtype="<i2").astype(np.float64) / 32768
+        s = int(c["t"] * SR)
+        track[s:s + len(clip)] += clip[: len(track) - s]
+    return track[: int(total * SR)]
 
 
 def open_page(p, d):
@@ -186,7 +234,7 @@ def render(lang: str, track: Path) -> Path:
     enc.stdin.close()
     assert enc.wait() == 0
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(video), "-i", str(track), "-map", "0:v", "-map", "1:a",
-                    "-c:v", "copy", "-af", "loudnorm=I=-20:TP=-2", "-c:a", "aac", "-b:a", "160k", "-shortest",
+                    "-c:v", "copy", "-af", "loudnorm=I=-16:TP=-1.5", "-c:a", "aac", "-b:a", "160k", "-shortest",
                     "-movflags", "+faststart", str(tmp)], check=True)
     tmp.rename(final)
     video.unlink()
@@ -200,7 +248,7 @@ if __name__ == "__main__":
         for lang in langs:
             stills(lang, times)
     else:
-        d0 = data(langs[0])
-        track = write_music(d0["total"], OUT / "music.wav")
         for lang in langs:
+            d = data(lang)
+            track = write_music(d["total"], OUT / f"music-{lang}.wav", voice_track(lang, d["total"]))
             print(render(lang, track))

@@ -219,7 +219,7 @@ blockquote { border-inline-start: 5px solid var(--brand); background: #F4F7F6; b
         <path d="M242 334 C216 356 202 450 206 556 L244 560 C242 486 250 424 266 386 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="3"/>
         <ellipse cx="225" cy="574" rx="19" ry="21" fill="#D9A47A"/>
       </g>
-      <g id="head">
+      <g id="headSway"><g id="head">
         <g transform="translate(320 190) scale(2.15) translate(-100 -98)">
           <path d="M52 92 C50 60 70 38 100 38 C130 38 150 60 148 92 L156 150 C140 160 128 150 124 140 L76 140 C72 150 60 160 44 150 Z" fill="#FFFFFF" stroke="#D5DEDB" stroke-width="2"/>
           <ellipse cx="100" cy="98" rx="30" ry="35" fill="#D9A47A"/>
@@ -235,14 +235,16 @@ blockquote { border-inline-start: 5px solid var(--brand); background: #F4F7F6; b
           <ellipse cx="120" cy="106" rx="5" ry="3" fill="#E58E73" opacity=".45"/>
           <path d="M71 104 C72 126 86 136 100 136 C114 136 128 126 129 104 C124 118 114 124 100 124 C86 124 76 118 71 104 Z" fill="#3B2A20"/>
           <path d="M88 112 Q100 106 112 112 Q100 110 88 112 Z" fill="#3B2A20" stroke="#3B2A20" stroke-width="3" stroke-linejoin="round"/>
-          <path d="M91 117 Q100 124 109 117" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+          <path id="smile" d="M91 117 Q100 124 109 117" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+          <g id="mouthOpen" opacity="0"><ellipse cx="100" cy="118.6" rx="7.6" ry="4.6" fill="#5A2620"/><path d="M93.2 116.1 Q100 114.4 106.8 116.1" fill="none" stroke="#FFFFFF" stroke-width="1.9" stroke-linecap="round"/><ellipse cx="100" cy="121.4" rx="4.2" ry="1.7" fill="#C9605A"/></g>
         </g>
-      </g>
+      </g></g>
     </g>
   </svg>
   <div id="bubble" class="abs"><div class="tail"></div><div id="persona"></div><div id="cap"></div></div>
   <div id="band" class="abs"><img src="../../frontend/haris.svg" alt=""><span id="footer"></span></div>
 </div>
+<script src="vendor/gsap.min.js"></script>
 <script>
 const W = 1920;
 let D, U, R, rtl = true, starts = [];
@@ -442,6 +444,59 @@ function init(data) {
   const m = document.getElementById("map");
   Object.assign(m.style, { left: X(1010, 880) + "px", top: "270px" });
   if (!rtl) document.getElementById("haris").style.transform = "scaleX(-1)";
+  buildMotion();
+}
+
+// Haris's motion as one GSAP timeline, seeked to each frame: a blink every 3 seconds, a nod and a
+// pointing gesture with every spoken line, and a wave at the end.
+let TL;
+function buildMotion() {
+  const head = document.getElementById("head"), arm = document.getElementById("armL");
+  const eyes = [document.getElementById("eyeL"), document.getElementById("eyeR")];
+  TL = gsap.timeline({ paused: true });
+  gsap.set(head, { svgOrigin: "320 300", rotation: 0, y: 0 });
+  gsap.set(arm, { svgOrigin: "244 346", rotation: 18 });
+  for (let b = 3; b < D.total; b += 3) {
+    TL.to(eyes, { attr: { ry: 0.6 }, duration: 0.07, ease: "power1.in" }, b)
+      .to(eyes, { attr: { ry: 5 }, duration: 0.1, ease: "power1.out" }, b + 0.07);
+  }
+  const sceneAt = (t) => { let k = 0; starts.forEach((s, i) => { if (t >= s) k = i; }); return k; };
+  const baseOf = (mode) => (mode === "hero" ? 125 : mode === "full" ? 18 : 48);
+  starts.forEach((s, i) => {
+    const mode = D.scenes[i].mode, base = baseOf(mode);
+    TL.to(arm, { rotation: base, duration: 0.7, ease: "power2.inOut" }, s + 0.05);
+    if (mode === "hero") {
+      for (let w = 0; w < 4; w++) {
+        TL.to(arm, { rotation: base + 14, duration: 0.25, ease: "sine.inOut" }, s + 0.9 + w * 0.5)
+          .to(arm, { rotation: base - 8, duration: 0.25, ease: "sine.inOut" }, s + 1.15 + w * 0.5);
+      }
+      TL.to(arm, { rotation: base, duration: 0.3, ease: "sine.inOut" }, s + 2.95);
+    }
+  });
+  // spoken lines; without a voice, each caption stands in for one
+  let speech = D.speech;
+  if (!speech.length) {
+    speech = [];
+    D.scenes.forEach((sc, i) => (U.captions[sc.k] || []).forEach(([at]) => speech.push([starts[i] + at, 3])));
+  }
+  speech.forEach(([t, len]) => {
+    const mode = D.scenes[sceneAt(t)].mode, base = baseOf(mode);
+    if (mode === "full") return;
+    TL.to(head, { rotation: -2.5, y: 3, duration: 0.22, ease: "power2.out" }, t)
+      .to(head, { rotation: 0.8, y: 0, duration: 0.45, ease: "power2.inOut" }, t + 0.22);
+    if (len > 3) {
+      TL.to(head, { rotation: 1.6, y: 2, duration: 0.3, ease: "sine.inOut" }, t + len * 0.5)
+        .to(head, { rotation: 0, y: 0, duration: 0.4, ease: "sine.inOut" }, t + len * 0.5 + 0.3);
+    }
+    if (mode !== "hero") {
+      TL.to(arm, { rotation: base + 12, duration: 0.3, ease: "power2.out" }, t + 0.05)
+        .to(arm, { rotation: base - 3, duration: 0.5, ease: "sine.inOut" }, t + 0.35);
+      if (len > 2.5) {
+        TL.to(arm, { rotation: base + 7, duration: 0.35, ease: "sine.inOut" }, t + len * 0.55)
+          .to(arm, { rotation: base, duration: 0.5, ease: "sine.inOut" }, t + len * 0.55 + 0.35);
+      }
+    }
+  });
 }
 
 function layout(mode) { return MODES[mode]; }
@@ -570,21 +625,18 @@ function render(t) {
     });
   });
 
-  // Haris: silent, breathing, blinking, pointing at the screen (and waving at the end)
+  // Haris: breathing, then the GSAP timeline (blinks, nods, gestures), then the mouth from the voice
   const bob = Math.sin(t * 2.1) * 4;
   document.getElementById("body").setAttribute("transform", `translate(0 ${bob})`);
-  const blink = ((t + 0.7) % 3.9) < 0.13 || ((t + 2.3) % 7.3) < 0.12;
-  ["eyeL", "eyeR"].forEach((id) => document.getElementById(id).setAttribute("ry", blink ? "0.6" : "5"));
-  document.getElementById("shine").style.opacity = blink ? "0" : "1";
-  const nod = Math.sin(clamp(lt / 0.6) * Math.PI) * 3;
-  document.getElementById("head").setAttribute("transform", `rotate(${Math.sin(t * 1.3) * 1.2} 320 300) translate(0 ${nod})`);
-  let arm;
-  if (sc.mode === "hero") arm = 125 + Math.sin(t * 7) * 14 * ease((lt - 0.4) / 0.6);
-  else {
-    const up = ease((lt - 0.1) / 0.6), down = ease((dur - lt - 0.1) / 0.5);
-    arm = 18 + 34 * Math.min(up, down) + Math.sin(t * 2.6) * 3;
-  }
-  document.getElementById("armL").setAttribute("transform", `rotate(${arm} 244 346)`);
+  document.getElementById("headSway").setAttribute("transform", `rotate(${Math.sin(t * 1.3) * 1.2} 320 300)`);
+  TL.time(Math.min(t, TL.duration()));
+  const ry = +document.getElementById("eyeL").getAttribute("ry");
+  document.getElementById("shine").style.opacity = ry < 2.5 ? "0" : "1";
+  const o = D.lips.length ? (D.lips[Math.min(D.lips.length - 1, Math.round(t * 30))] || 0) : 0;
+  const m = document.getElementById("mouthOpen");
+  m.setAttribute("opacity", o > 0.04 ? "1" : "0");
+  m.setAttribute("transform", `translate(100 118.6) scale(${0.85 + 0.15 * o} ${0.18 + 0.82 * o}) translate(-100 -118.6)`);
+  document.getElementById("smile").style.opacity = String(1 - Math.min(1, o * 3));
 }
 </script>
 </body>
