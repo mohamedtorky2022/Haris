@@ -71,13 +71,45 @@ def split(lang: str) -> None:
         ends = [float(x.split("silence_end: ")[1].split()[0]) for x in log.splitlines() if "silence_end" in x]
         gaps = [(s, e) for s, e in zip(starts, ends) if e - s >= 0.25]
         chars = [len(lns[i]["say"]) for i in ids]
-        cuts, used = [], set()
-        for k in range(1, len(ids)):
-            want = total * sum(chars[:k]) / sum(chars)
-            best = min((g for g in gaps if g not in used), key=lambda g: abs((g[0] + g[1]) / 2 - want))
-            used.add(best)
-            cuts.append((best[0] + best[1]) / 2)
+        gaps = [g for g in gaps if g[1] < total - 0.2]
+        # expected times: letters at one steady rate, plus about a second for each full stop
+        # inside a line and for each pause between lines
+        import re as _re
+        stops = [len(_re.findall(r"[.؟?!:](?=\s)", lns[i]["say"])) for i in ids]
+        rate = (total - 1.0 * (len(ids) - 1) - 1.0 * sum(stops)) / sum(chars)
+        span = [c * rate + 1.0 * s for c, s in zip(chars, stops)]
+        wants = [sum(span[:k]) + 1.0 * (k - 0.5) for k in range(1, len(ids))]
+        # choose one gap per boundary, in order, closest to where it should fall; the pauses
+        # between lines are long, so a short pause (inside a line) costs extra
+        cost = lambda g, w: ((g[0] + g[1]) / 2 - w) ** 2 + (0 if g[1] - g[0] >= 0.7 else 25)
+        INF = float("inf")
+        m, n = len(wants), len(gaps)
+        best = [[INF] * (n + 1) for _ in range(m + 1)]
+        back = [[None] * (n + 1) for _ in range(m + 1)]
+        best[0] = [0.0] * (n + 1)
+        for k in range(1, m + 1):
+            for j in range(1, n + 1):
+                stay = best[k][j - 1]
+                take = best[k - 1][j - 1] + cost(gaps[j - 1], wants[k - 1])
+                best[k][j], back[k][j] = (take, True) if take < stay else (stay, False)
+        cuts, k, j = [], m, n
+        while k > 0:
+            if back[k][j]:
+                g = gaps[j - 1]
+                cuts.append((g[0] + g[1]) / 2)
+                k -= 1
+            j -= 1
         cuts = sorted(cuts)
+        # when the long pauses are exactly the full stops plus the breaks between lines, cut at them in order
+        long = [g for g in gaps if g[1] - g[0] >= 0.7]
+        inner = [len(_re.findall(r"[.؟?!](?=\s)", lns[i]["say"])) for i in ids]
+        if len(long) == len(ids) - 1 + sum(inner):
+            cuts, pos = [], 0
+            for k in range(len(ids) - 1):
+                pos += inner[k]
+                g = long[pos]
+                cuts.append((g[0] + g[1]) / 2)
+                pos += 1
         bounds = [0.0] + cuts + [total]
         for i, a, b in zip(ids, bounds, bounds[1:]):
             subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(src), "-ss", f"{a:.3f}", "-to", f"{b:.3f}",
@@ -126,8 +158,18 @@ if __name__ == "__main__":
     cmd, lang = sys.argv[1], sys.argv[2]
     if cmd == "lines":
         folder(lang).mkdir(parents=True, exist_ok=True)
-        (folder(lang) / "lines.json").write_text(json.dumps(lines(lang), ensure_ascii=False, indent=1))
-        print(len(lines(lang)), "lines")
+        lns = lines(lang)
+        (folder(lang) / "lines.json").write_text(json.dumps(lns, ensure_ascii=False, indent=1))
+        # three recordings of about 700 letters each (FreeTTS takes up to 2,000 per request)
+        total, chunks, acc = sum(len(l["say"]) for l in lns), [[], [], []], 0
+        for l in lns:
+            k = min(2, int(acc * 3 / total))
+            chunks[k].append(l)
+            acc += len(l["say"])
+        (folder(lang) / "chunks.json").write_text(json.dumps([[l["id"] for l in c] for c in chunks]))
+        for n, c in enumerate(chunks, 1):
+            (folder(lang) / f"chunk{n}.txt").write_text("\n\n".join(l["say"] for l in c))
+        print(len(lns), "lines in", [len(c) for c in chunks], "recordings")
     elif cmd == "record":
         record(lang)
     elif cmd == "split":
