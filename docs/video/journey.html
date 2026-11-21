@@ -189,7 +189,7 @@ blockquote { border-inline-start: 5px solid var(--brand); background: #F4F7F6; b
 .hero .mapbg { position: absolute; width: 1100px; opacity: .14; }
 .heroc { position: absolute; top: 0; bottom: 0; justify-content: center; width: 1150px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
 .heroc .s1 { font-size: 130px; font-weight: 700; color: var(--gold2); line-height: 1.1; }
-.heroc .s2 { font-size: 52px; font-weight: 700; color: #fff; line-height: 1.3; }
+.heroc .s2 { font-size: 72px; font-weight: 700; color: #fff; line-height: 1.3; }
 .heroc .chips { display: flex; gap: 14px; margin-top: 8px; }
 .heroc .chips span { border: 3px solid var(--gold2); color: var(--gold2); border-radius: 999px; padding: 6px 24px; font-size: 30px; font-weight: 700; }
 .heroc .guards { font-size: 38px; font-weight: 700; color: var(--gold2); }
@@ -288,7 +288,7 @@ function build() {
   const S = {
     poster: `<div class="fullbg"><img src="../poster/uae-map-light.svg" alt="" style="position:absolute;inset-inline-start:-80px;top:120px;width:1200px;opacity:.5"></div>
       <div class="row"><div class="pbox"><img src="../poster/haris-poster.png" alt="">
-        <div class="cam" data-cam style="left:153px"><div class="view"><img src="../poster/qr.svg" alt=""><div class="corner"></div><div class="scanline" data-scan></div>
+        <div class="cam" data-cam style="left:330px"><div class="view"><img src="../poster/qr.svg" alt=""><div class="corner"></div><div class="scanline" data-scan></div>
         <div class="toast" data-at="4.4" data-tapat="6.0"><span class="waicon"></span><div><b>WhatsApp</b>${esc(u.poster.open_wa)}</div></div></div></div></div>
         <div class="ptxt"><h1 data-at="0.3">${esc(u.poster.title)}</h1><div class="tag" data-at="0.8">${esc(u.poster.tagline)}</div>
         <div class="step" data-at="2.0">📱 ${esc(u.poster.step)}</div></div></div>`,
@@ -558,7 +558,7 @@ function render(t) {
     const cam = s.querySelector("[data-cam]");
     if (cam) {
       const up = ease((r - 1.0) / 1.1), away = ease((r - 7.4) / 1.2);
-      cam.style.top = (1000 - up * 690 + away * 900) + "px";
+      cam.style.top = (1000 - up * 660 + away * 900) + "px";
       const scan = s.querySelector("[data-scan]");
       const sp = clamp((r - 2.2) / 2.0);
       scan.style.top = (150 + Math.abs(Math.sin(sp * Math.PI * 2)) * 250) + "px";
