@@ -48,7 +48,7 @@ Open Haris and pick a language. The menu offers four things: **check a message o
 
 The next version, a mobile app and a WhatsApp channel, is designed in an official government style: home and quick check, check result, report by voice or screenshots, report summary, official warnings and the campaign radar, and the same flows inside a WhatsApp business chat.
 
-**Campaign poster: «حارس» درعك الذكي ("Haris, your smart shield").** An A3 poster shows the name, that line, and three words for what Haris does (يحذّرك · يرشدك · يوصّل بلاغك: it warns you, guides you, and carries your report). Below them a golden shield holds the map of the UAE, its seven emirates linked by a digital network, while viruses, fake links and phishing hooks bounce off its edge; Haris stands beside it. Scanning the QR code at the bottom opens WhatsApp straight to a chat with Haris, where people save the contact and forward suspicious messages. The source is in `docs/poster/` (`poster.html` and a rendered `haris-poster.png`). The QR holds a placeholder message until the official WhatsApp number is live; then `qr.svg` is regenerated with the `wa.me/<number>` link.
+**Campaign poster: «حارس» درعك الذكي ("Haris, your smart shield").** An A3 poster shows the name, that line, and three words for what Haris does (يحذّرك · يرشدك · يوصّل بلاغك: it warns you, guides you, and carries your report). Below them a golden shield holds the map of the UAE, its seven emirates linked by a digital network, while viruses, fake links and phishing hooks bounce off its edge; Haris stands beside it. Scanning the QR code at the bottom opens WhatsApp straight to a chat with Haris, where people save the contact and forward suspicious messages. The source is in `docs/poster/` (`poster.html` and a rendered `haris-poster.png`). The QR opens `https://wa.me/971503123535` (+971 50 312 3535) with «مرحباً حارس» typed in; `docs/poster/qr.py` regenerates it if the number changes.
 
 Haris always presents itself as an assistant, **not** an official body, and never tells a user a message is "safe": the lowest rating is "no clear warning signs".
 
@@ -152,7 +152,7 @@ Open <http://127.0.0.1:8000/reports.html>. The queue puts the critical cases fir
 4. In Meta's WhatsApp > Configuration, set the callback URL to `https://<tunnel address>/webhook/whatsapp`, type the same verify token, and subscribe to the `messages` field.
 5. Send "مرحباً" or "hi" to the test number from a verified phone. Haris answers with buttons: check a message, I've been scammed, how to use it.
 
-The test number cannot receive messages from the public. For the poster's QR code, Haris needs its own WhatsApp Business number.
+The test number cannot receive messages from the public. The poster's QR code points to Haris's own number, +971 50 312 3535, which must be registered in the same Meta app (Phone number ID and token in `.env`) for Haris to answer the people who scan it.
 
 **Journey video** (Arabic, narrated, about 4:10; English, captions only, about 3:40). It opens on the campaign poster and its QR code, shows the problem in a few seconds, then follows three people, each in their own scene:
 
