@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-VOICE, RATE, GAP, TAIL = "Majed", 215, 0.35, 0.9
+VOICE, RATE, GAP, TAIL = "Majed", 240, 0.3, 0.8
 
 
 def lines(lang: str) -> list[dict]:
@@ -46,6 +46,14 @@ def record(lang: str) -> None:
         print(ln["id"], ln["say"][:40])
 
 
+def trim(src: Path) -> Path:
+    """Cut the silence the voice leaves before and after each line."""
+    dst = src.with_suffix(".wav")
+    af = "silenceremove=start_periods=1:start_threshold=-45dB,areverse,silenceremove=start_periods=1:start_threshold=-45dB,areverse"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(src), "-af", af, "-ar", "44100", "-ac", "1", str(dst)], check=True)
+    return dst
+
+
 def duration(path: Path) -> float:
     r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(path)],
                        capture_output=True, text=True, check=True)
@@ -58,7 +66,7 @@ def timing(lang: str) -> None:
     lns = json.loads((d / "lines.json").read_text())
     by_scene: dict[str, list] = {}
     for ln in lns:
-        ln["len"] = round(duration(d / f"{ln['id']}.aiff"), 3)
+        ln["len"] = round(duration(trim(d / f"{ln['id']}.aiff")), 3)
         by_scene.setdefault(ln["scene"], []).append(ln)
     scenes, captions, clips = {}, {}, []
     start = 0.5  # LEAD in journey.py
@@ -68,7 +76,7 @@ def timing(lang: str) -> None:
         for ln in by_scene.get(sc["k"], []):
             at = max(ln["at"], t_end + GAP if t_end else ln["at"])
             t_end = at + ln["len"]
-            clips.append({"file": f"{ln['id']}.aiff", "t": round(start + at, 3)})
+            clips.append({"file": f"{ln['id']}.wav", "t": round(start + at, 3)})
             if ln["kind"] == "caption":
                 caps.append([round(at, 2), ln["i"]])
         dur = max(sc["dur"], round(t_end + TAIL, 2))
