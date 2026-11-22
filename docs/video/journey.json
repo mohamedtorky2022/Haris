@@ -332,7 +332,7 @@
   "poster": {
    "title": "«حارس»",
    "tagline": "درعك الذكي",
-   "step": "امسح الرمز بكاميرا هاتفك، واحفظ «حارس» في جهات الاتصال، ثم راسله على واتساب.",
+   "step": "امسح الرمز بكاميرا هاتفك أو من واتساب، فتُفتح محادثة «حارس». أرسل «مرحباً حارس» واحفظ بطاقته.",
    "open_wa": "افتح المحادثة في واتساب"
   },
   "problem": {
@@ -646,7 +646,7 @@
    "s2": "درعك الذكي",
    "guards": "يحمي الجميع في دولة الإمارات",
    "try": "جرّبه الآن",
-   "scan": "امسح الرمز واحفظ «حارس» في جهات الاتصال",
+   "scan": "امسح الرمز وتحدّث مع «حارس» على واتساب",
    "chips": [
     "يحذّرك",
     "يرشدك",
@@ -882,7 +882,7 @@
   "poster": {
    "title": "Haris",
    "tagline": "Your smart shield",
-   "step": "Scan the code with your phone camera, save Haris to your contacts, then message it on WhatsApp.",
+   "step": "Scan the code with your camera or in WhatsApp to open a chat with Haris. Say hello and save its contact card.",
    "open_wa": "Open the chat in WhatsApp"
   },
   "problem": {
@@ -1196,7 +1196,7 @@
    "s2": "Your smart shield",
    "guards": "Protecting everyone in the UAE",
    "try": "Try it now",
-   "scan": "Scan the code and save Haris to your contacts",
+   "scan": "Scan the code to chat with Haris on WhatsApp",
    "chips": [
     "Warns you",
     "Guides you",

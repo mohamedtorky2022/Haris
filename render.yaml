@@ -9,6 +9,15 @@ services:
     region: frankfurt
     branch: master
     autoDeploy: true
+    # Each deploy starts the free disk afresh, so only changes to the running app redeploy it.
+    buildFilter:
+      paths:
+        - backend/**
+        - frontend/**
+        - requirements.txt
+        - render.yaml
+        - scripts/inbox_demo.py
+        - scripts/alerts_demo.py
     healthCheckPath: /api/health
     # The demo reports are made without the AI key, so the build never waits on translation calls.
     buildCommand: >-
