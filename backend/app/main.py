@@ -18,7 +18,7 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from haris import __version__, alerts, inbox, llm, radar, whatsapp
+from haris import __version__, alerts, inbox, llm, persist, radar, whatsapp
 from haris.detector import analyze
 from haris.intake import MAX_IMAGES, extract
 from haris.playbooks import get_playbook, list_playbooks
@@ -125,6 +125,7 @@ def _keep_awake() -> None:
     threading.Thread(target=loop, name="keep-awake", daemon=True).start()
 
 
+persist.start()  # on a host with DATABASE_URL: bring back the saved reports, subscribers and radar
 _keep_awake()  # at import: newer FastAPI versions dropped add_event_handler, and uvicorn runs one worker
 
 

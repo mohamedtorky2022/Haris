@@ -1,4 +1,4 @@
-# Render Blueprint: Haris as one free web service with a fixed address (https://haris-uae.onrender.com
+# Render Blueprint: Haris as one free web service, plus a free Postgres database that keeps its data with a fixed address (https://haris-uae.onrender.com
 # or similar). Secrets are typed into Render's dashboard, never committed: every key marked
 # "sync: false" is asked for when the Blueprint is created.
 services:
@@ -25,6 +25,10 @@ services:
       if [ "$HARIS_DEMO_DATA" = "1" ]; then env -u GEMINI_API_KEY -u ANTHROPIC_API_KEY python scripts/inbox_demo.py --clear && python scripts/alerts_demo.py; fi
     startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips "*"
     envVars:
+      - key: DATABASE_URL             # reports, subscribers and the radar survive restarts and deploys
+        fromDatabase:
+          name: haris-db
+          property: connectionString
       - key: PYTHON_VERSION
         value: "3.12.7"
       - key: HARIS_DEMO_DATA          # fictional reports and alert subscribers for the dashboard demo
@@ -47,3 +51,10 @@ services:
         value: "971503123535"
       - key: HARIS_WEBSITE
         value: https://claude.ai/artifact/Kb2rxU4cMeUmkumdnJZDkv
+
+databases:
+  - name: haris-db
+    plan: free          # Render's free Postgres expires 30 days after it is created
+    region: frankfurt
+    databaseName: haris
+    user: haris

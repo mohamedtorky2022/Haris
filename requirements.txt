@@ -3,3 +3,5 @@ fastapi==0.128.8
 starlette==0.49.3
 uvicorn[standard]==0.39.0
 pydantic==2.13.5
+# Only used on the host, when DATABASE_URL is set: keeps the data across restarts (haris/persist.py).
+psycopg[binary]>=3.2,<4
