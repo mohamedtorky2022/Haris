@@ -10,9 +10,10 @@ services:
     branch: master
     autoDeploy: true
     healthCheckPath: /api/health
+    # The demo reports are made without the AI key, so the build never waits on translation calls.
     buildCommand: >-
       pip install -r requirements.txt &&
-      if [ "$HARIS_DEMO_DATA" = "1" ]; then python scripts/inbox_demo.py --clear && python scripts/alerts_demo.py; fi
+      if [ "$HARIS_DEMO_DATA" = "1" ]; then env -u GEMINI_API_KEY -u ANTHROPIC_API_KEY python scripts/inbox_demo.py --clear && python scripts/alerts_demo.py; fi
     startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips "*"
     envVars:
       - key: PYTHON_VERSION
