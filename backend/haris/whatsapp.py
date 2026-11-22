@@ -119,6 +119,7 @@ class _Expiring:
 _seen = _Expiring(ttl=24 * 3600, size=5000)       # message ids, because Meta retries deliveries
 _pending = _Expiring(ttl=REPORT_TTL, size=2000)   # report token -> (text, lang)
 _hits: dict[str, deque] = defaultdict(deque)
+_carded = _Expiring(ttl=24 * 3600, size=20000)   # hashed senders who already got Haris's contact card today
 
 
 def _over_limit(sender: str) -> bool | None:
@@ -138,6 +139,7 @@ def reset() -> None:
     _seen.items.clear()
     _pending.items.clear()
     _hits.clear()
+    _carded.items.clear()
 
 
 # --- Incoming messages ------------------------------------------------------
@@ -196,6 +198,31 @@ def _with_buttons(body: str, buttons: list[dict], lang: str) -> list[dict]:
 def welcome(lang: str) -> list[dict]:
     t = TEXT[lang]
     return _with_buttons(t["welcome"], [_button("check", lang), _button("scammed", lang), _button("guide", lang)], lang)
+
+
+def contact_card() -> dict:
+    """Haris's own contact card. WhatsApp shows a new business number as digits until Meta
+    approves its display name, so the first welcome also sends this card: one tap on
+    "Add contact" saves the number under the name «حارس»."""
+    number = re.sub(r"\D", "", os.getenv("WHATSAPP_PUBLIC_NUMBER", "971503123535"))
+    card = {
+        "name": {"formatted_name": "حارس Haris", "first_name": "حارس", "last_name": "Haris"},
+        "org": {"company": "حارس · درعك الذكي"},
+        "phones": [{"phone": f"+{number}", "type": "WORK", "wa_id": number}],
+    }
+    site = os.getenv("HARIS_WEBSITE", "")
+    if site:
+        card["urls"] = [{"url": site, "type": "WORK"}]
+    return {"type": "contacts", "contacts": [card]}
+
+
+def _first_welcome(sender: str) -> bool:
+    """True the first time in a day that this sender gets the welcome. Only a hash of the number is kept."""
+    key = hashlib.sha256(sender.encode()).hexdigest()
+    if key in _carded:
+        return False
+    _carded.put(key)
+    return True
 
 
 def format_result(result: dict, lang: str, max_items: int = 3) -> str:
@@ -380,6 +407,8 @@ def process(payload: dict) -> int:
             continue
         lang = detect_language(msg["text"]) if msg["text"] else "ar"
         replies = [{"type": "text", "text": {"body": TEXT[lang]["too_many"]}}] if over else handle(msg)
+        if not over and msg["type"] == "text" and is_greeting(msg["text"]) and _first_welcome(msg["from"]):
+            replies.append(contact_card())
         for reply in replies:
             sent += send(msg["from"], reply)
     return sent

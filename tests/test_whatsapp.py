@@ -172,9 +172,23 @@ def test_process_replies_once_per_message(monkeypatch):
     sent = []
     monkeypatch.setattr(wa, "send", lambda to, message: sent.append((to, message)) or True)
     payload = webhook({"id": "m1", "from": "971501", "type": "text", "text": {"body": "hello"}})
-    assert wa.process(payload) == 1
+    assert wa.process(payload) == 2  # the welcome menu, then Haris's contact card
     assert wa.process(payload) == 0  # Meta retried the same delivery
     assert sent[0][0] == "971501"
+    assert sent[1][1]["type"] == "contacts"
+
+
+def test_contact_card_is_sent_once_with_the_first_welcome(monkeypatch):
+    sent = []
+    monkeypatch.setattr(wa, "send", lambda to, message: sent.append(message) or True)
+    wa.process(webhook({"id": "c1", "from": "971503", "type": "text", "text": {"body": "مرحباً حارس"}}))
+    wa.process(webhook({"id": "c2", "from": "971503", "type": "text", "text": {"body": "مرحبا"}}))
+    cards = [m for m in sent if m["type"] == "contacts"]
+    assert len(cards) == 1 and sent[1] is cards[0]
+    card = cards[0]["contacts"][0]
+    assert card["name"]["first_name"] == "حارس"
+    assert card["phones"][0]["wa_id"] == "971503123535"
+    assert "971503" not in wa._carded.items  # only a hash of the sender is kept
 
 
 def test_process_limits_each_sender(monkeypatch):
@@ -182,7 +196,7 @@ def test_process_limits_each_sender(monkeypatch):
     monkeypatch.setattr(wa, "send", lambda to, message: sent.append(message) or True)
     for i in range(wa.PER_SENDER_LIMIT + 5):
         wa.process(webhook({"id": f"m{i}", "from": "971502", "type": "text", "text": {"body": "hi"}}))
-    assert len(sent) == wa.PER_SENDER_LIMIT + 1
+    assert len(sent) == wa.PER_SENDER_LIMIT + 2  # the first welcome also carries the contact card
     assert sent[-1]["text"]["body"] == wa.TEXT["en"]["too_many"]
 
 

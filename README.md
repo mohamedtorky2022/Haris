@@ -52,6 +52,8 @@ The next version, a mobile app and a WhatsApp channel, is designed in an officia
 
 **WhatsApp Business profile.** The profile picture is `docs/poster/haris-whatsapp.png` (Haris inside the golden shield, cropped to fit WhatsApp's circle). The profile's website is a one-page introduction to Haris (`docs/landing/index.html`): the shield, «درعك الذكي», what Haris does, how to start, the five languages, the privacy promises, a WhatsApp button and the same QR code. It is published as a free page with a fixed link, so it does not depend on the tunnel.
 
+A new business number shows as digits for people who haven't saved it, until Meta approves its display name (in practice the name appears for everyone only on high-volume or Official Business accounts). So the first time someone greets Haris, for example by scanning the QR, Haris replies with its menu and then its own contact card: one tap on «إضافة جهة اتصال» saves the number as «حارس».
+
 Haris always presents itself as an assistant, **not** an official body, and never tells a user a message is "safe": the lowest rating is "no clear warning signs".
 
 ### Who it serves
