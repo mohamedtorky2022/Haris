@@ -125,7 +125,7 @@ def _keep_awake() -> None:
     threading.Thread(target=loop, name="keep-awake", daemon=True).start()
 
 
-app.add_event_handler("startup", _keep_awake)
+_keep_awake()  # at import: newer FastAPI versions dropped add_event_handler, and uvicorn runs one worker
 
 
 # --- Middleware -----------------------------------------------------------
