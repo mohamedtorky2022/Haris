@@ -55,13 +55,20 @@ _NAME = re.compile(r"\b(?:haris|حارس|हारिस)\b", re.IGNORECASE)
 _PUNCT = re.compile(r"[^\w\s]", re.UNICODE)
 
 
+def _secret(name: str, default: str = "") -> str:
+    """A key pasted into a hosting dashboard can carry a stray line or quotes; keep the first word only,
+    so one bad paste does not turn into an invalid HTTP header (and a token printed in an error)."""
+    words = os.getenv(name, default).replace('"', " ").replace("'", " ").split()
+    return words[0] if words else ""
+
+
 def settings() -> dict:
     return {
-        "token": os.getenv("WHATSAPP_TOKEN", ""),
-        "phone_id": os.getenv("WHATSAPP_PHONE_NUMBER_ID", ""),
-        "verify_token": os.getenv("WHATSAPP_VERIFY_TOKEN", ""),
-        "app_secret": os.getenv("WHATSAPP_APP_SECRET", ""),
-        "version": os.getenv("WHATSAPP_API_VERSION", DEFAULT_VERSION),
+        "token": _secret("WHATSAPP_TOKEN"),
+        "phone_id": _secret("WHATSAPP_PHONE_NUMBER_ID"),
+        "verify_token": _secret("WHATSAPP_VERIFY_TOKEN"),
+        "app_secret": _secret("WHATSAPP_APP_SECRET"),
+        "version": _secret("WHATSAPP_API_VERSION", DEFAULT_VERSION),
     }
 
 

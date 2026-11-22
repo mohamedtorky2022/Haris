@@ -331,3 +331,10 @@ def test_everyone_who_writes_gets_the_alerts_and_stop_is_remembered(monkeypatch)
     assert not wa.alerts.is_subscribed("971504")  # not added back after STOP
     wa.process(webhook({"id": "s4", "from": "971504", "type": "text", "text": {"body": "تنبيهات"}}))
     assert wa.alerts.is_subscribed("971504")
+
+
+def test_a_bad_paste_in_the_host_settings_is_cleaned(monkeypatch):
+    monkeypatch.setenv("WHATSAPP_TOKEN", 'EAAtoken123\nWHATSAPP_PHONE_NUMBER_ID=999')
+    monkeypatch.setenv("WHATSAPP_APP_SECRET", ' "abc" ')
+    s = wa.settings()
+    assert s["token"] == "EAAtoken123" and s["app_secret"] == "abc"
