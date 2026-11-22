@@ -93,6 +93,8 @@ Full detail, including model choices and the privacy design, is in [`docs/TECHNI
 
 ## 4. Run it
 
+**On the demo Mac after a restart:** `scripts/haris-up.sh` starts the server and a Cloudflare quick tunnel, keeps the Mac awake, and points Meta's WhatsApp webhook at the tunnel's new address (secrets read from `.env`, never printed). It prints the new address and the dashboard link.
+
 Requirements: Python 3.9 or newer (macOS ships 3.9 with the Xcode tools).
 
 ```bash
