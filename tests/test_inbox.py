@@ -81,7 +81,8 @@ def test_queue_puts_the_most_urgent_first_and_counts():
     money = inbox.submit(MONEY, "ar", "dubai", True)
     inbox.act(money["reference"], "receive")
     q = inbox.queue()
-    assert [i["priority"] for i in q["items"]] == ["critical", "financial", "medium", "indicator"]
+    # new reports first, by urgency; the received one after them
+    assert [i["priority"] for i in q["items"]] == ["critical", "medium", "indicator", "financial"]
     assert q["items"][0]["reference"] == crit["reference"]
     assert q["stats"]["new"] == 3 and q["stats"]["urgent"] == 2 and q["stats"]["in_progress"] == 1
     assert q["stats"]["avg_minutes_to_receive"] is not None
@@ -194,3 +195,13 @@ def test_plans_about_children_point_to_child_protection():
             c = get_playbook(pid, lang)["child"]
             assert len(c["tips"]) == 3 and [x["value"] for x in c["contacts"]] == ["116111", "80085"]
         assert "child" not in get_playbook("money_sent", lang)
+
+
+def test_queue_shows_the_newest_first_inside_a_priority_and_marks_whatsapp(monkeypatch):
+    real = time.time
+    old = inbox.submit({"incident_type": "suspicious_only"}, "ar", "dubai", False)
+    monkeypatch.setattr(inbox.time, "time", lambda: real() + 60)
+    new = inbox.submit({"incident_type": "suspicious_only", "reporter_contact": "WhatsApp +971500000001"}, "ar", "dubai", False)
+    items = inbox.queue()["items"]
+    assert [i["reference"] for i in items[:2]] == [new["reference"], old["reference"]]
+    assert items[0]["channel"] == "whatsapp" and items[1]["channel"] == "web"

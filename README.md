@@ -83,7 +83,7 @@ The same engine serves every group; the scam patterns and advice cover parcel an
    ├─ inbox.py      reports sent to the authority (demo): triage, routing by emirate, status, auto-delete (SQLite)
    ├─ translate.py  victim ↔ authority translation; numbers and links never reach the model
    ├─ whatsapp.py   WhatsApp channel: checks Meta's signature, replies with buttons and lists
-   ├─ alerts.py     official warnings on WhatsApp: opt-in subscribers, delivery when a campaign is approved
+   ├─ alerts.py     official warnings on WhatsApp: everyone who writes to Haris (STOP to leave), delivery when a campaign is approved
    ├─ translations.py  loads all wording from locales/<lang>.json (one file per language)
    ├─ playbooks.py  emergency plans + official contacts
    └─ report.py     builds the police report in memory

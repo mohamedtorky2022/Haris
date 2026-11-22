@@ -173,10 +173,11 @@ def test_process_replies_once_per_message(monkeypatch):
     sent = []
     monkeypatch.setattr(wa, "send", lambda to, message: sent.append((to, message)) or True)
     payload = webhook({"id": "m1", "from": "971501", "type": "text", "text": {"body": "hello"}})
-    assert wa.process(payload) == 2  # the welcome menu, then Haris's contact card
+    assert wa.process(payload) == 3  # the welcome menu, Haris's contact card, the alerts notice
     assert wa.process(payload) == 0  # Meta retried the same delivery
     assert sent[0][0] == "971501"
     assert sent[1][1]["type"] == "contacts"
+    assert sent[2][1]["text"]["body"] == wa.alerts.TEXT["en"]["auto_notice"]
 
 
 def test_contact_card_is_sent_once_with_the_first_welcome(monkeypatch):
@@ -197,7 +198,7 @@ def test_process_limits_each_sender(monkeypatch):
     monkeypatch.setattr(wa, "send", lambda to, message: sent.append(message) or True)
     for i in range(wa.PER_SENDER_LIMIT + 5):
         wa.process(webhook({"id": f"m{i}", "from": "971502", "type": "text", "text": {"body": "hi"}}))
-    assert len(sent) == wa.PER_SENDER_LIMIT + 2  # the first welcome also carries the contact card
+    assert len(sent) == wa.PER_SENDER_LIMIT + 3  # the first welcome also carries the contact card and the alerts notice
     assert sent[-1]["text"]["body"] == wa.TEXT["en"]["too_many"]
 
 
@@ -316,3 +317,17 @@ def test_authority_actions_reach_the_victim_and_the_answer_comes_back(monkeypatc
     # with no open question, the next message is checked as usual
     [m] = wa.handle(text_msg("hello there friend how are you", sender=sender))
     assert case["reference"] not in m["interactive"]["body"]["text"]
+
+
+def test_everyone_who_writes_gets_the_alerts_and_stop_is_remembered(monkeypatch):
+    sent = []
+    monkeypatch.setattr(wa, "send", lambda to, message: sent.append(message) or True)
+    wa.process(webhook({"id": "s1", "from": "971504", "type": "text", "text": {"body": "هل هذه رسالة احتيال؟ حسابك موقوف"}}))
+    assert wa.alerts.is_subscribed("971504")
+    assert sent[-1]["text"]["body"] == wa.alerts.TEXT["ar"]["auto_notice"]
+    wa.process(webhook({"id": "s2", "from": "971504", "type": "text", "text": {"body": "إيقاف"}}))
+    assert not wa.alerts.is_subscribed("971504")
+    wa.process(webhook({"id": "s3", "from": "971504", "type": "text", "text": {"body": "مرحبا"}}))
+    assert not wa.alerts.is_subscribed("971504")  # not added back after STOP
+    wa.process(webhook({"id": "s4", "from": "971504", "type": "text", "text": {"body": "تنبيهات"}}))
+    assert wa.alerts.is_subscribed("971504")

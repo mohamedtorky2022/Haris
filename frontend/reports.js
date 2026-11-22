@@ -56,7 +56,17 @@
     if (h < 24) return `قبل ${count(h, ["ساعة", "ساعتين", "ساعات", "ساعة"])}`;
     return `قبل ${count(Math.round(h / 24), ["يوم", "يومين", "أيام", "يوماً"])}`;
   };
-  const clock = (ts) => new Date(ts * 1000).toLocaleString("ar-AE", { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short" });
+  // Always UAE time (Asia/Dubai), whatever the officer's device is set to.
+  const TZ = "Asia/Dubai";
+  const clock = (ts) => new Date(ts * 1000).toLocaleString("ar-AE", { timeZone: TZ, hour: "2-digit", minute: "2-digit", day: "numeric", month: "short" });
+  const dayOf = (d) => d.toLocaleDateString("en-CA", { timeZone: TZ });
+  const when = (ts) => {
+    const d = new Date(ts * 1000);
+    const time = d.toLocaleTimeString("ar-AE", { timeZone: TZ, hour: "numeric", minute: "2-digit" });
+    const today = dayOf(d) === dayOf(new Date());
+    const day = today ? "اليوم" : d.toLocaleDateString("ar-AE", { timeZone: TZ, day: "numeric", month: "short" });
+    return `${day} ${time} (${ago(ts)})`;
+  };
   const money = (r) => (r.amount ? `${r.amount} ${r.currency || "AED"}` : "");
   const ltr = (text) => el("bdi", { dir: "ltr", text });
 
@@ -89,11 +99,13 @@
     ]));
     b.append(el("span", { class: "what" }, [
       el("span", { text: INCIDENT[r.incident_type] || r.incident_title }),
+      r.channel === "whatsapp" ? el("span", { class: "lang-chip wa", text: "📱 واتساب" }) : null,
       r.lang !== "ar" ? el("span", { class: "lang-chip", text: `🗣️ ${LANG[r.lang]}` }) : null,
       r.visitor ? el("span", { class: `lang-chip visitor${r.leaving_soon ? " soon" : ""}`, text: r.leaving_soon ? "🧳 زائر · يغادر خلال 3 أيام" : "🧳 زائر" }) : null,
       r.needs_translator ? el("span", { class: "lang-chip warn", text: "يحتاج مترجماً" }) : null,
     ]));
-    b.append(el("p", { class: "meta", text: [EMIRATE[r.emirate], money(r), ago(r.created_at)].filter(Boolean).join(" · ") }));
+    b.append(el("p", { class: "meta", text: [EMIRATE[r.emirate], money(r), when(r.created_at)].filter(Boolean).join(" · ") }));
+    if (fresh.has(r.reference)) b.classList.add("fresh");
     b.addEventListener("click", () => { selected = r.reference; lastDetail = ""; refresh(); });
     return b;
   }
@@ -234,9 +246,45 @@
     return b;
   }
 
+  // A report that arrives while the dashboard is open is announced: a banner, a short tone, and the count in the tab title.
+  let known = null;
+  const fresh = new Set();
+  function chime() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [880, 1175].forEach((f, i) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.frequency.value = f; o.connect(g); g.connect(ctx.destination);
+        g.gain.setValueAtTime(0.0001, ctx.currentTime + i * 0.18);
+        g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + i * 0.18 + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + i * 0.18 + 0.16);
+        o.start(ctx.currentTime + i * 0.18); o.stop(ctx.currentTime + i * 0.18 + 0.17);
+      });
+    } catch { /* sound is optional */ }
+  }
+  function announce(items) {
+    const refs = new Set(items.map((r) => r.reference));
+    if (known) {
+      const arrived = items.filter((r) => !known.has(r.reference));
+      if (arrived.length) {
+        arrived.forEach((r) => fresh.add(r.reference));
+        const banner = document.getElementById("arrived");
+        banner.textContent = `📥 وصل ${arrived.length === 1 ? "بلاغ جديد" : `${arrived.length} بلاغات جديدة`}: ${arrived.map((r) => r.reference).join("، ")} · ${when(arrived[0].created_at)}`;
+        banner.hidden = false;
+        document.title = `(${fresh.size}) البلاغات الواردة | لوحة الجهة المختصة`;
+        chime();
+      }
+    }
+    known = refs;
+  }
+  document.getElementById("arrived").addEventListener("click", (e) => {
+    e.currentTarget.hidden = true; fresh.clear(); document.title = "البلاغات الواردة | لوحة الجهة المختصة"; refresh();
+  });
+
   async function refresh() {
     let q;
     try { q = await call("/api/authority/reports"); } catch { return; }
+    announce(q.items);
     const s = q.stats;
     document.getElementById("n-new").textContent = s.new;
     document.getElementById("n-urgent").textContent = s.urgent;
@@ -250,7 +298,7 @@
     const items = q.items.filter((r) => (showClosed.checked || r.status !== "closed") && (!emirateFilter.value || r.emirate === emirateFilter.value)
       && (!langFilter.value || r.lang === langFilter.value) && (!visitorsOnly.checked || r.visitor));
     list.replaceChildren(...(items.length ? items.map(row) : [el("p", { class: "empty", text: "لا توجد بلاغات." })]));
-    document.getElementById("updated").textContent = `آخر تحديث: ${new Date().toLocaleTimeString("ar-AE")} · يتحدّث كل 5 ثوانٍ`;
+    document.getElementById("updated").textContent = `آخر تحديث: ${new Date().toLocaleTimeString("ar-AE", { timeZone: TZ })} بتوقيت الإمارات · يتحدّث كل 5 ثوانٍ`;
     if (selected) {
       try { showDetail(await call(`/api/authority/reports/${encodeURIComponent(selected)}`)); }
       catch (e) {

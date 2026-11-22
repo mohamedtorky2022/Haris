@@ -621,6 +621,8 @@ def process(payload: dict) -> int:
         replies = [{"type": "text", "text": {"body": TEXT[lang]["too_many"]}}] if over else handle(msg)
         if not over and msg["type"] == "text" and is_greeting(msg["text"]) and _first_welcome(msg["from"]):
             replies.append(contact_card())
+        if not over and alerts.command(msg["text"]) is None and alerts.auto_subscribe(msg["from"], lang):
+            replies.append({"type": "text", "text": {"body": alerts.TEXT[lang]["auto_notice"]}})
         for reply in replies:
             sent += send(msg["from"], reply)
     return sent

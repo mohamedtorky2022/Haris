@@ -346,7 +346,8 @@
    "lang_button": "Choose language",
    "lang_section": "Warning language",
    "lang_row": "Current language",
-   "lang_set": "Done ✅ Warnings will reach you in English. To stop them, send: STOP"
+   "lang_set": "Done ✅ Warnings will reach you in English. To stop them, send: STOP",
+   "auto_notice": "🔔 Haris will send you official warnings about new scam campaigns in the UAE here. To stop them at any time, send: STOP"
   },
   "file": {
    "file_ask": "I'll prepare your report and send it to the authority once you agree.\n\nTell me what happened in one message, typed or 🎙️ as a voice note:\n• What happened and when\n• The amount and how you paid, if you paid\n• The scammer's number, link or account\n\n📷 You can also send screenshots (up to 5).\n⚠️ Never send a verification code, password or card number.",

@@ -273,11 +273,12 @@ def _summary(row) -> dict:
         "amount": f["amount"], "currency": f["currency"], "has_reply": any(e["kind"] == "reply" for e in events),
         "needs_translator": row["lang"] != "ar" and not (f.get("translation") or {}).get("ok"),
         "visitor": bool(f.get("visitor")), "leaving_soon": leaving_soon(f),
+        "channel": "whatsapp" if str(f.get("reporter_contact") or "").startswith("WhatsApp") else "web",
     }
 
 
 def queue() -> dict:
-    """Every report, most urgent first; closed ones at the bottom. Plus the counters for the dashboard."""
+    """Every report: new ones first, then in progress, then closed; the most urgent and newest first inside each. Plus the counters."""
     with closing(_connect()) as con:
         rows = con.execute("SELECT * FROM reports").fetchall()
     items = [_summary(r) for r in rows]
@@ -285,7 +286,9 @@ def queue() -> dict:
     # A visitor who leaves within 3 days moves up one step: after they fly, a statement or a refund is much harder.
     def place(i):
         r = rank[i["priority"]]
-        return (i["status"] == "closed", r - 1 if i["leaving_soon"] and r > 1 else r, not i["leaving_soon"], i["created_at"])
+        # New reports first, then those in progress, then closed; by urgency inside each, newest first.
+        group = 2 if i["status"] == "closed" else 0 if i["status"] == "new" else 1
+        return (group, r - 1 if i["leaving_soon"] and r > 1 else r, not i["leaving_soon"], -i["created_at"])
 
     items.sort(key=place)
     open_items = [i for i in items if i["status"] != "closed"]

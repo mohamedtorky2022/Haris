@@ -66,6 +66,7 @@ def _connect() -> sqlite3.Connection:
         CREATE TABLE IF NOT EXISTS sends (id INTEGER PRIMARY KEY, broadcast_id INTEGER, created_at REAL, mode TEXT,
             title TEXT, total INTEGER, sent INTEGER DEFAULT 0, simulated INTEGER DEFAULT 0, failed INTEGER DEFAULT 0,
             done INTEGER DEFAULT 0);
+        CREATE TABLE IF NOT EXISTS optouts (wa_hash TEXT PRIMARY KEY, at REAL);
         """
     )
     return con
@@ -81,9 +82,26 @@ def command(text: str) -> str | None:
     return None
 
 
+def _hash(wa_id: str) -> str:
+    import hashlib
+    return hashlib.sha256(wa_id.encode()).hexdigest()
+
+
+def auto_subscribe(wa_id: str, lang: str) -> bool:
+    """Everyone who talks to Haris gets the official warnings, and is told so in that first reply.
+    Someone who sent «إيقاف» is remembered (only a hash of the number) and never added back
+    unless they ask. Returns True only when they were added now."""
+    with closing(_connect()) as con, con:
+        if con.execute("SELECT 1 FROM optouts WHERE wa_hash = ?", (_hash(wa_id),)).fetchone():
+            return False
+        return con.execute("INSERT OR IGNORE INTO subscribers (wa_id, lang, joined_at) VALUES (?, ?, ?)",
+                           (wa_id, lang, time.time())).rowcount > 0
+
+
 def subscribe(wa_id: str, lang: str) -> bool:
     """Returns False if they were already subscribed (their language is updated)."""
     with closing(_connect()) as con, con:
+        con.execute("DELETE FROM optouts WHERE wa_hash = ?", (_hash(wa_id),))
         known = con.execute("SELECT 1 FROM subscribers WHERE wa_id = ?", (wa_id,)).fetchone()
         con.execute("INSERT INTO subscribers (wa_id, lang, joined_at) VALUES (?, ?, ?) "
                     "ON CONFLICT(wa_id) DO UPDATE SET lang = excluded.lang", (wa_id, lang, time.time()))
@@ -92,6 +110,7 @@ def subscribe(wa_id: str, lang: str) -> bool:
 
 def unsubscribe(wa_id: str) -> bool:
     with closing(_connect()) as con, con:
+        con.execute("INSERT OR REPLACE INTO optouts VALUES (?, ?)", (_hash(wa_id), time.time()))
         return con.execute("DELETE FROM subscribers WHERE wa_id = ?", (wa_id,)).rowcount > 0
 
 

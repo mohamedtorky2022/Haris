@@ -117,3 +117,13 @@ button[data-approve]:disabled { opacity: 0.5; cursor: not-allowed; }
 .lang-chip.visitor.soon { color: #fff; background: #b54708; }
 .visitor-banner { margin: 0 0 12px; padding: 8px 12px; border-radius: 8px; background: #f9eeda; color: #5b3c00; display: grid; gap: 3px; font-size: 14px; }
 .visitor-banner.soon { background: #fdecec; color: #8e1414; }
+
+/* A report that arrived while the dashboard was open */
+.arrived { display: block; width: 100%; margin: 8px 0 0; padding: 12px 16px; border: 0; border-radius: 12px;
+  background: #0A4740; color: #fff; font: inherit; font-weight: 700; text-align: start; cursor: pointer;
+  box-shadow: 0 0 0 3px #E7C77A inset; animation: arrive 1.2s ease-out 2; }
+.arrived[hidden] { display: none; }
+.fresh { box-shadow: 0 0 0 3px #E7C77A; }
+.lang-chip.wa { background: #E3F4EA; color: #14633B; }
+@keyframes arrive { from { transform: scale(1.02); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .arrived { animation: none; } }
