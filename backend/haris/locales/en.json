@@ -398,7 +398,8 @@
    "case_received": "🔍 The authority received your report *{ref}* and is reviewing it.",
    "case_question": "❓ The authority has a question about your report *{ref}*:\n\n{note}\n\nType your answer here in one message, or send a photo or a voice note.",
    "case_reply_ok": "✅ I passed your answer to the authority (report {ref}).",
-   "case_closed": "Your report *{ref}* was closed."
+   "case_closed": "Your report *{ref}* was closed.",
+   "case_assigned": "📋 Your report *{ref}* was passed to the team in charge, which will follow it through."
   }
  },
  "inbox": {
@@ -413,7 +414,9 @@
    "received": "✅ The authority received your report",
    "info_requested": "❓ The authority asked you",
    "reply": "I passed your answer to them",
-   "closed": "The report was closed"
+   "closed": "The report was closed",
+   "assigned": "Your report was passed to the team in charge",
+   "team_step": "The team in charge took a step on your report"
   }
  },
  "visitor": {

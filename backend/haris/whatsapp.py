@@ -457,6 +457,8 @@ def notify_case(ref: str, status: str, note: str, lang: str) -> None:
         body = t["case_received"].format(ref=ref)
     elif status == "info_requested":
         body = t["case_question"].format(ref=ref, note=note)
+    elif status == "assigned":
+        body = t["case_assigned"].format(ref=ref)
     elif status == "closed":
         body = t["case_closed"].format(ref=ref) + (f"\n\n{note}" if note else "")
     else:

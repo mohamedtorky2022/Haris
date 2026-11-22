@@ -5,7 +5,12 @@
   const PRIORITY = { critical: "حرجة", financial: "عاجلة مالياً", medium: "متوسطة", indicator: "مؤشر" };
   const STATUS = { new: "جديد", received: "قيد المعالجة", info_requested: "بانتظار معلومات", closed: "مغلق" };
   const EVENT = { submitted: "أرسل المُبلّغ البلاغ", received: "تم الاستلام", info_requested: "طُلبت معلومات إضافية",
-                  reply: "ردّ المُبلّغ", closed: "أُغلق البلاغ" };
+                  reply: "ردّ المُبلّغ", closed: "أُغلق البلاغ", assigned: "التوزيع", team_step: "إجراء الفريق" };
+  const TEAM = { protection: "الحماية العاجلة", financial: "الفريق المالي", telecom: "الأرقام والاتصالات",
+                 digital: "الحسابات والبريد والروابط", radar: "رادار الحملات" };
+  const TEAM_SHORT = { protection: "الحماية", financial: "المالي", telecom: "الاتصالات", digital: "الحسابات", radar: "الرادار" };
+  const TEAM_ICON = { protection: "🛑", financial: "💰", telecom: "📞", digital: "📧", radar: "📡" };
+  const holder = (r) => r.routing.team || r.routing.suggested.lead;
   const EMIRATE = { abu_dhabi: "أبوظبي", dubai: "دبي", sharjah: "الشارقة", ajman: "عجمان",
                     umm_al_quwain: "أم القيوين", ras_al_khaimah: "رأس الخيمة", fujairah: "الفجيرة" };
   const INCIDENT = { money_sent: "احتيال مالي (دفع أو خصم)", account_hacked: "اختراق حساب", extortion: "ابتزاز إلكتروني",
@@ -31,6 +36,8 @@
   try { token = sessionStorage.getItem("haris.authority") || ""; } catch { /* storage blocked */ }
   let selected = "";
   let lastDetail = "";
+  let view = "all";  // all, unassigned, or a team
+  try { view = sessionStorage.getItem("haris.view") || "all"; } catch { /* storage blocked */ }
 
   for (const [k, v] of Object.entries(EMIRATE)) emirateFilter.append(el("option", { value: k, text: v }));
   for (const [k, v] of Object.entries(LANG)) langFilter.append(el("option", { value: k, text: v }));
@@ -79,7 +86,7 @@
     if (res.status === 401 || res.status === 403) {
       login.hidden = false;
       document.getElementById("login-error").textContent = token ? "رمز الدخول غير صحيح، تأكد منه وحاول مرة أخرى." : "";
-      list.replaceChildren(el("p", { class: "empty", text: "أدخل رمز الدخول في الأعلى لعرض البلاغات." }));
+      list.replaceChildren(el("p", { class: "empty", text: "أدخل رمز الدخول لعرض البلاغات." }));
       throw new Error("auth");
     }
     const data = await res.json().catch(() => ({}));
@@ -89,22 +96,41 @@
     return data;
   }
 
+  // Time left before the team's deadline, or how late the case is.
+  function sla(r) {
+    if (r.status === "closed") return el("span", { class: "sla", text: "—" });
+    const left = r.routing.deadline - Date.now() / 1000;
+    const m = Math.round(Math.abs(left) / 60);
+    const span = m < 60 ? `${m} د` : m < 1440 ? `${Math.round(m / 60)} س` : `${Math.round(m / 1440)} ي`;
+    return el("span", { class: `sla${left < 0 ? " late" : left < 3600 ? " soon" : ""}`, text: left < 0 ? `متأخر ${span}` : `باقٍ ${span}` });
+  }
+
+  function teamTag(r) {
+    const t = holder(r);
+    return el("span", { class: `team-tag${r.routing.team ? "" : " suggest"}`, title: r.routing.team ? "الفريق المسؤول" : "توزيع مقترح لم يُعتمد بعد",
+      text: `${TEAM_ICON[t]} ${TEAM_SHORT[t]}${r.routing.team ? "" : " (مقترح)"}` });
+  }
+
   function row(r) {
     const b = el("button", { type: "button", class: `case ${r.priority} ${r.status}`, "aria-pressed": String(r.reference === selected) });
-    b.append(el("span", { class: "top" }, [
-      el("span", { class: `pr ${r.priority}`, text: PRIORITY[r.priority] }),
+    b.append(
+      el("span", { class: "bar" }),
+      el("span", {}, [el("span", { class: "ref" }, ltr(r.reference)), el("small", { text: when(r.created_at) })]),
+      el("span", { class: "what" }, [
+        el("span", { text: INCIDENT[r.incident_type] || r.incident_title }),
+        el("span", { class: `pr ${r.priority}`, text: PRIORITY[r.priority] }),
+        r.channel === "whatsapp" ? el("span", { class: "lang-chip wa", text: "📱 واتساب" }) : null,
+        r.campaign ? el("span", { class: "lang-chip camp", text: `📡 حملة · ${r.campaign.people}` }) : null,
+        r.lang !== "ar" ? el("span", { class: "lang-chip", text: `🗣️ ${LANG[r.lang]}` }) : null,
+        r.visitor ? el("span", { class: `lang-chip visitor${r.leaving_soon ? " soon" : ""}`, text: r.leaving_soon ? "🧳 يغادر قريباً" : "🧳 زائر" }) : null,
+        r.needs_translator ? el("span", { class: "lang-chip warn", text: "يحتاج مترجماً" }) : null,
+        r.has_reply && r.status === "received" ? el("span", { class: "newreply", text: "● ردّ المُبلّغ" }) : null,
+      ]),
+      el("span", { text: [EMIRATE[r.emirate], money(r)].filter(Boolean).join(" · ") }),
+      teamTag(r),
+      sla(r),
       el("span", { class: `sts ${r.status}`, text: STATUS[r.status] }),
-      r.has_reply && r.status === "received" ? el("span", { class: "newreply", text: "ردّ المُبلّغ" }) : null,
-      el("span", { class: "ref" }, ltr(r.reference)),
-    ]));
-    b.append(el("span", { class: "what" }, [
-      el("span", { text: INCIDENT[r.incident_type] || r.incident_title }),
-      r.channel === "whatsapp" ? el("span", { class: "lang-chip wa", text: "📱 واتساب" }) : null,
-      r.lang !== "ar" ? el("span", { class: "lang-chip", text: `🗣️ ${LANG[r.lang]}` }) : null,
-      r.visitor ? el("span", { class: `lang-chip visitor${r.leaving_soon ? " soon" : ""}`, text: r.leaving_soon ? "🧳 زائر · يغادر خلال 3 أيام" : "🧳 زائر" }) : null,
-      r.needs_translator ? el("span", { class: "lang-chip warn", text: "يحتاج مترجماً" }) : null,
-    ]));
-    b.append(el("p", { class: "meta", text: [EMIRATE[r.emirate], money(r), when(r.created_at)].filter(Boolean).join(" · ") }));
+    );
     if (fresh.has(r.reference)) b.classList.add("fresh");
     b.addEventListener("click", () => { selected = r.reference; lastDetail = ""; refresh(); });
     return b;
@@ -133,7 +159,7 @@
   }
 
   function showDetail(d) {
-    const key = JSON.stringify([d.status, d.events.length]);
+    const key = JSON.stringify([d.status, d.events.length, d.routing.team, Math.floor(Date.now() / 60000)]);
     if (key === lastDetail && detail.dataset.ref === d.reference) return; // keep a note being typed
     lastDetail = key;
     detail.dataset.ref = d.reference;
@@ -148,6 +174,8 @@
         : (d.fields.visitor || {}).identity === "passport" ? "✔ هوية زائر مؤكدة بجواز السفر (تأكيد تجريبي)"
         : "✔ هوية مؤكدة (تأكيد تجريبي، UAE PASS عند الربط الرسمي)" }),
     ];
+    if (d.status !== "closed") parts.push(routeCard(d));
+    else parts.push(el("p", { class: "verified", text: `الفريق المسؤول: ${TEAM[holder(d)]}` }));
     const v = d.fields.visitor;
     if (v) {
       const nat = (d.fields.translation || {}).nationality;
@@ -185,9 +213,70 @@
       parts.push(el("blockquote", { dir: "auto", text: f.description || "—" }));
     }
     parts.push(el("h3", { text: "سجل البلاغ" }), el("ol", { class: "timeline" }, d.events.map((e) =>
-      el("li", { class: e.kind }, [el("time", { text: clock(e.ts) }), el("span", { text: EVENT[e.kind] || e.kind }), ...noteOf(e, d)]))));
+      el("li", { class: e.kind }, [el("time", { text: clock(e.ts) }), el("span", { text: eventLabel(e) }), ...noteOf(e, d)]))));
     if (d.status !== "closed") parts.push(actions(d));
     detail.replaceChildren(...parts);
+  }
+
+  function eventLabel(e) {
+    if (e.kind === "assigned") return `${TEAM_ICON[e.team] || ""} أُحيل إلى ${TEAM[e.team] || e.team}${e.accepted ? " (اعتماد التوزيع المقترح)" : ""}`;
+    if (e.kind === "team_step") return `${TEAM_ICON[e.team] || ""} ${TEAM[e.team] || ""}: ${e.label || e.step}`;
+    return EVENT[e.kind] || e.kind;
+  }
+
+  // The routing card: Haris's suggestion and why, the team that holds the case, its deadline,
+  // the move to another team, and the steps the holding team can record.
+  function routeCard(d) {
+    const r = d.routing, s = r.suggested;
+    const box = el("div", { class: "route" });
+    const err = el("p", { class: "err", role: "alert" });
+    const post = async (body) => {
+      err.textContent = "";
+      try { await call(`/api/authority/reports/${encodeURIComponent(d.reference)}`, body); }
+      catch { err.textContent = "تعذّر الحفظ، حاول مرة أخرى."; return; }
+      lastDetail = ""; refresh();
+    };
+    if (!r.team) {
+      box.append(el("div", { class: "rt" }, [el("b", { text: "✨ توزيع مقترح من «حارس»:" }),
+        el("span", { class: "team-tag", text: `${TEAM_ICON[s.lead]} ${TEAM[s.lead]}` }),
+        ...s.also.map((t) => el("span", { class: "team-tag suggest", text: `يشارك: ${TEAM_ICON[t]} ${TEAM[t]}` }))]));
+      box.append(el("ul", {}, s.why.map((w) => el("li", { text: w }))));
+      const ok = el("button", { type: "button", class: "primary", text: `اعتماد وإحالة إلى ${TEAM[s.lead]}` });
+      ok.addEventListener("click", () => post({ action: "assign", team: s.lead }));
+      box.append(el("div", { class: "row" }, [ok]));
+    } else {
+      box.append(el("div", { class: "rt" }, [el("b", { text: "لدى:" }),
+        el("span", { class: "team-tag", text: `${TEAM_ICON[r.team]} ${TEAM[r.team]}` }),
+        ...r.also.map((t) => el("span", { class: "team-tag suggest", text: `يشارك: ${TEAM_ICON[t]} ${TEAM[t]}` }))]));
+    }
+    const left = r.deadline - Date.now() / 1000;
+    box.append(el("p", { class: `deadline sla${left < 0 ? " late" : left < 3600 ? " soon" : ""}`,
+      text: `مهلة ${TEAM[holder(d)]}: ${left < 0 ? "تجاوزها البلاغ" : "تنتهي"} ${clock(r.deadline)}` }));
+    if (d.campaign) {
+      box.append(el("p", { class: "lang-chip camp", text: `📡 بيانات المحتال جزء من حملة على الرادار: ${d.campaign.label} · ${d.campaign.people} مُبلّغين` }));
+    }
+    // Move to another team, with a short reason kept in the log.
+    const pick = el("select", { "aria-label": "تحويل إلى فريق" }, [el("option", { value: "", text: "تحويل إلى فريق…" }),
+      ...Object.keys(TEAM).filter((t) => t !== holder(d) || !r.team).map((t) => el("option", { value: t, text: `${TEAM_ICON[t]} ${TEAM[t]}` }))]);
+    const why = el("input", { type: "text", placeholder: "سبب التحويل (اختياري)", maxlength: "200" });
+    const move = el("button", { type: "button", text: "تحويل" });
+    move.addEventListener("click", () => { if (pick.value) post({ action: "assign", team: pick.value, note: why.value.trim() }); });
+    box.append(el("div", { class: "row" }, [pick, why, move]));
+    // The steps of the team that holds the case, and of the teams that share it.
+    const done = new Set(d.events.filter((e) => e.kind === "team_step").map((e) => `${e.team}:${e.step}`));
+    for (const t of [holder(d), ...(r.team ? r.also : s.also)]) {
+      const steps = (d.team_steps || {})[t] || [];
+      if (!steps.length) continue;
+      box.append(el("h3", { text: `${TEAM_ICON[t]} إجراءات ${TEAM[t]} (تجريبية: تُسجَّل في سجل البلاغ)` }));
+      box.append(el("div", { class: "steps-box" }, steps.map((st) => {
+        const k = `${t}:${st.id}`;
+        const b = el("button", { type: "button", class: done.has(k) ? "done" : "", text: `${done.has(k) ? "✔ " : ""}${st.label}` });
+        if (!done.has(k)) b.addEventListener("click", () => post({ action: "team_step", team: t, step: st.id }));
+        return b;
+      })));
+    }
+    box.append(err);
+    return box;
   }
 
   // What the officer reads in the log: the victim's reply in Arabic with the original, or the officer's
@@ -283,19 +372,26 @@
 
   async function refresh() {
     let q;
-    try { q = await call("/api/authority/reports"); } catch { return; }
+    const live = document.getElementById("live");
+    try { q = await call("/api/authority/reports"); live.className = "live"; live.lastChild.textContent = " متصل"; }
+    catch { live.className = "live off"; live.lastChild.textContent = " غير متصل"; return; }
     announce(q.items);
     const s = q.stats;
-    document.getElementById("n-new").textContent = s.new;
-    document.getElementById("n-urgent").textContent = s.urgent;
-    document.getElementById("n-progress").textContent = s.in_progress;
-    document.getElementById("n-closed").textContent = s.closed;
-    document.getElementById("n-wait").textContent = s.avg_minutes_to_receive ?? "—";
+    const open = q.items.filter((r) => r.status !== "closed").length;
+    document.getElementById("k-today").textContent = s.today;
+    document.getElementById("k-open").textContent = open;
+    document.getElementById("k-late").textContent = s.late;
+    document.getElementById("k-unassigned").textContent = s.unassigned;
+    document.getElementById("k-wait").textContent = s.avg_minutes_to_receive == null ? "—" : `${s.avg_minutes_to_receive} د`;
+    document.getElementById("k-amount").textContent = `${(s.amount_open || 0).toLocaleString("ar-AE")} د.إ`;
+    queues(q, open);
     document.getElementById("retention").textContent = s.retention_days;
     document.getElementById("by-lang").textContent = Object.entries(s.by_lang || {}).filter(([, n]) => n)
       .map(([l, n]) => `${LANG[l]} ${n}`).join(" · ") + (s.needs_translator ? ` · يحتاج مترجماً ${s.needs_translator}` : "")
       + (s.visitors ? ` · 🧳 زوار ${s.visitors}${s.leaving_soon ? ` (يغادر قريباً ${s.leaving_soon})` : ""}` : "");
-    const items = q.items.filter((r) => (showClosed.checked || r.status !== "closed") && (!emirateFilter.value || r.emirate === emirateFilter.value)
+    const inView = (r) => view === "all" || (view === "unassigned" ? !r.routing.team : view === "late" ? r.routing.late
+      : holder(r) === view || (r.routing.team ? r.routing.also : r.routing.suggested.also).includes(view));
+    const items = q.items.filter((r) => inView(r) && (showClosed.checked || r.status !== "closed") && (!emirateFilter.value || r.emirate === emirateFilter.value)
       && (!langFilter.value || r.lang === langFilter.value) && (!visitorsOnly.checked || r.visitor));
     list.replaceChildren(...(items.length ? items.map(row) : [el("p", { class: "empty", text: "لا توجد بلاغات." })]));
     document.getElementById("updated").textContent = `آخر تحديث: ${new Date().toLocaleTimeString("ar-AE", { timeZone: TZ })} بتوقيت الإمارات · يتحدّث كل 5 ثوانٍ`;
@@ -307,6 +403,29 @@
       }
     }
   }
+
+  // The side rail: every team's open cases, a red dot when one is past its deadline.
+  function queues(q, open) {
+    const nav = document.getElementById("queues");
+    const s = q.stats;
+    const entries = [["all", "🗂️", "كل البلاغات", open, false], ["unassigned", "✨", "بانتظار التوزيع", s.unassigned, false],
+      ["late", "⏰", "متأخرة عن المهلة", s.late, s.late > 0],
+      ...Object.keys(TEAM).map((t) => [t, TEAM_ICON[t], TEAM[t], s.teams[t].open, s.teams[t].late > 0])];
+    nav.replaceChildren(...entries.map(([id, ic, label, n, late], i) => {
+      const b = el("button", { type: "button", class: `q${i === 3 ? " sep" : ""}`, "aria-pressed": String(view === id) },
+        [el("span", { class: "ic", text: ic }), el("span", { text: label }), late ? el("span", { class: "late", title: "فيها بلاغ متأخر" }) : null,
+         el("span", { class: "n", text: String(n) })]);
+      b.addEventListener("click", () => { view = id; try { sessionStorage.setItem("haris.view", id); } catch { /* */ } refresh(); });
+      return b;
+    }));
+    const title = entries.find(([id]) => id === view);
+    document.getElementById("queue-title").textContent = title ? `${title[1]} ${title[2]}` : "كل البلاغات";
+  }
+
+  // A live clock in UAE time, and whether the last refresh reached the server.
+  const clockEl = document.getElementById("clock");
+  const tick = () => { clockEl.textContent = new Date().toLocaleString("ar-AE", { timeZone: TZ, weekday: "short", hour: "2-digit", minute: "2-digit", second: "2-digit" }); };
+  tick(); setInterval(tick, 1000);
 
   login.addEventListener("submit", (e) => {
     e.preventDefault();

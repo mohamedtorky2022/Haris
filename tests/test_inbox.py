@@ -205,3 +205,57 @@ def test_queue_shows_the_newest_first_inside_a_priority_and_marks_whatsapp(monke
     items = inbox.queue()["items"]
     assert [i["reference"] for i in items[:2]] == [new["reference"], old["reference"]]
     assert items[0]["channel"] == "whatsapp" and items[1]["channel"] == "web"
+
+
+# --- Teams -----------------------------------------------------------------------
+
+def test_haris_suggests_the_lead_team_and_the_teams_that_should_also_see_it():
+    money = inbox.submit({"incident_type": "money_sent", "amount": "2500",
+                          "scammer_identifiers": ["0501234567"], "description": "حوّلت المبلغ"}, "ar", "dubai", False)
+    threat = inbox.submit({"incident_type": "extortion", "description": "يهددني بنشر صوري"}, "ar", "dubai", False)
+    hacked = inbox.submit({"incident_type": "account_hacked", "description": "سرق حسابي في انستغرام"}, "ar", "dubai", False)
+    plain = inbox.submit({"incident_type": "suspicious_only", "description": "رسالة غريبة"}, "ar", "dubai", False)
+    r = lambda c: inbox.detail(c["reference"])["routing"]["suggested"]
+    assert r(money)["lead"] == "financial" and "telecom" in r(money)["also"]
+    assert r(threat)["lead"] == "protection"
+    assert r(hacked)["lead"] == "digital"
+    assert r(plain)["lead"] == "radar"
+
+
+def test_assigning_a_team_receives_the_case_logs_it_and_tells_the_victim():
+    told = []
+    inbox.ON_ACTION.append(lambda ref, status, note, lang: told.append(status))
+    try:
+        case = inbox.submit({"incident_type": "money_sent", "amount": "900", "scammer_identifiers": ["0501234567"]},
+                            "ar", "sharjah", False)
+        out = inbox.act(case["reference"], "assign", "تحويل للأرقام أولاً", team="telecom")
+        assert out["status"] == "received" and out["routing"]["team"] == "telecom"
+        assert "financial" in out["routing"]["also"]
+        assert [e["kind"] for e in out["events"]][-2:] == ["received", "assigned"]
+        assert told[-1] == "assigned"
+        q = inbox.queue()
+        assert q["stats"]["teams"]["telecom"]["open"] >= 1
+        # the victim sees a short line, not the internal note
+        public = inbox.status(case["reference"], case["token"])
+        assert public["events"][-1]["kind"] == "assigned" and public["events"][-1]["note"] == ""
+    finally:
+        inbox.ON_ACTION.pop()
+
+
+def test_team_steps_are_logged_and_radar_send_feeds_the_radar():
+    case = inbox.submit({"incident_type": "suspicious_only", "scammer_identifiers": ["https://emirates-post-fee.top/pay"],
+                         "description": "رسالة تطلب رسوم توصيل"}, "ar", "dubai", False)
+    out = inbox.act(case["reference"], "team_step", team="radar", step="radar_send")
+    assert out["events"][-1]["kind"] == "team_step" and out["events"][-1]["step"] == "radar_send"
+    from haris import radar
+    assert any(k["value"] == "emirates-post-fee.top" for c in radar.campaigns() for k in c["keys"])
+    with pytest.raises(ValueError):
+        inbox.act(case["reference"], "team_step", team="radar", step="bank_freeze")
+
+
+def test_an_open_case_past_its_team_deadline_is_late(monkeypatch):
+    case = inbox.submit({"incident_type": "extortion", "description": "تهديد"}, "ar", "dubai", False)
+    real = time.time
+    monkeypatch.setattr(inbox.time, "time", lambda: real() + 2 * 3600)
+    item = next(i for i in inbox.queue()["items"] if i["reference"] == case["reference"])
+    assert item["routing"]["late"] and inbox.queue()["stats"]["late"] >= 1

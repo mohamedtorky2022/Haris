@@ -313,8 +313,10 @@ class ReplyRequest(BaseModel):
 
 
 class CaseAction(BaseModel):
-    action: Literal["receive", "request_info", "close"]
+    action: Literal["receive", "request_info", "close", "assign", "team_step"]
     note: str = Field("", max_length=1000)
+    team: str = Field("", max_length=20)
+    step: str = Field("", max_length=40)
 
 
 @app.post("/api/reports")
@@ -369,7 +371,7 @@ def authority_report(ref: str, request: Request):
 def authority_report_action(ref: str, body: CaseAction, request: Request):
     require_authority(request)
     try:
-        found = inbox.act(ref, body.action, body.note)
+        found = inbox.act(ref, body.action, body.note, body.team, body.step)
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from None
     if not found:

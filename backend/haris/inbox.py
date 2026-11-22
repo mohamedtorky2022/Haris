@@ -41,6 +41,29 @@ STATUSES = ("new", "received", "info_requested", "closed")
 PRIORITIES = ("critical", "financial", "medium", "indicator")
 EMIRATES = ("abu_dhabi", "dubai", "sharjah", "ajman", "umm_al_quwain", "ras_al_khaimah", "fujairah")
 ACTIONS = {"receive": "received", "request_info": "info_requested", "close": "closed"}
+
+# --- Teams --------------------------------------------------------------------
+# After a report is received it goes to the team that can act on it. Haris suggests one lead team
+# and the teams that should also see it; the officer confirms or moves it, and every move is logged.
+TEAMS = ("protection", "financial", "telecom", "digital", "radar")
+TEAM_LABELS = {"protection": "الحماية العاجلة", "financial": "الفريق المالي", "telecom": "الأرقام والاتصالات",
+               "digital": "الحسابات والبريد والروابط", "radar": "رادار الحملات"}
+# How long a team has before an open case shows as late, counted from when the report arrived.
+DEADLINES = {"protection": 3600, "financial": DAY, "radar": DAY, "telecom": 3 * DAY, "digital": 3 * DAY}
+# What each team can record on a case (demo: the step is logged, nothing is sent to a bank or a telecom).
+TEAM_STEPS = {
+    "protection": {"called_victim": "تواصل الفريق مع المُبلّغ هاتفياً", "safety_plan": "وُضعت خطة حماية للمُبلّغ",
+                   "escalated_field": "أُحيلت الحالة إلى الفريق الميداني"},
+    "financial": {"bank_freeze": "أُرسل طلب تجميد المبلغ إلى البنك", "beneficiary_traced": "حُدّد الحساب المستفيد",
+                  "refund_pending": "بانتظار رد البنك على الاسترداد"},
+    "telecom": {"block_number": "أُرسل طلب حظر الرقم إلى شركة الاتصالات", "number_owner": "طُلبت بيانات صاحب الرقم",
+                "number_blocked": "أكّدت شركة الاتصالات حظر الرقم"},
+    "digital": {"takedown": "أُرسل طلب إغلاق الحساب أو حجب الرابط", "account_recovery": "تواصل الفريق مع المنصة لاسترداد الحساب",
+                "link_blocked": "حُجب الرابط"},
+    "radar": {"radar_send": "أُضيفت بيانات المحتال إلى رادار الحملات"},
+}
+ACTIONS_EXTRA = ("assign", "team_step")
+INTERNAL = ("assigned", "team_step")
 # Visitors have no Emirates ID: they confirm identity with a UAE PASS visitor account (passport) or the passport itself.
 DEPARTURES = ("within_3_days", "within_week", "later", "unknown")
 VISITOR_IDENTITY = ("uae_pass_visitor", "passport")
@@ -224,9 +247,10 @@ def _public(row) -> dict:
         "reference": row["ref"], "status": row["status"], "status_label": T["status"][row["status"]],
         "updated_at": row["updated_at"],
         # An officer's note is shown in the victim's language, with the Arabic original beside it.
+        # Moves between teams and their internal steps are shown to the victim only as a short line.
         "events": [{"ts": e["ts"], "kind": e["kind"], "label": T["events"][e["kind"]],
-                    "note": e.get("note_victim") or e.get("note", ""),
-                    "original": e.get("note", "") if e.get("note_victim") else ""}
+                    "note": "" if e["kind"] in INTERNAL else e.get("note_victim") or e.get("note", ""),
+                    "original": e.get("note", "") if e.get("note_victim") and e["kind"] not in INTERNAL else ""}
                    for e in events],
     }
 
@@ -261,11 +285,53 @@ def _add_reply(ref: str, row, text: str) -> dict | None:
 
 # --- The authority's side ----------------------------------------------------
 
+_PHONE = re.compile(r"(?:\+|00)?\d[\d\s-]{7,}\d")
+_EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
+_LINK = re.compile(r"https?://|www\.|\b[\w-]+\.(?:com|ae|net|org|top|click|xyz|online|info|site|link|shop)\b", re.I)
+_HANDLE = re.compile(r"(?:^|\s)@[\w.]{3,}|instagram|tiktok|snapchat|facebook|telegram|انستغرام|تيك توك|سناب|فيسبوك|تيليجرام", re.I)
+
+
+def suggest(fields: dict, priority: str) -> dict:
+    """The lead team and the teams that should also see the case, with the reasons, in Arabic."""
+    incident = fields.get("incident_type", "suspicious_only")
+    ids = " ".join(fields.get("scammer_identifiers") or [])
+    text = " ".join([ids, fields.get("description", "")])
+    has_phone, has_email = bool(_PHONE.search(ids or text)), bool(_EMAIL.search(text))
+    has_link, has_handle = bool(_LINK.search(text)), bool(_HANDLE.search(text))
+    money = incident in ("money_sent", "business_fraud") or bool(re.sub(r"\D", "", fields.get("amount") or ""))
+    why, teams = [], []
+    if priority == "critical" or incident == "extortion":
+        teams.append("protection"); why.append("خطر على المُبلّغ أو ابتزاز: تواصل عاجل")
+    if money:
+        teams.append("financial"); why.append("مال دُفع أو بيانات بطاقة: تجميد المبلغ قبل سحبه")
+    if incident in ("account_hacked", "impersonation", "privacy_violation", "harassment") or has_email or has_link or has_handle:
+        teams.append("digital"); why.append("حساب أو بريد أو رابط: إغلاق أو حجب أو استرداد")
+    if has_phone:
+        teams.append("telecom"); why.append("رقم هاتف للمحتال: طلب حظر الرقم")
+    if incident == "suspicious_only" or not teams:
+        teams.append("radar"); why.append("رسالة بلا ضرر بعد: تُضاف إلى رادار الحملات لتحذير الناس")
+    lead, *also = list(dict.fromkeys(teams))
+    return {"lead": lead, "also": also, "why": why}
+
+
+def routing(row, f: dict | None = None) -> dict:
+    """Where the case is now: the suggestion, the team that holds it, and whether it is late."""
+    f = f if f is not None else json.loads(row["fields"])
+    r = f.get("routing") or {}
+    s = r.get("suggested") or suggest(f, row["priority"])
+    team = r.get("team")
+    holder = team or s["lead"]
+    late = row["status"] != "closed" and time.time() - row["created_at"] > DEADLINES[holder]
+    return {"suggested": s, "team": team, "also": r.get("also", s["also"] if team else []),
+            "deadline": row["created_at"] + DEADLINES[holder], "late": late}
+
+
 def _summary(row) -> dict:
     f = json.loads(row["fields"])
     events = json.loads(row["events"])
     received = next((e["ts"] for e in events if e["kind"] == "received"), None)
     return {
+        "routing": routing(row, f),
         "reference": row["ref"], "status": row["status"], "priority": row["priority"], "emirate": row["emirate"],
         "incident_type": row["incident"], "incident_title": PLAYBOOKS[row["incident"]]["title"]["ar"],
         "lang": row["lang"], "verified": bool(row["verified"]), "created_at": row["created_at"],
@@ -277,11 +343,40 @@ def _summary(row) -> dict:
     }
 
 
+def _campaign_keys(f: dict) -> set:
+    from . import radar
+    text = " ".join([*f.get("scammer_identifiers", []), f.get("description", "")])
+    return {k for k in radar.keys_of(text) if k[0] != "template"}
+
+
+def _link_campaigns(items: list, rows) -> None:
+    """Mark the reports whose scammer number, link, email or IBAN is already in a campaign on the radar."""
+    try:
+        from . import radar
+        camps = [(c, {(k["kind"], k["value"]) for k in c["keys"]}) for c in radar.campaigns()]
+    except Exception:  # noqa: BLE001  the radar is optional for the inbox
+        camps = []
+    for item, row in zip(items, rows):
+        keys = _campaign_keys(json.loads(row["fields"])) if camps else set()
+        hit = next((c for c, ck in camps if keys & ck), None)
+        item["campaign"] = {"id": hit["id"], "people": hit["people"], "status": hit["status"],
+                            "label": hit["category_label"]} if hit else None
+
+
+def _number(text: str) -> float:
+    digits = re.sub(r"[^\d.]", "", (text or "").replace(",", ""))
+    try:
+        return float(digits) if digits else 0.0
+    except ValueError:
+        return 0.0
+
+
 def queue() -> dict:
     """Every report: new ones first, then in progress, then closed; the most urgent and newest first inside each. Plus the counters."""
     with closing(_connect()) as con:
         rows = con.execute("SELECT * FROM reports").fetchall()
     items = [_summary(r) for r in rows]
+    _link_campaigns(items, rows)
     rank = {p: i for i, p in enumerate(PRIORITIES)}
     # A visitor who leaves within 3 days moves up one step: after they fly, a statement or a refund is much harder.
     def place(i):
@@ -307,7 +402,16 @@ def queue() -> dict:
             "needs_translator": sum(i["needs_translator"] for i in open_items),
             "visitors": sum(i["visitor"] for i in open_items),
             "leaving_soon": sum(i["leaving_soon"] for i in open_items),
+            "teams": {t: {"open": sum((i["routing"]["team"] or i["routing"]["suggested"]["lead"]) == t for i in open_items),
+                          "late": sum((i["routing"]["team"] or i["routing"]["suggested"]["lead"]) == t and i["routing"]["late"]
+                                      for i in open_items)} for t in TEAMS},
+            "unassigned": sum(not i["routing"]["team"] for i in open_items),
+            "late": sum(i["routing"]["late"] for i in open_items),
+            "today": sum(time.time() - i["created_at"] < DAY for i in items),
+            "amount_open": round(sum(_number(i["amount"]) for i in open_items)),
         },
+        "teams": [{"id": t, "label": TEAM_LABELS[t], "deadline_hours": DEADLINES[t] / 3600,
+                   "steps": [{"id": k, "label": v} for k, v in TEAM_STEPS[t].items()]} for t in TEAMS],
     }
 
 
@@ -316,11 +420,18 @@ def detail(ref: str) -> dict | None:
         row = _row(con, ref)
     if not row:
         return None
-    return {**_summary(row), "fields": json.loads(row["fields"]), "events": json.loads(row["events"])}
+    out = {**_summary(row), "fields": json.loads(row["fields"]), "events": json.loads(row["events"])}
+    _link_campaigns([out], [row])
+    out["team_labels"] = TEAM_LABELS
+    out["team_steps"] = {t: [{"id": k, "label": v} for k, v in steps.items()] for t, steps in TEAM_STEPS.items()}
+    return out
 
 
-def act(ref: str, action: str, note: str = "") -> dict | None:
-    """Receive, ask for more information, or close a report. A note is sent to the victim."""
+def act(ref: str, action: str, note: str = "", team: str = "", step: str = "") -> dict | None:
+    """Receive, ask for more information, or close a report (a note goes to the victim);
+    or hand it to a team, or log a team's step."""
+    if action in ACTIONS_EXTRA:
+        return _route(ref, action, _clean(note, 1000), team, step)
     if action not in ACTIONS:
         raise ValueError("unknown action")
     note = _clean(note, 1000)
@@ -347,6 +458,55 @@ def act(ref: str, action: str, note: str = "") -> dict | None:
             hook(ref, new_status, event.get("note_victim") or note, row["lang"])
         except Exception:  # noqa: BLE001  a failed notice must not undo the officer's action
             log.exception("case notice failed")
+    return detail(ref)
+
+
+def _route(ref: str, action: str, note: str, team: str, step: str) -> dict | None:
+    if action == "assign" and team not in TEAMS:
+        raise ValueError("unknown team")
+    with closing(_connect()) as con:
+        row = _row(con, ref)
+    if not row or row["status"] == "closed":
+        return None
+    f = json.loads(row["fields"])
+    current = routing(row, f)
+    if action == "team_step":
+        holder = current["team"] or current["suggested"]["lead"]
+        team = team if team in TEAMS else holder
+        if step not in TEAM_STEPS[team]:
+            raise ValueError("unknown step for this team")
+        if step == "radar_send":  # the scammer's details join the campaign radar like any other report
+            from . import radar
+            text = " ".join([*f.get("scammer_identifiers", []), f.get("description", "")]).strip()
+            if text:
+                radar.report(text, f"inbox:{ref}", row["lang"])
+        event = {"ts": time.time(), "kind": "team_step", "team": team, "step": step,
+                 "label": TEAM_STEPS[team][step], **({"note": note} if note else {})}
+        new_status = "received" if row["status"] == "new" else row["status"]
+    else:
+        also = [t for t in current["suggested"]["also"] if t != team] if team == current["suggested"]["lead"] else \
+            [t for t in [current["suggested"]["lead"], *current["suggested"]["also"]] if t != team]
+        f["routing"] = {"suggested": current["suggested"], "team": team, "also": also, "assigned_at": time.time()}
+        event = {"ts": time.time(), "kind": "assigned", "team": team, "label": TEAM_LABELS[team],
+                 "accepted": team == current["suggested"]["lead"], **({"note": note} if note else {})}
+        new_status = "received" if row["status"] == "new" else row["status"]
+    with closing(_connect()) as con, con:
+        fresh = _row(con, ref)
+        if not fresh or fresh["status"] == "closed":
+            return None
+        events = json.loads(fresh["events"])
+        if fresh["status"] == "new":
+            events.append({"ts": event["ts"], "kind": "received"})
+        events.append(event)
+        con.execute("UPDATE reports SET status = ?, fields = ?, events = ?, updated_at = ? WHERE ref = ?",
+                    (new_status, json.dumps(f, ensure_ascii=False), json.dumps(events, ensure_ascii=False),
+                     time.time(), ref))
+    if action == "assign" or row["status"] == "new":
+        for hook in ON_ACTION:  # the victim is told the case moved, without naming internal teams
+            try:
+                hook(ref, "assigned" if action == "assign" else "received", "", row["lang"])
+            except Exception:  # noqa: BLE001
+                log.exception("case notice failed")
     return detail(ref)
 
 

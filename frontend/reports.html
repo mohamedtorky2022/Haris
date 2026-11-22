@@ -5,73 +5,96 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>البلاغات الواردة | لوحة الجهة المختصة</title>
   <link rel="icon" href="haris.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="authority.css?v=20261121">
-  <link rel="stylesheet" href="reports.css?v=20261121e">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="ops.css?v=20261122a">
 </head>
 <body>
-  <header class="bar">
-    <img src="haris.svg" alt="" width="40" height="40">
-    <div>
-      <h1>البلاغات الواردة</h1>
-      <p>لوحة تجريبية لجهة مختصة · بلاغات أرسلها أصحابها عبر «حارس»</p>
+  <header class="ops-top">
+    <div class="brand">
+      <span class="seal"><img src="haris.svg" alt="" width="34" height="34"></span>
+      <div>
+        <h1>مركز البلاغات الإلكترونية</h1>
+        <p>لوحة تجريبية لجهة مختصة · بلاغات أرسلها أصحابها عبر «حارس»</p>
+      </div>
     </div>
     <nav class="tabs" aria-label="أقسام اللوحة">
       <a href="reports.html" aria-current="page">البلاغات</a>
       <a href="authority.html">رادار الحملات</a>
     </nav>
-    <span class="demo">نسخة تجريبية</span>
+    <div class="status-strip">
+      <span class="live" id="live"><i></i> متصل</span>
+      <span class="clock" id="clock" aria-label="الوقت بتوقيت الإمارات"></span>
+      <span class="demo">نسخة تجريبية</span>
+    </div>
   </header>
 
-  <main>
-    <form id="login" class="login" hidden>
-      <label for="token">رمز الدخول للجهة المختصة</label>
-      <input id="token" type="password" autocomplete="off">
-      <button type="submit">دخول</button>
-      <p id="login-error" class="err" role="alert"></p>
-    </form>
+  <div class="ops">
+    <aside class="side" aria-label="الفرق والتصفية">
+      <p class="side-title">قوائم العمل</p>
+      <nav id="queues" class="queues"></nav>
 
-    <section class="explain">
-      <p><strong>كيف تعمل:</strong> يصل البلاغ فقط بعد أن يراجعه صاحبه ويوافق على إرساله. يُرتَّب تلقائياً حسب الخطورة، ويُوجَّه حسب إمارة المُبلّغ. كل إجراء هنا يظهر لصاحب البلاغ في «حارس» برقم بلاغه.</p>
-      <ul class="steps">
-        <li><span class="pr critical">حرجة</span> خطر على الحياة، أو تهديد بالعنف، أو طفل في الحالة: تواصل فوري.</li>
-        <li><span class="pr financial">عاجلة مالياً</span> مال دُفع أو خُصم خلال آخر 24 ساعة: إشعار البنك في الدقائق الأولى يزيد فرصة التجميد.</li>
-        <li><span class="pr medium">متوسطة</span> اختراق أو ابتزاز أو انتحال أو تشهير، أو احتيال أقدم من 24 ساعة.</li>
-        <li><span class="pr indicator">مؤشر</span> رسالة مشبوهة بلا ضرر بعد.</li>
-      </ul>
-      <p class="privacy">🔒 يُحفظ البلاغ في صندوق مؤقت ويُحذف تلقائياً بعد <b id="retention">7</b> أيام. لقطات الشاشة لا تُحفظ هنا، فهي في ملف البلاغ عند صاحبه.</p>
-    </section>
+      <p class="side-title filters-title">تصفية</p>
+      <div class="filters">
+        <label for="emirate">الإمارة</label>
+        <select id="emirate"><option value="">كل الإمارات</option></select>
+        <label for="lang">لغة المُبلّغ</label>
+        <select id="lang"><option value="">كل اللغات</option></select>
+        <label class="check"><input type="checkbox" id="visitors-only"> 🧳 الزوار فقط</label>
+        <label class="check"><input type="checkbox" id="show-closed"> إظهار المغلقة</label>
+      </div>
+      <p id="by-lang" class="by-lang"></p>
 
-    <section class="counters five" aria-live="polite">
-      <div><b id="n-new">0</b><span>جديدة</span></div>
-      <div class="hot"><b id="n-urgent">0</b><span>عاجلة أو حرجة (مفتوحة)</span></div>
-      <div><b id="n-progress">0</b><span>قيد المعالجة</span></div>
-      <div><b id="n-closed">0</b><span>مغلقة</span></div>
-      <div><b id="n-wait">—</b><span>متوسط زمن الاستلام (دقيقة)</span></div>
-    </section>
+      <details class="legend">
+        <summary>درجات الخطورة والمهل</summary>
+        <ul>
+          <li><span class="pr critical">حرجة</span> خطر على الحياة أو تهديد أو طفل · مهلة ساعة</li>
+          <li><span class="pr financial">عاجلة مالياً</span> مال دُفع خلال 24 ساعة · مهلة يوم</li>
+          <li><span class="pr medium">متوسطة</span> اختراق أو ابتزاز أو انتحال · مهلة 3 أيام</li>
+          <li><span class="pr indicator">مؤشر</span> رسالة مشبوهة بلا ضرر بعد</li>
+        </ul>
+        <p>🔒 يُحذف البلاغ تلقائياً بعد <b id="retention">7</b> أيام. لقطات الشاشة لا تُحفظ هنا.</p>
+      </details>
+    </aside>
 
-    <div class="toolbar">
-      <label><input type="checkbox" id="show-closed"> إظهار المغلقة</label>
-      <label><input type="checkbox" id="visitors-only"> 🧳 الزوار فقط</label>
-      <label for="emirate">الإمارة</label>
-      <select id="emirate">
-        <option value="">كل الإمارات</option>
-      </select>
-      <label for="lang">لغة المُبلّغ</label>
-      <select id="lang">
-        <option value="">كل اللغات</option>
-      </select>
-      <span id="by-lang" class="by-lang"></span>
-      <p id="updated" class="updated"></p>
-      <button id="arrived" class="arrived" type="button" hidden title="اضغط لإخفاء التنبيه"></button>
-    </div>
+    <main class="work">
+      <form id="login" class="login" hidden>
+        <label for="token">رمز الدخول للجهة المختصة</label>
+        <input id="token" type="password" autocomplete="off">
+        <button type="submit">دخول</button>
+        <p id="login-error" class="err" role="alert"></p>
+      </form>
 
-    <div class="split">
-      <section id="list" class="queue" aria-label="قائمة البلاغات" aria-live="polite"></section>
-      <section id="detail" class="detail" aria-live="polite">
-        <p class="empty">اختر بلاغاً من القائمة لعرض تفاصيله.</p>
+      <section class="kpis" aria-live="polite">
+        <div><span>بلاغات اليوم</span><b id="k-today">0</b></div>
+        <div><span>مفتوحة</span><b id="k-open">0</b></div>
+        <div class="hot"><span>متأخرة عن المهلة</span><b id="k-late">0</b></div>
+        <div class="warm"><span>بانتظار التوزيع</span><b id="k-unassigned">0</b></div>
+        <div><span>متوسط زمن الاستلام</span><b id="k-wait">—</b></div>
+        <div><span>مبالغ مُبلَّغ عنها (مفتوحة)</span><b id="k-amount">0</b></div>
       </section>
-    </div>
-  </main>
-  <script src="reports.js?v=20261121g"></script>
+
+      <button id="arrived" class="arrived" type="button" hidden title="اضغط لإخفاء التنبيه"></button>
+
+      <div class="queue-head">
+        <h2 id="queue-title">كل البلاغات</h2>
+        <p id="updated" class="updated"></p>
+      </div>
+
+      <div class="split">
+        <section class="table" aria-label="قائمة البلاغات">
+          <div class="thead" aria-hidden="true">
+            <span></span><span>البلاغ</span><span>النوع</span><span>الإمارة</span><span>الفريق</span><span>المهلة</span><span>الحالة</span>
+          </div>
+          <div id="list" class="rows" aria-live="polite"></div>
+        </section>
+        <section id="detail" class="detail" aria-live="polite">
+          <p class="empty">اختر بلاغاً من القائمة لعرض تفاصيله وتوزيعه.</p>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script src="reports.js?v=20261122a"></script>
 </body>
 </html>
