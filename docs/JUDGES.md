@@ -1,0 +1,54 @@
+# جرّب «حارس» في 3 دقائق · Try Haris in 3 minutes
+
+> نسخة تجريبية لمسابقة. لوحة التحكم نموذج لجهة مختصة، وليست تابعة للشرطة أو لأي جهة حكومية.
+> A hackathon demo. The dashboard is a mock-up for an authority; it is not run by the police or any government body.
+
+<p align="center"><img src="poster/haris-qr-whatsapp-official.png" alt="WhatsApp QR for Haris" width="220"></p>
+
+**واتساب:** امسح الرمز بكاميرا الهاتف أو من داخل واتساب، أو افتح https://wa.me/message/ZQRY2FJGR3KFN1 ، أو راسل **+971 50 312 3535**.
+**الموقع:** https://haris-uae.onrender.com
+**لوحة الجهة المختصة:** https://haris-uae.onrender.com/reports.html (رمز الدخول مرفق مع ملف التسليم، ولا يُنشر هنا)
+
+---
+
+## 1. افحص رسالة مشبوهة (دقيقة واحدة)
+
+أرسل «مرحباً حارس»، ثم أعد توجيه أي رسالة مشبوهة، أو انسخ إحدى هذه الرسائل:
+
+| الرسالة | ما يُتوقع |
+|---|---|
+| عزيزي العميل، تم إيقاف بطاقتك المصرفية مؤقتاً. لإعادة التفعيل حدّث بياناتك خلال 24 ساعة عبر الرابط: http://adcb-update-card.com/verify | 🔴 خطورة عالية: انتحال بنك |
+| Your Emirates Post parcel is on hold due to unpaid customs fee of AED 12.50. Pay now: https://emiratespost-delivery.top/pay | 🔴 خطورة عالية: رسوم شحنة وهمية (يردّ بالإنجليزية) |
+| مبروك! ربحت 50,000 درهم في سحب اتصالات السنوي. لاستلام الجائزة أرسل رمز التحقق الذي وصلك الآن ورقم هويتك | 🔴 خطورة عالية: سرقة رمز التحقق |
+
+جرّب أيضاً رسالة عادية مثل «هل نلتقي غداً في المقهى؟»، ليظهر أن «حارس» لا يحذّر بلا سبب. ويفهم الأوردو والهندية والروسية كذلك.
+
+## 2. قدّم بلاغاً (دقيقة ونصف)
+
+1. أرسل كلمة **بلاغ**.
+2. احكِ ما حدث في رسالة واحدة، كتابةً أو 🎙️ **برسالة صوتية**.
+3. أرسل لقطة شاشة أو أكثر (حتى 5)، ثم اختر الإمارة.
+4. راجع الملخص واضغط **«أرسل البلاغ»**، فيصلك رقم مرجعي.
+
+لا ترسل رمز تحقق أو كلمة مرور أو رقم بطاقة حقيقياً؛ «حارس» يخفي هذه البيانات تلقائياً على أي حال.
+
+## 3. تابعه من لوحة الجهة المختصة (30 ثانية)
+
+1. افتح اللوحة وأدخل رمز الدخول. يظهر بلاغك في أعلى القائمة خلال ثوانٍ، بتوقيت الإمارات.
+2. يقترح «حارس» الفريق المختص وسبب اقتراحه: الحماية العاجلة، أو الفريق المالي، أو الأرقام والاتصالات، أو الحسابات والبريد والروابط، أو رادار الحملات.
+3. اضغط **«اعتماد وإحالة»** أو حوّله لفريق آخر، أو اطلب معلومة من المُبلّغ. يصل إلى هاتفك على واتساب إشعار بكل خطوة، ويمكنك الرد على سؤال الضابط من واتساب مباشرة.
+
+## 4. التنبيهات
+
+أرسل **تنبيهات** للاشتراك، و**STOP** لإلغائه. عندما تعتمد الجهة المختصة تحذيراً من حملة احتيال يصل للمشتركين. في هذه النسخة لا تصل التنبيهات إلا لمن راسل «حارس» خلال آخر 24 ساعة، بسبب قيود حساب واتساب للأعمال التجريبي.
+
+---
+
+## English, in short
+
+1. **Check a message:** send "Hi Haris", then forward any suspicious message or paste one from the table above. Haris answers in the sender's language with a risk level and what to do.
+2. **File a report:** send **report**, tell what happened in one message (text or a voice note), add up to 5 screenshots, pick the emirate, then tap **Send report**. You get a reference number.
+3. **Follow it on the dashboard:** open https://haris-uae.onrender.com/reports.html with the access code sent with the submission. Haris suggests the team and why. Accept or move it, or ask the reporter a question. Every step reaches the reporter on WhatsApp.
+4. **Alerts:** send **alerts** to subscribe and **STOP** to leave. In this demo, alerts reach only people who wrote to Haris in the last 24 hours, because of the trial WhatsApp Business account.
+
+**Good to know:** Haris runs on free plans until 1 December 2026. If many messages arrive in the same minute, the AI pauses for a few seconds and Haris answers from its built-in rules, so it never stops replying.

@@ -3,6 +3,8 @@
 # Haris (حارس) — an AI assistant against cybercrime
 
 > **Live demo (always on):** https://haris-uae.onrender.com · authority dashboard: https://haris-uae.onrender.com/reports.html (access code from the team) · WhatsApp: **+971 50 312 3535** (scan the QR on the poster with the camera or inside WhatsApp).
+>
+> **Judges: [try Haris in 3 minutes](docs/JUDGES.md)** · **للجنة: [جرّب «حارس» في 3 دقائق](docs/JUDGES.md)**
 
 
 > **حارس** مساعد ذكي يحمي كل من يعيش في الإمارات من الاحتيال والجرائم الإلكترونية، بلغته: يفحص الرسائل والروابط المشبوهة، ويرشد الضحية خطوة بخطوة، ويجهّز ملف بلاغ منظماً للشرطة. لا يحفظ رسائل المستخدمين، ويخفي بياناتهم الشخصية قبل أي تحليل.

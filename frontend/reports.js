@@ -382,7 +382,8 @@
     document.getElementById("k-open").textContent = open;
     document.getElementById("k-late").textContent = s.late;
     document.getElementById("k-unassigned").textContent = s.unassigned;
-    document.getElementById("k-wait").textContent = s.avg_minutes_to_receive == null ? "—" : `${s.avg_minutes_to_receive} د`;
+    const m = s.avg_minutes_to_receive;
+    document.getElementById("k-wait").textContent = m == null ? "—" : m < 90 ? `${Math.round(m)} دقيقة` : `${(m / 60).toFixed(1)} ساعة`;
     document.getElementById("k-amount").textContent = `${(s.amount_open || 0).toLocaleString("ar-AE")} د.إ`;
     queues(q, open);
     document.getElementById("retention").textContent = s.retention_days;
