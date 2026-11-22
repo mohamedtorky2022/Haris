@@ -2,6 +2,9 @@
 
 # Haris (حارس) — an AI assistant against cybercrime
 
+> **Live demo (always on):** https://haris-uae.onrender.com · authority dashboard: https://haris-uae.onrender.com/reports.html (access code from the team) · WhatsApp: **+971 50 312 3535** (scan the QR on the poster to save «حارس»).
+
+
 > **حارس** مساعد ذكي يحمي كل من يعيش في الإمارات من الاحتيال والجرائم الإلكترونية، بلغته: يفحص الرسائل والروابط المشبوهة، ويرشد الضحية خطوة بخطوة، ويجهّز ملف بلاغ منظماً للشرطة. لا يحفظ رسائل المستخدمين، ويخفي بياناتهم الشخصية قبل أي تحليل.
 
 Haris is a chat assistant that helps anyone in the UAE spot online scams, act fast when they have been scammed, and hand the police a complete report. It speaks Arabic, English, Urdu, Hindi and Russian, works for visitors without an Emirates ID, and stores nothing users send unless they choose to send a report.
@@ -95,7 +98,7 @@ Full detail, including model choices and the privacy design, is in [`docs/TECHNI
 
 **Always-on address (Render, free).** `render.yaml` deploys Haris as one free Render web service from this repository: Render → New → Blueprint → pick the repo, then type the secrets it asks for (`GEMINI_API_KEY`, `HARIS_AUTHORITY_TOKEN`, `WHATSAPP_TOKEN`, `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`). The service gets a fixed `https://….onrender.com` address, so Meta's webhook is set once. On Render the server visits its own health page every 10 minutes, so the free plan's 15-minute sleep never starts; the free disk is temporary, so reports and subscribers start again from the demo set (`HARIS_DEMO_DATA=1`) after each deploy.
 
-**On the demo Mac after a restart:** `scripts/haris-up.sh` starts the server and a Cloudflare quick tunnel, keeps the Mac awake, and points Meta's WhatsApp webhook at the tunnel's new address (secrets read from `.env`, never printed). It prints the new address and the dashboard link.
+**On the demo Mac:** `scripts/haris-up.sh` starts a local copy with a Cloudflare quick tunnel and keeps the Mac awake; WhatsApp stays on Render unless you add `--whatsapp`, which moves Meta's webhook to the Mac (secrets read from `.env`, never printed).
 
 Requirements: Python 3.9 or newer (macOS ships 3.9 with the Xcode tools).
 

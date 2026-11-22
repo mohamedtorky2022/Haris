@@ -1,7 +1,7 @@
 #!/bin/zsh
-# Start Haris on this Mac: the server, a Cloudflare quick tunnel, no sleep, and point
-# Meta's WhatsApp webhook at the tunnel's new address. Run from anywhere:
-#   ~/Desktop/Haseen/scripts/haris-up.sh
+# Start Haris on this Mac: the server, a Cloudflare quick tunnel and no sleep. Run from anywhere:
+#   ~/Desktop/Haseen/scripts/haris-up.sh            # WhatsApp stays on the always-on Render address
+#   ~/Desktop/Haseen/scripts/haris-up.sh --whatsapp # also move Meta's WhatsApp webhook to this Mac
 # Secrets are read from .env and never printed.
 set -u
 ROOT="${0:A:h:h}"
@@ -20,6 +20,12 @@ for i in {1..30}; do
 done
 [[ -z "$URL" ]] && { echo "The tunnel did not start; see /tmp/haris-tunnel.log"; exit 1; }
 for i in {1..20}; do curl -s -m 5 -o /dev/null "$URL/api/health" && break; sleep 2; done
+if [[ "${1:-}" != "--whatsapp" ]]; then
+  echo "Haris is up: $URL"
+  echo "Dashboard:   $URL/reports.html"
+  echo "WhatsApp still goes to https://haris-uae.onrender.com (add --whatsapp to move it to this Mac)"
+  exit 0
+fi
 .venv/bin/python - "$URL" <<'PY'
 import json, sys, urllib.error, urllib.parse, urllib.request
 env = {}
