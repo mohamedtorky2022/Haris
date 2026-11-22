@@ -24,7 +24,7 @@ import urllib.error
 import urllib.request
 from collections import OrderedDict, defaultdict, deque
 
-from . import alerts, radar
+from . import alerts, inbox, intake, radar
 from .detector import analyze
 from .playbooks import contacts, get_playbook, list_playbooks
 from .text import SUPPORTED_LANGS, detect_language, normalize
@@ -119,6 +119,7 @@ class _Expiring:
 _seen = _Expiring(ttl=24 * 3600, size=5000)       # message ids, because Meta retries deliveries
 _pending = _Expiring(ttl=REPORT_TTL, size=2000)   # report token -> (text, lang)
 _hits: dict[str, deque] = defaultdict(deque)
+_filing = _Expiring(ttl=30 * 60, size=2000)     # hashed sender -> report being filed (in memory only)
 _carded = _Expiring(ttl=24 * 3600, size=20000)   # hashed senders who already got Haris's contact card today
 
 
@@ -140,6 +141,7 @@ def reset() -> None:
     _pending.items.clear()
     _hits.clear()
     _carded.items.clear()
+    _filing.items.clear()
 
 
 # --- Incoming messages ------------------------------------------------------
@@ -277,7 +279,86 @@ def playbook(playbook_id: str, lang: str) -> list[dict]:
     steps = "\n".join(f"{i}. {s}" for i, s in enumerate(pb["steps"], 1))
     people = "\n".join(f"• {c['label']}: {c['value']}" for c in contacts(lang))
     body = f"*{pb['title']}*\n\n*{t['steps_heading']}*\n{steps}\n\n*{t['contacts_heading']}*\n{people}\n\n{t['report_app']}"
-    return _with_buttons(body, [_button("check", lang), _button("guide", lang)], lang)
+    return _with_buttons(body, [_button("file", lang), _button("check", lang), _button("guide", lang)], lang)
+
+
+# --- Filing a report with the authority ---------------------------------------
+# The same report as the web app, in three steps: the story, the emirate, then the
+# summary and the victim's consent. Nothing is written until they tap "Send report";
+# until then the draft lives in memory for 30 minutes under a hash of their number.
+
+def _key(sender: str) -> str:
+    return hashlib.sha256(sender.encode()).hexdigest()
+
+
+def file_start(sender: str, lang: str) -> list[dict]:
+    _filing.put(_key(sender), {"step": "story", "lang": lang})
+    return _with_buttons(TEXT[lang]["file"]["file_ask"], [_button("cancel", lang)], lang)
+
+
+def file_story(sender: str, story: str, lang: str) -> list[dict]:
+    t = TEXT[lang]["file"]
+    out = intake.extract(story, [], lang)
+    _filing.put(_key(sender), {"step": "emirate", "lang": lang, "fields": out["fields"], "missing": out["missing"]})
+    rows = [{"id": f"em:{lang}:{code}", "title": name[:24]} for code, name in t["emirates"].items()]
+    return [{"type": "interactive", "interactive": {
+        "type": "list", "body": {"text": t["file_emirate"]}, "footer": {"text": TEXT[lang]["footer"]},
+        "action": {"button": t["file_emirate_button"], "sections": [{"title": t["file_emirate_section"], "rows": rows}]}}}]
+
+
+def file_summary(sender: str, emirate: str, lang: str) -> list[dict]:
+    draft = _filing.pop(_key(sender))
+    if not draft or "fields" not in draft or emirate not in inbox.EMIRATES:
+        return _with_buttons(TEXT[lang]["file"]["file_expired"], [_button("file", lang), _button("check", lang)], lang)
+    lang = draft["lang"]
+    t, f = TEXT[lang]["file"], draft["fields"]
+    draft.update(step="confirm", emirate=emirate)
+    _filing.put(_key(sender), draft)
+    lab = t["labels"]
+    lines = [t["file_summary"], f"• {lab['type']}: {TEXT[lang]['playbooks'].get(f['incident_type'], f['incident_type'])}"]
+    if f.get("occurred_at"):
+        lines.append(f"• {lab['when']}: {f['occurred_at']}")
+    if f.get("amount"):
+        lines.append(f"• {lab['amount']}: {f['amount']} {f.get('currency') or 'AED'}")
+    if f.get("payment_method_label"):
+        lines.append(f"• {lab['method']}: {f['payment_method_label']}")
+    if f.get("scammer_identifiers"):
+        lines.append(f"• {lab['ids']}: {', '.join(f['scammer_identifiers'][:5])}")
+    lines.append(f"• {lab['emirate']}: {t['emirates'][emirate]}")
+    lines.append(f"• {lab['contact']}: +{sender}")
+    story = f.get("description", "")
+    lines.append("\n" + (story[:400] + ("…" if len(story) > 400 else "")))
+    missing = [t["file_missing_names"][m] for m in draft.get("missing", []) if m in t["file_missing_names"]]
+    if missing:
+        lines.append("\n" + t["file_missing"].format(items="، ".join(missing) if lang in ("ar", "ur") else ", ".join(missing)))
+    lines.append("\n" + t["file_consent"].format(days=inbox.retention_days()))
+    return _with_buttons("\n".join(lines), [_button("send", lang), _button("edit", lang), _button("cancel", lang)], lang)
+
+
+def file_send(sender: str, lang: str) -> list[dict]:
+    draft = _filing.pop(_key(sender))
+    if not draft or draft.get("step") != "confirm":
+        return _with_buttons(TEXT[lang]["file"]["file_expired"], [_button("file", lang), _button("check", lang)], lang)
+    lang = draft["lang"]
+    t, f = TEXT[lang]["file"], draft["fields"]
+    data = {k: f.get(k) for k in ("incident_type", "occurred_at", "description", "amount", "currency",
+                                  "payment_method", "scammer_identifiers", "steps_taken")}
+    data["reporter_contact"] = f"WhatsApp +{sender}"
+    try:
+        sent = inbox.submit(data, lang, draft["emirate"], False)
+    except Exception:  # noqa: BLE001  the victim must hear back even if the inbox is down
+        log.exception("WhatsApp report could not be saved")
+        _filing.put(_key(sender), draft)
+        return _with_buttons(t["file_failed"], [_button("send", lang), _button("cancel", lang)], lang)
+    return _with_buttons(t["file_sent"].format(ref=sent["reference"]), [_button("check", lang), _button("guide", lang)], lang)
+
+
+def file_cancel(sender: str, lang: str) -> list[dict]:
+    _filing.pop(_key(sender))
+    return _with_buttons(TEXT[lang]["file"]["file_cancelled"], [_button("check", lang), _button("scammed", lang)], lang)
+
+
+FILE_WORDS = {"بلاغ", "قدم بلاغ", "تقديم بلاغ", "ابلاغ", "report", "file a report", "رپورٹ", "रिपोर्ट", "заявление"}
 
 
 def report(token: str, sender: str, lang: str) -> list[dict]:
@@ -337,8 +418,15 @@ def handle(msg: dict) -> list[dict]:
     if msg["type"] == "text":
         text = msg["text"].strip()
         lang = detect_language(text) if text else "ar"
+        draft = _filing.pop(_key(msg["from"]))
+        if draft and draft.get("step") == "story" and not is_greeting(text):
+            return file_story(msg["from"], text, draft["lang"])
+        if draft and not is_greeting(text):
+            _filing.put(_key(msg["from"]), draft)  # still waiting for a button
         if is_greeting(text):
             return welcome(lang)
+        if _clean(text) in {_clean(w) for w in FILE_WORDS}:
+            return file_start(msg["from"], lang)
         wanted = alerts.command(text)
         if wanted == "subscribe":
             return alerts_on(msg["from"], lang)
@@ -366,6 +454,14 @@ def handle(msg: dict) -> list[dict]:
             return playbook(arg, lang)
         if action == "report":
             return report(arg, msg["from"], lang)
+        if action == "file" or action == "edit":
+            return file_start(msg["from"], lang)
+        if action == "em":
+            return file_summary(msg["from"], arg, lang)
+        if action == "send":
+            return file_send(msg["from"], lang)
+        if action == "cancel":
+            return file_cancel(msg["from"], lang)
         return welcome(lang)
     if msg["type"] in ("image", "audio", "video", "document", "sticker", "location", "contacts"):
         return _with_buttons(TEXT["ar"]["unsupported"] + "\n\n" + TEXT["en"]["unsupported"],

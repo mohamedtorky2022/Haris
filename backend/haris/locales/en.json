@@ -303,7 +303,11 @@
    "scammed": "I've been scammed",
    "guide": "How to use Haris",
    "report": "Report to protect",
-   "alerts": "🔔 Get alerts"
+   "alerts": "🔔 Get alerts",
+   "file": "📝 File a report",
+   "send": "✅ Send report",
+   "edit": "✏️ Rewrite",
+   "cancel": "Cancel"
   },
   "ask_check": "Send the suspicious message or link here, or forward it to me from the chat where you got it.",
   "reasons_heading": "Why:",
@@ -326,7 +330,7 @@
   },
   "steps_heading": "Do this now:",
   "contacts_heading": "Contacts and reporting:",
-  "report_app": "To prepare a full report with voice or screenshots, use the Haris app.",
+  "report_app": "To send a report to the authority now, tap \"File a report\".",
   "guide": "Haris in three steps:\n1. *Check before you reply:* forward me the suspicious message and I'll tell you the risk, why, and what to do.\n2. *Something went wrong?* Tap \"I've been scammed\" and choose your case for the first steps and the official reporting numbers.\n3. *Protect others:* if it was a scam and you didn't reply, tap \"Report to protect\".",
   "reported": "Thank you, your report was received 🙏\nEvery report helps spot a campaign early, and the authority decides on any official warning.",
   "report_expired": "This report has expired. Send the suspicious message again, then tap \"Report to protect\".",
@@ -343,6 +347,44 @@
    "lang_section": "Warning language",
    "lang_row": "Current language",
    "lang_set": "Done ✅ Warnings will reach you in English. To stop them, send: STOP"
+  },
+  "file": {
+   "file_ask": "I'll prepare your report and send it to the authority once you agree.\n\nTell me in one message what happened:\n• What happened and when\n• The amount and how you paid, if you paid\n• The scammer's number, link or account\n\n⚠️ Never send a verification code, password or card number.",
+   "file_emirate": "Which emirate are you in? I pick the authority from it.",
+   "file_emirate_button": "Choose emirate",
+   "file_emirate_section": "Emirates",
+   "file_summary": "*Your report*",
+   "labels": {
+    "type": "Type",
+    "when": "When",
+    "amount": "Amount",
+    "method": "Payment method",
+    "ids": "Scammer details",
+    "emirate": "Emirate",
+    "contact": "Contact"
+   },
+   "file_missing": "Missing: {items}. You can send it as it is, or rewrite it and add them.",
+   "file_missing_names": {
+    "description": "what happened",
+    "occurred_at": "when it happened",
+    "amount": "the amount",
+    "payment_method": "how you paid",
+    "scammer_identifiers": "the scammer's number or link"
+   },
+   "file_consent": "By tapping \"Send report\" you agree to send it, with your WhatsApp number, to the authority. Haris deletes it after {days} days.",
+   "file_sent": "✅ Your report was sent to the authority.\n\nReference: *{ref}*\nKeep it, and quote it if the authority contacts you.\n\n(Demo: the report reaches the authority's demo dashboard.)",
+   "file_cancelled": "The report was cancelled. Nothing was sent.",
+   "file_expired": "The report timed out (30 minutes). Please start again.",
+   "file_failed": "I couldn't send the report right now. Try again shortly, or call 999 in an emergency.",
+   "emirates": {
+    "abu_dhabi": "Abu Dhabi",
+    "dubai": "Dubai",
+    "sharjah": "Sharjah",
+    "ajman": "Ajman",
+    "umm_al_quwain": "Umm Al Quwain",
+    "ras_al_khaimah": "Ras Al Khaimah",
+    "fujairah": "Fujairah"
+   }
   }
  },
  "inbox": {

@@ -3,6 +3,7 @@
 import hashlib
 import hmac
 import json
+import re
 
 import pytest
 
@@ -227,3 +228,46 @@ def test_webhook_routes(monkeypatch):
     assert r.status_code == 200 and r.json() == {"received": True}
     assert sent and sent[0]["interactive"]["body"]["text"].startswith("🔴")
     assert client.get("/api/health").json()["whatsapp_enabled"] is True
+
+
+# --- Filing a report on WhatsApp ----------------------------------------------
+
+def test_filing_a_report_end_to_end(monkeypatch, tmp_path):
+    monkeypatch.setenv("HARIS_INBOX_DB", str(tmp_path / "inbox.db"))
+    sender = "971500000009"
+    [m] = wa.handle(reply_msg("pb:ar:money_sent", sender))
+    assert "file:ar" in [b["id"] for b in buttons(m)]
+    [m] = wa.handle(reply_msg("file:ar", sender))
+    assert m["interactive"]["body"]["text"] == wa.TEXT["ar"]["file"]["file_ask"]
+    story = "اليوم حوّلت 2500 درهم عبر تحويل بنكي لرقم 0501234567 بعد رسالة تقول إن حسابي موقوف"
+    [m] = wa.handle(text_msg(story, sender=sender))
+    rows = m["interactive"]["action"]["sections"][0]["rows"]
+    assert len(rows) == 7 and rows[1]["id"] == "em:ar:dubai"
+    [m] = wa.handle(reply_msg("em:ar:dubai", sender))
+    body = m["interactive"]["body"]["text"]
+    assert "2500" in body and "دبي" in body and "+971500000009" in body
+    assert [b["id"] for b in buttons(m)] == ["send:ar", "edit:ar", "cancel:ar"]
+    [m] = wa.handle(reply_msg("send:ar", sender))
+    text = m["interactive"]["body"]["text"]
+    ref = re.search(r"HRS-\d{8}-[0-9A-F]{6}", text).group(0)
+    from haris import inbox
+    case = inbox.detail(ref)
+    assert case and case["emirate"] == "dubai"
+    # nothing left in memory, and a second "send" does not file twice
+    [m] = wa.handle(reply_msg("send:ar", sender))
+    assert m["interactive"]["body"]["text"] == wa.TEXT["ar"]["file"]["file_expired"]
+
+
+def test_filing_can_be_cancelled_and_nothing_is_saved(monkeypatch, tmp_path):
+    monkeypatch.setenv("HARIS_INBOX_DB", str(tmp_path / "inbox.db"))
+    sender = "971500000010"
+    wa.handle(reply_msg("file:en", sender))
+    wa.handle(text_msg("Someone took 300 AED from my card", sender=sender))
+    [m] = wa.handle(reply_msg("cancel:en", sender))
+    assert m["interactive"]["body"]["text"] == wa.TEXT["en"]["file"]["file_cancelled"]
+    assert not (tmp_path / "inbox.db").exists() or not __import__("haris").inbox.queue().get("cases")
+
+
+def test_typing_report_starts_filing():
+    [m] = wa.handle(text_msg("بلاغ", sender="971500000011"))
+    assert m["interactive"]["body"]["text"] == wa.TEXT["ar"]["file"]["file_ask"]
