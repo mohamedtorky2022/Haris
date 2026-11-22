@@ -24,7 +24,7 @@ import urllib.error
 import urllib.request
 from collections import OrderedDict, defaultdict, deque
 
-from . import alerts, inbox, intake, radar
+from . import alerts, inbox, intake, llm, radar
 from .detector import analyze
 from .playbooks import contacts, get_playbook, list_playbooks
 from .text import SUPPORTED_LANGS, detect_language, normalize
@@ -163,6 +163,11 @@ def incoming(payload: dict) -> list[dict]:
                     msg["reply_id"] = reply.get("id", "")
                 elif msg["type"] == "button":
                     msg["reply_id"] = (m.get("button") or {}).get("payload", "")
+                elif msg["type"] in ("image", "audio"):
+                    media = m.get(msg["type"]) or {}
+                    msg["media_id"] = media.get("id", "")
+                    msg["mime"] = media.get("mime_type", "")
+                    msg["text"] = (media.get("caption") or "")[:MAX_TEXT]
                 if msg["from"]:
                     found.append(msg)
     return found
@@ -296,23 +301,39 @@ def file_start(sender: str, lang: str) -> list[dict]:
     return _with_buttons(TEXT[lang]["file"]["file_ask"], [_button("cancel", lang)], lang)
 
 
-def file_story(sender: str, story: str, lang: str) -> list[dict]:
+def file_story(sender: str, story: str, draft: dict) -> list[dict]:
+    """The story is in (typed, or a transcribed voice note): ask for the emirate.
+    Screenshots can still arrive until the emirate is chosen; the fields are read then."""
+    lang = draft["lang"]
     t = TEXT[lang]["file"]
-    out = intake.extract(story, [], lang)
-    _filing.put(_key(sender), {"step": "emirate", "lang": lang, "fields": out["fields"], "missing": out["missing"]})
+    draft.update(step="emirate", story=story)
+    _filing.put(_key(sender), draft)
     rows = [{"id": f"em:{lang}:{code}", "title": name[:24]} for code, name in t["emirates"].items()]
     return [{"type": "interactive", "interactive": {
         "type": "list", "body": {"text": t["file_emirate"]}, "footer": {"text": TEXT[lang]["footer"]},
         "action": {"button": t["file_emirate_button"], "sections": [{"title": t["file_emirate_section"], "rows": rows}]}}}]
 
 
+def file_image(sender: str, data_url: str, draft: dict) -> list[dict]:
+    lang = draft["lang"]
+    t = TEXT[lang]["file"]
+    images = draft.setdefault("images", [])
+    if len(images) < MAX_IMAGES:
+        images.append(data_url)
+    _filing.put(_key(sender), draft)
+    after = t["got_image_story"] if draft["step"] == "story" else t["got_image_emirate"]
+    return [{"type": "text", "text": {"body": t["got_image"].format(n=len(images)) + "\n" + after}}]
+
+
 def file_summary(sender: str, emirate: str, lang: str) -> list[dict]:
     draft = _filing.pop(_key(sender))
-    if not draft or "fields" not in draft or emirate not in inbox.EMIRATES:
+    if not draft or "story" not in draft or emirate not in inbox.EMIRATES:
         return _with_buttons(TEXT[lang]["file"]["file_expired"], [_button("file", lang), _button("check", lang)], lang)
     lang = draft["lang"]
-    t, f = TEXT[lang]["file"], draft["fields"]
-    draft.update(step="confirm", emirate=emirate)
+    t = TEXT[lang]["file"]
+    out = intake.extract(draft["story"], draft.get("images", []), lang)
+    f = out["fields"]
+    draft.update(step="confirm", emirate=emirate, fields=f, missing=out["missing"])
     _filing.put(_key(sender), draft)
     lab = t["labels"]
     lines = [t["file_summary"], f"• {lab['type']}: {TEXT[lang]['playbooks'].get(f['incident_type'], f['incident_type'])}"]
@@ -324,11 +345,13 @@ def file_summary(sender: str, emirate: str, lang: str) -> list[dict]:
         lines.append(f"• {lab['method']}: {f['payment_method_label']}")
     if f.get("scammer_identifiers"):
         lines.append(f"• {lab['ids']}: {', '.join(f['scammer_identifiers'][:5])}")
+    if draft.get("images"):
+        lines.append(f"• {lab['images']}: {len(draft['images'])}")
     lines.append(f"• {lab['emirate']}: {t['emirates'][emirate]}")
     lines.append(f"• {lab['contact']}: +{sender}")
     story = f.get("description", "")
     lines.append("\n" + (story[:400] + ("…" if len(story) > 400 else "")))
-    missing = [t["file_missing_names"][m] for m in draft.get("missing", []) if m in t["file_missing_names"]]
+    missing = [t["file_missing_names"][m] for m in out["missing"] if m in t["file_missing_names"]]
     if missing:
         lines.append("\n" + t["file_missing"].format(items="، ".join(missing) if lang in ("ar", "ur") else ", ".join(missing)))
     lines.append("\n" + t["file_consent"].format(days=inbox.retention_days()))
@@ -344,8 +367,10 @@ def file_send(sender: str, lang: str) -> list[dict]:
     data = {k: f.get(k) for k in ("incident_type", "occurred_at", "description", "amount", "currency",
                                   "payment_method", "scammer_identifiers", "steps_taken")}
     data["reporter_contact"] = f"WhatsApp +{sender}"
+    data["evidence"] = draft.get("images", [])  # only the number of screenshots is kept
     try:
         sent = inbox.submit(data, lang, draft["emirate"], False)
+        inbox.link_whatsapp(sent["reference"], sender)
     except Exception:  # noqa: BLE001  the victim must hear back even if the inbox is down
         log.exception("WhatsApp report could not be saved")
         _filing.put(_key(sender), draft)
@@ -356,6 +381,83 @@ def file_send(sender: str, lang: str) -> list[dict]:
 def file_cancel(sender: str, lang: str) -> list[dict]:
     _filing.pop(_key(sender))
     return _with_buttons(TEXT[lang]["file"]["file_cancelled"], [_button("check", lang), _button("scammed", lang)], lang)
+
+
+MAX_IMAGES = 5
+MAX_MEDIA = 10 * 1024 * 1024
+
+
+def download_media(media_id: str) -> tuple[bytes, str] | None:
+    """Fetch a photo or voice note the user sent. Kept in memory only."""
+    s = settings()
+    head = {"Authorization": f"Bearer {s['token']}"}
+    try:
+        req = urllib.request.Request(f"{GRAPH_URL}/{s['version']}/{media_id}", headers=head)
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            meta = json.load(resp)
+        if int(meta.get("file_size") or 0) > MAX_MEDIA:
+            return None
+        with urllib.request.urlopen(urllib.request.Request(meta["url"], headers=head), timeout=30) as resp:
+            data = resp.read(MAX_MEDIA + 1)
+        return (data, meta.get("mime_type", "")) if len(data) <= MAX_MEDIA else None
+    except (OSError, ValueError, KeyError) as err:
+        log.warning("WhatsApp media download failed: %s", type(err).__name__)
+        return None
+
+
+def _data_url(data: bytes, mime: str) -> str:
+    import base64
+    return f"data:{mime.split(';')[0] or 'image/jpeg'};base64,{base64.b64encode(data).decode()}"
+
+
+def handle_media(msg: dict) -> list[dict]:
+    """A voice note becomes text, then goes where typed text would. A photo is evidence for a report,
+    or an answer to the authority's question."""
+    sender = msg["from"]
+    draft = _filing.pop(_key(sender))
+    if draft:
+        _filing.put(_key(sender), draft)
+    question = None if draft else inbox.open_question(sender)
+    lang = (draft or {}).get("lang") or (question[1] if question else "ar")
+    t = TEXT[lang]["file"]
+    got = download_media(msg["media_id"]) if msg.get("media_id") else None
+    if msg["type"] == "audio":
+        heard = llm.transcribe(got[0], got[1] or msg.get("mime", "audio/ogg")) if got else None
+        if not heard:
+            return _with_buttons(t["voice_failed"], [_button("cancel", lang)] if draft else [_button("check", lang)], lang)
+        lang = lang if (draft or question) else detect_language(heard)
+        echo = {"type": "text", "text": {"body": TEXT[lang]["file"]["voice_heard"].format(text=heard[:900])}}
+        return [echo] + handle({**msg, "type": "text", "text": heard, "media_id": ""})
+    if not got:
+        return _with_buttons(t["image_failed"], [_button("check", lang)], lang)
+    if draft and draft.get("step") in ("story", "emirate"):
+        return file_image(sender, _data_url(*got), draft)
+    if question:
+        read = intake.extract(msg.get("text", ""), [_data_url(*got)], question[1])["fields"]
+        note = "📷 " + (read.get("summary") or msg.get("text") or t["image_no_text"])
+        inbox.answer_from_whatsapp(question[0], sender, note)
+        return [{"type": "text", "text": {"body": t["case_reply_ok"].format(ref=question[0])}}]
+    return _with_buttons(t["image_hint"], [_button("file", lang), _button("check", lang)], lang)
+
+
+def notify_case(ref: str, status: str, note: str, lang: str) -> None:
+    """The authority acted on a report filed on WhatsApp: tell the victim in the chat."""
+    wa_id = inbox.whatsapp_of(ref)
+    if not wa_id or not enabled():
+        return
+    t = TEXT[lang if lang in SUPPORTED_LANGS else "ar"]["file"]
+    if status == "received":
+        body = t["case_received"].format(ref=ref)
+    elif status == "info_requested":
+        body = t["case_question"].format(ref=ref, note=note)
+    elif status == "closed":
+        body = t["case_closed"].format(ref=ref) + (f"\n\n{note}" if note else "")
+    else:
+        return
+    send(wa_id, {"type": "text", "text": {"body": body[:4096]}})
+
+
+inbox.ON_ACTION.append(notify_case)
 
 
 FILE_WORDS = {"بلاغ", "قدم بلاغ", "تقديم بلاغ", "ابلاغ", "report", "file a report", "رپورٹ", "रिपोर्ट", "заявление"}
@@ -415,16 +517,23 @@ def alerts_off(sender: str, lang: str) -> list[dict]:
 
 def handle(msg: dict) -> list[dict]:
     """Decide the reply to one incoming message. Returns the messages to send, without the recipient."""
+    if msg["type"] in ("audio", "image") and msg.get("media_id"):
+        return handle_media(msg)
     if msg["type"] == "text":
         text = msg["text"].strip()
         lang = detect_language(text) if text else "ar"
         draft = _filing.pop(_key(msg["from"]))
         if draft and draft.get("step") == "story" and not is_greeting(text):
-            return file_story(msg["from"], text, draft["lang"])
+            return file_story(msg["from"], text, draft)
         if draft and not is_greeting(text):
             _filing.put(_key(msg["from"]), draft)  # still waiting for a button
         if is_greeting(text):
             return welcome(lang)
+        question = None if draft else inbox.open_question(msg["from"])
+        if question and _clean(text) not in {_clean(w) for w in FILE_WORDS} and not alerts.command(text):
+            inbox.answer_from_whatsapp(question[0], msg["from"], text)
+            return _with_buttons(TEXT[question[1]]["file"]["case_reply_ok"].format(ref=question[0]),
+                                 [_button("check", question[1]), _button("guide", question[1])], question[1])
         if _clean(text) in {_clean(w) for w in FILE_WORDS}:
             return file_start(msg["from"], lang)
         wanted = alerts.command(text)

@@ -19,6 +19,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import logging
 import os
 import re
 import secrets
@@ -33,6 +34,7 @@ from .text import SUPPORTED_LANGS, detect_language, normalize
 from .translate import translate, translate_lines
 from .translations import section
 
+log = logging.getLogger("haris.inbox")
 DEFAULT_DB = Path(__file__).resolve().parents[2] / "data" / "inbox.db"
 DAY = 24 * 3600
 STATUSES = ("new", "received", "info_requested", "closed")
@@ -85,9 +87,11 @@ def _connect() -> sqlite3.Connection:
             emirate TEXT, incident TEXT, lang TEXT, verified INTEGER, token_hash TEXT,
             fields TEXT, events TEXT);
         CREATE INDEX IF NOT EXISTS reports_created ON reports (created_at);
+        CREATE TABLE IF NOT EXISTS whatsapp_links (ref TEXT PRIMARY KEY, wa_id TEXT, created_at REAL);
         """
     )
     con.execute("DELETE FROM reports WHERE created_at < ?", (time.time() - cfg["retention"],))
+    con.execute("DELETE FROM whatsapp_links WHERE created_at < ?", (time.time() - cfg["retention"],))
     return con
 
 
@@ -236,6 +240,10 @@ def reply(ref: str, token: str, text: str) -> dict | None:
         row = _row(con, ref)
     if not _check(row, token) or row["status"] == "closed":
         return None
+    return _add_reply(ref, row, text)
+
+
+def _add_reply(ref: str, row, text: str) -> dict | None:
     event = {"ts": time.time(), "kind": "reply", "note": text}
     if row["lang"] != "ar":  # translated outside the database lock: the model can take seconds
         tr = translate(text, row["lang"], "ar")
@@ -331,4 +339,48 @@ def act(ref: str, action: str, note: str = "") -> dict | None:
         events = json.loads(row["events"]) + [event]
         con.execute("UPDATE reports SET status = ?, events = ?, updated_at = ? WHERE ref = ?",
                     (new_status, json.dumps(events, ensure_ascii=False), time.time(), ref))
+    for hook in ON_ACTION:  # e.g. tell a victim who reported on WhatsApp
+        try:
+            hook(ref, new_status, event.get("note_victim") or note, row["lang"])
+        except Exception:  # noqa: BLE001  a failed notice must not undo the officer's action
+            log.exception("case notice failed")
     return detail(ref)
+
+
+# --- Reports filed on WhatsApp --------------------------------------------------
+# The WhatsApp number of a victim who reported there, so the authority's actions reach
+# them in the chat. Deleted with the report, after the same retention period.
+
+ON_ACTION: list = []
+
+
+def link_whatsapp(ref: str, wa_id: str) -> None:
+    with closing(_connect()) as con, con:
+        con.execute("INSERT OR REPLACE INTO whatsapp_links VALUES (?,?,?)", (ref, wa_id, time.time()))
+
+
+def whatsapp_of(ref: str) -> str | None:
+    with closing(_connect()) as con:
+        found = con.execute("SELECT wa_id FROM whatsapp_links WHERE ref = ?", (ref,)).fetchone()
+    return found["wa_id"] if found else None
+
+
+def open_question(wa_id: str) -> tuple[str, str] | None:
+    """The report (reference, language) on which the authority is waiting for this person's answer."""
+    with closing(_connect()) as con:
+        found = con.execute(
+            "SELECT r.ref, r.lang FROM whatsapp_links l JOIN reports r ON r.ref = l.ref "
+            "WHERE l.wa_id = ? AND r.status = 'info_requested' ORDER BY r.updated_at DESC LIMIT 1", (wa_id,)).fetchone()
+    return (found["ref"], found["lang"]) if found else None
+
+
+def answer_from_whatsapp(ref: str, wa_id: str, text: str) -> dict | None:
+    """The victim's answer arrives in the chat: the link to their number stands in for the status token."""
+    text = _clean(text, 2000)
+    if not text or whatsapp_of(ref) != wa_id:
+        return None
+    with closing(_connect()) as con:
+        row = _row(con, ref)
+    if not row or row["status"] == "closed":
+        return None
+    return _add_reply(ref, row, text)

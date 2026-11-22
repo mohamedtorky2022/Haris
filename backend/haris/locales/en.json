@@ -349,7 +349,7 @@
    "lang_set": "Done ✅ Warnings will reach you in English. To stop them, send: STOP"
   },
   "file": {
-   "file_ask": "I'll prepare your report and send it to the authority once you agree.\n\nTell me in one message what happened:\n• What happened and when\n• The amount and how you paid, if you paid\n• The scammer's number, link or account\n\n⚠️ Never send a verification code, password or card number.",
+   "file_ask": "I'll prepare your report and send it to the authority once you agree.\n\nTell me what happened in one message, typed or 🎙️ as a voice note:\n• What happened and when\n• The amount and how you paid, if you paid\n• The scammer's number, link or account\n\n📷 You can also send screenshots (up to 5).\n⚠️ Never send a verification code, password or card number.",
    "file_emirate": "Which emirate are you in? I pick the authority from it.",
    "file_emirate_button": "Choose emirate",
    "file_emirate_section": "Emirates",
@@ -361,7 +361,8 @@
     "method": "Payment method",
     "ids": "Scammer details",
     "emirate": "Emirate",
-    "contact": "Contact"
+    "contact": "Contact",
+    "images": "Screenshots attached"
    },
    "file_missing": "Missing: {items}. You can send it as it is, or rewrite it and add them.",
    "file_missing_names": {
@@ -384,7 +385,19 @@
     "umm_al_quwain": "Umm Al Quwain",
     "ras_al_khaimah": "Ras Al Khaimah",
     "fujairah": "Fujairah"
-   }
+   },
+   "got_image": "📷 Got the photo ({n}).",
+   "got_image_story": "Now tell me what happened, in text or a voice note, or send another photo.",
+   "got_image_emirate": "You can send another photo, or choose your emirate from the list.",
+   "voice_heard": "🎙️ I heard:\n\"{text}\"",
+   "voice_failed": "I couldn't understand the voice note. Type what you want to say, or record it again more clearly.",
+   "image_failed": "I couldn't open the photo. Please send it again.",
+   "image_hint": "I got your photo. To attach it to a report, tap \"File a report\"; to check a message, copy its text and send it.",
+   "image_no_text": "The victim sent a photo.",
+   "case_received": "🔍 The authority received your report *{ref}* and is reviewing it.",
+   "case_question": "❓ The authority has a question about your report *{ref}*:\n\n{note}\n\nType your answer here in one message, or send a photo or a voice note.",
+   "case_reply_ok": "✅ I passed your answer to the authority (report {ref}).",
+   "case_closed": "Your report *{ref}* was closed."
   }
  },
  "inbox": {

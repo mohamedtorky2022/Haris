@@ -105,7 +105,8 @@ a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 <tr><td data-l="البيانات">نص الرسالة أو الرابط الذي ترسله للفحص</td><td data-l="الغرض">تقييم خطر الاحتيال وشرح السبب</td><td data-l="المدة">في الذاكرة حتى يُرسل الرد. إن كانت الرسالة خطرة تبقى في الذاكرة 30 دقيقة فقط ليعمل زر «أبلغ لحماية غيرك»، ثم تُحذف</td></tr>
 <tr><td data-l="البيانات">رقم واتساب الخاص بك</td><td data-l="الغرض">إرسال الرد إليك، ومنع الإرسال المفرط (20 رسالة في الدقيقة)</td><td data-l="المدة">في الذاكرة دقيقة واحدة. ولإرسال بطاقة جهة الاتصال مرة واحدة يُحفظ بصمة مشفّرة (SHA-256) من الرقم وليس الرقم نفسه، لمدة 24 ساعة</td></tr>
 <tr><td data-l="البيانات">بلاغ «احمِ غيرك» (فقط إن ضغطت الزر)</td><td data-l="الغرض">تحذير الآخرين من حملة احتيال منتشرة</td><td data-l="المدة">30 يوماً. نحفظ بيانات المحتال فقط (رقمه، رابطه، بريده، رقم حسابه) ونص الرسالة بعد حذف بياناتك الشخصية منه</td></tr>
-<tr><td data-l="البيانات">بلاغ إلى الجهة المختصة (فقط إن أرسلته وأكّدت)</td><td data-l="الغرض">إيصال بلاغك منظّماً</td><td data-l="المدة">7 أيام ثم يُحذف مهما كانت حالته. لا نحفظ لقطات الشاشة ولا رقم جواز السفر</td></tr>
+<tr><td data-l="البيانات">بلاغ إلى الجهة المختصة (فقط إن أرسلته وأكّدت)</td><td data-l="الغرض">إيصال بلاغك منظّماً، ومتابعته معك على واتساب</td><td data-l="المدة">7 أيام ثم يُحذف مهما كانت حالته، ومعه رقم واتساب الذي أرسلته منه. لا نحفظ لقطات الشاشة ولا رقم جواز السفر، بل عددها فقط</td></tr>
+<tr><td data-l="البيانات">رسالة صوتية أو صورة ترسلها</td><td data-l="الغرض">تحويل الصوت إلى نص، وقراءة الصورة لتعبئة البلاغ</td><td data-l="المدة">في الذاكرة فقط حتى يُعالج البلاغ أو يُلغى (30 دقيقة كحد أقصى)، ثم تُحذف</td></tr>
 <tr><td data-l="البيانات">الاشتراك في التنبيهات (فقط إن أرسلت «تنبيهات»)</td><td data-l="الغرض">إرسال تحذيرات عن حملات احتيال جديدة</td><td data-l="المدة">رقمك ولغتك ووقت اشتراكك، حتى ترسل «إيقاف»</td></tr>
 </tbody>
 </table>
@@ -117,7 +118,7 @@ a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 <h2>مع من نشارك البيانات</h2>
 <ul>
 <li><b>Meta (واتساب):</b> تصل رسائلك إلى «حارس» عبر منصة WhatsApp Business التابعة لـ Meta، وتخضع لسياسة الخصوصية الخاصة بواتساب.</li>
-<li><b>خدمة ذكاء اصطناعي:</b> قد يُرسل نص الرسالة بعد حذف بياناتك الشخصية منه إلى خدمة ذكاء اصطناعي (حالياً Google Gemini، أو Anthropic Claude) لتحسين دقة الفحص. لا تُرسل أرقامك أو روابطك الكاملة.</li>
+<li><b>خدمة ذكاء اصطناعي:</b> قد يُرسل نص الرسالة بعد حذف بياناتك الشخصية منه إلى خدمة ذكاء اصطناعي (حالياً Google Gemini، أو Anthropic Claude) لتحسين دقة الفحص. أما الرسالة الصوتية ولقطات الشاشة فتُرسل كما هي إلى Google Gemini لتحويلها إلى نص وقراءتها، لأن الصوت والصورة لا يمكن حذف البيانات منهما مسبقاً.</li>
 <li><b>الجهة المختصة:</b> فقط البلاغ الذي تختار أنت إرساله وتؤكّده.</li>
 </ul>
 <p>لا نبيع البيانات، ولا نستخدمها للإعلانات، ولا نشاركها مع أي طرف آخر.</p>
@@ -155,13 +156,14 @@ a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 <tr><td data-l="Data">Text or link you send for checking</td><td data-l="Purpose">Assess scam risk and explain why</td><td data-l="Retention">In memory until the reply is sent; if risky, kept in memory for 30 minutes so the "Report to protect others" button works</td></tr>
 <tr><td data-l="Data">Your WhatsApp number</td><td data-l="Purpose">Reply to you; rate limit (20 messages per minute)</td><td data-l="Retention">In memory for one minute; a SHA-256 hash (not the number) for 24 hours so the contact card is sent once</td></tr>
 <tr><td data-l="Data">"Protect others" report (only if you tap it)</td><td data-l="Purpose">Warn others about a spreading scam campaign</td><td data-l="Retention">30 days; only the scammer's details and the message with your personal data removed</td></tr>
-<tr><td data-l="Data">Report to the authority (only if you send and confirm it)</td><td data-l="Purpose">Deliver your report in an organised form</td><td data-l="Retention">7 days, then deleted; no screenshots or passport numbers are stored</td></tr>
+<tr><td data-l="Data">Report to the authority (only if you send and confirm it)</td><td data-l="Purpose">Deliver your report and follow it up with you on WhatsApp</td><td data-l="Retention">7 days, then deleted, with the WhatsApp number you sent it from; screenshots are not stored, only how many</td></tr>
+<tr><td data-l="Data">A voice note or photo you send</td><td data-l="Purpose">Turn speech into text and read the photo to fill in the report</td><td data-l="Retention">In memory only until the report is sent or cancelled (30 minutes at most), then deleted</td></tr>
 <tr><td data-l="Data">Alert subscription (only if you send "alerts")</td><td data-l="Purpose">Send warnings about new scam campaigns</td><td data-l="Retention">Your number, language and join time, until you send "STOP"</td></tr>
 </tbody>
 </table>
 <p>Before any processing, your card numbers, Emirates ID, IBANs, phone numbers and e-mail addresses are removed from the text automatically. No logs contain your message text. Haris never opens links or contacts numbers it sees; it only analyses text.</p>
 <h3>Sharing</h3>
-<p>Messages reach Haris through Meta's WhatsApp Business Platform, under WhatsApp's own privacy policy. Redacted message text may be sent to an AI service (currently Google Gemini, or Anthropic Claude) to improve accuracy. A report goes to the authority only if you choose to send it. We do not sell data, use it for advertising, or share it with anyone else.</p>
+<p>Messages reach Haris through Meta's WhatsApp Business Platform, under WhatsApp's own privacy policy. Redacted message text may be sent to an AI service (currently Google Gemini, or Anthropic Claude) to improve accuracy. Voice notes and screenshots are sent as they are to Google Gemini to transcribe and read them, since audio and images cannot be redacted first. A report goes to the authority only if you choose to send it. We do not sell data, use it for advertising, or share it with anyone else.</p>
 <h3>Your rights and data deletion</h3>
 <p>We follow the data-minimisation and purpose-limitation principles of UAE Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data. Send <b>STOP</b> (or «إيقاف») to Haris on WhatsApp to delete your alert subscription immediately. Everything else is deleted automatically on the schedule above. We keep no other data linked to your number.</p>
 <h3>Contact</h3>

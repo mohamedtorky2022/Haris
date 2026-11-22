@@ -271,3 +271,48 @@ def test_filing_can_be_cancelled_and_nothing_is_saved(monkeypatch, tmp_path):
 def test_typing_report_starts_filing():
     [m] = wa.handle(text_msg("بلاغ", sender="971500000011"))
     assert m["interactive"]["body"]["text"] == wa.TEXT["ar"]["file"]["file_ask"]
+
+
+def test_voice_note_and_screenshot_in_a_report(monkeypatch, tmp_path):
+    monkeypatch.setenv("HARIS_INBOX_DB", str(tmp_path / "inbox.db"))
+    monkeypatch.setattr(wa, "download_media", lambda mid: (b"bytes", "image/jpeg" if mid == "img" else "audio/ogg; codecs=opus"))
+    monkeypatch.setattr(wa.llm, "transcribe", lambda data, mime: "أمس دفعت 900 درهم ببطاقتي لموقع توصيل مزيف")
+    sender = "971500000012"
+    wa.handle(reply_msg("file:ar", sender))
+    [m] = wa.handle({"id": "i1", "from": sender, "type": "image", "media_id": "img", "mime": "image/jpeg", "text": "", "reply_id": ""})
+    assert "(1)" in m["text"]["body"]
+    out = wa.handle({"id": "a1", "from": sender, "type": "audio", "media_id": "aud", "mime": "audio/ogg", "text": "", "reply_id": ""})
+    assert "900" in out[0]["text"]["body"]  # the transcript is shown back
+    assert out[1]["interactive"]["type"] == "list"  # then the emirate list
+    [m] = wa.handle(reply_msg("em:ar:sharjah", sender))
+    body = m["interactive"]["body"]["text"]
+    assert "900" in body and wa.TEXT["ar"]["file"]["labels"]["images"] in body
+    [m] = wa.handle(reply_msg("send:ar", sender))
+    ref = re.search(r"HRS-\d{8}-[0-9A-F]{6}", m["interactive"]["body"]["text"]).group(0)
+    from haris import inbox
+    assert inbox.detail(ref)["fields"]["evidence_count"] == 1
+    assert inbox.whatsapp_of(ref) == sender
+
+
+def test_authority_actions_reach_the_victim_and_the_answer_comes_back(monkeypatch, tmp_path):
+    monkeypatch.setenv("HARIS_INBOX_DB", str(tmp_path / "inbox.db"))
+    sent = []
+    monkeypatch.setattr(wa, "send", lambda to, message: sent.append((to, message)) or True)
+    monkeypatch.setattr(wa, "enabled", lambda: True)
+    from haris import inbox
+    sender = "971500000013"
+    case = inbox.submit({"incident_type": "account_hacked", "description": "اختُرق حسابي"}, "ar", "dubai", False)
+    inbox.link_whatsapp(case["reference"], sender)
+    inbox.act(case["reference"], "receive")
+    inbox.act(case["reference"], "request_info", "متى لاحظت الاختراق؟")
+    assert sent[0][0] == sender and case["reference"] in sent[0][1]["text"]["body"]
+    assert "متى لاحظت الاختراق؟" in sent[1][1]["text"]["body"]
+    [m] = wa.handle(text_msg("صباح أمس الساعة 9", sender=sender))
+    assert case["reference"] in m["interactive"]["body"]["text"]
+    detail = inbox.detail(case["reference"])
+    assert detail["status"] == "received" and detail["events"][-1]["note"] == "صباح أمس الساعة 9"
+    inbox.act(case["reference"], "close", "تم استرداد الحساب")
+    assert "تم استرداد الحساب" in sent[-1][1]["text"]["body"]
+    # with no open question, the next message is checked as usual
+    [m] = wa.handle(text_msg("hello there friend how are you", sender=sender))
+    assert case["reference"] not in m["interactive"]["body"]["text"]
