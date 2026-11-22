@@ -50,7 +50,7 @@ The next version, a mobile app and a WhatsApp channel, is designed in an officia
 
 **Campaign poster: «حارس» درعك الذكي ("Haris, your smart shield").** An A3 poster shows the name, that line, and three words for what Haris does (يحذّرك · يرشدك · يوصّل بلاغك: it warns you, guides you, and carries your report). Below them a golden shield holds the map of the UAE, its seven emirates linked by a digital network, while viruses, fake links and phishing hooks bounce off its edge; Haris stands beside it. Scanning the QR code at the bottom opens WhatsApp straight to a chat with Haris, where people save the contact and forward suspicious messages. The source is in `docs/poster/` (`poster.html` and a rendered `haris-poster.png`). The QR opens `https://wa.me/971503123535` (+971 50 312 3535) with «مرحباً حارس» typed in; `docs/poster/qr.py` regenerates it if the number changes.
 
-**WhatsApp Business profile.** The profile picture is `docs/poster/haris-whatsapp.png` (Haris inside the golden shield, cropped to fit WhatsApp's circle). The profile's website is a one-page introduction to Haris (`docs/landing/index.html`): the shield, «درعك الذكي», what Haris does, how to start, the five languages, the privacy promises, a WhatsApp button and the same QR code. It is published as a free page with a fixed link, so it does not depend on the tunnel.
+**WhatsApp Business profile.** The profile picture is `docs/poster/haris-whatsapp.png` (Haris inside the golden shield, cropped to fit WhatsApp's circle). The profile's website is a one-page introduction to Haris (`docs/landing/index.html`): the shield, «درعك الذكي», what Haris does, how to start, the five languages, the privacy promises, a WhatsApp button and the same QR code. It is published as a free page with a fixed link, so it does not depend on the tunnel. Its footer links to the privacy policy (`docs/landing/privacy.html`, Arabic and English), which is the Privacy Policy URL the Meta app needs to go Live: what Haris processes on WhatsApp and the web, why, how long each item is kept, who it is shared with (Meta, the redacted text to the AI provider, the authority only when the user sends a report), and how to delete it («إيقاف»/STOP removes the alert subscription; everything else expires on its own).
 
 A new business number shows as digits for people who haven't saved it, until Meta approves its display name (in practice the name appears for everyone only on high-volume or Official Business accounts). So the first time someone greets Haris, for example by scanning the QR, Haris replies with its menu and then its own contact card: one tap on «إضافة جهة اتصال» saves the number as «حارس».
 
@@ -321,7 +321,7 @@ haris/
 ├── tests/                      unit and API tests
 └── docs/
     ├── TECHNICAL.md            architecture, model choices, privacy design
-    ├── landing/                one-page site for the WhatsApp Business profile
+    ├── landing/                one-page site for the WhatsApp Business profile, and the privacy policy
     ├── poster/                 campaign poster (HTML source, QR, UAE map, rendered PNG)
     ├── video/                  journey video (Arabic and English) and an earlier narrated version
     ├── Haris-presentation.pptx     presentation (English)
