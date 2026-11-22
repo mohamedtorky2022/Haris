@@ -101,6 +101,33 @@ class ReportRequest(BaseModel):
     reporter_contact: Optional[str] = Field(None, max_length=120)
 
 
+# --- Staying awake on a free host --------------------------------------------
+# Render's free plan stops a service after 15 minutes without traffic and takes about a minute to
+# wake, which a WhatsApp user would feel. On Render (RENDER_EXTERNAL_URL is set there) the server
+# visits its own public health page every 10 minutes. HARIS_KEEP_AWAKE=0 turns this off.
+
+def _keep_awake() -> None:
+    import threading
+    import urllib.request
+
+    url = os.getenv("RENDER_EXTERNAL_URL", "").rstrip("/")
+    if not url or os.getenv("HARIS_KEEP_AWAKE", "1") == "0":
+        return
+
+    def loop() -> None:
+        while True:
+            time.sleep(600)
+            try:
+                urllib.request.urlopen(f"{url}/api/health", timeout=20).read()
+            except OSError:
+                pass
+
+    threading.Thread(target=loop, name="keep-awake", daemon=True).start()
+
+
+app.add_event_handler("startup", _keep_awake)
+
+
 # --- Middleware -----------------------------------------------------------
 
 _hits: dict[str, deque] = defaultdict(deque)

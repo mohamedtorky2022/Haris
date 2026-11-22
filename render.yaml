@@ -1,0 +1,39 @@
+# Render Blueprint: Haris as one free web service with a fixed address (https://haris-uae.onrender.com
+# or similar). Secrets are typed into Render's dashboard, never committed: every key marked
+# "sync: false" is asked for when the Blueprint is created.
+services:
+  - type: web
+    name: haris-uae
+    runtime: python
+    plan: free
+    region: frankfurt
+    branch: master
+    autoDeploy: true
+    healthCheckPath: /api/health
+    buildCommand: >-
+      pip install -r requirements.txt &&
+      if [ "$HARIS_DEMO_DATA" = "1" ]; then python scripts/inbox_demo.py --clear && python scripts/alerts_demo.py; fi
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips "*"
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: HARIS_DEMO_DATA          # fictional reports and alert subscribers for the dashboard demo
+        value: "1"
+      - key: HARIS_AI_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: HARIS_AUTHORITY_TOKEN    # the dashboard's access code
+        sync: false
+      - key: WHATSAPP_TOKEN
+        sync: false
+      - key: WHATSAPP_APP_SECRET
+        sync: false
+      - key: WHATSAPP_VERIFY_TOKEN
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        value: "1362368773636702"
+      - key: WHATSAPP_PUBLIC_NUMBER
+        value: "971503123535"
+      - key: HARIS_WEBSITE
+        value: https://claude.ai/artifact/Kb2rxU4cMeUmkumdnJZDkv

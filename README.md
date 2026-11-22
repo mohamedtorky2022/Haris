@@ -93,6 +93,8 @@ Full detail, including model choices and the privacy design, is in [`docs/TECHNI
 
 ## 4. Run it
 
+**Always-on address (Render, free).** `render.yaml` deploys Haris as one free Render web service from this repository: Render → New → Blueprint → pick the repo, then type the secrets it asks for (`GEMINI_API_KEY`, `HARIS_AUTHORITY_TOKEN`, `WHATSAPP_TOKEN`, `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`). The service gets a fixed `https://….onrender.com` address, so Meta's webhook is set once. On Render the server visits its own health page every 10 minutes, so the free plan's 15-minute sleep never starts; the free disk is temporary, so reports and subscribers start again from the demo set (`HARIS_DEMO_DATA=1`) after each deploy.
+
 **On the demo Mac after a restart:** `scripts/haris-up.sh` starts the server and a Cloudflare quick tunnel, keeps the Mac awake, and points Meta's WhatsApp webhook at the tunnel's new address (secrets read from `.env`, never printed). It prints the new address and the dashboard link.
 
 Requirements: Python 3.9 or newer (macOS ships 3.9 with the Xcode tools).
