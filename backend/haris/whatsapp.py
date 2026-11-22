@@ -602,6 +602,13 @@ def send(to: str, message: dict) -> bool:
 def process(payload: dict) -> int:
     """Handle every new message in a webhook payload. Returns how many messages were sent."""
     sent = 0
+    for entry in payload.get("entry") or []:  # Meta tells us when a reply could not be delivered
+        for change in entry.get("changes") or []:
+            for st in (change.get("value") or {}).get("statuses") or []:
+                if st.get("status") == "failed":
+                    err = (st.get("errors") or [{}])[0]
+                    log.warning("WhatsApp delivery failed: %s %s %s", err.get("code"), err.get("title"),
+                                (err.get("error_data") or {}).get("details", ""))
     for msg in incoming(payload):
         if msg["id"] and msg["id"] in _seen:
             continue
