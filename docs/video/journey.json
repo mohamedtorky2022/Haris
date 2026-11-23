@@ -8,12 +8,22 @@
   {
    "k": "problem",
    "mode": "full",
-   "dur": 12
+   "dur": 13
   },
   {
    "k": "a_check",
    "mode": "phone",
    "dur": 13
+  },
+  {
+   "k": "site",
+   "mode": "phone",
+   "dur": 13
+  },
+  {
+   "k": "ad",
+   "mode": "phone",
+   "dur": 15
   },
   {
    "k": "a_help",
@@ -29,6 +39,11 @@
    "k": "a_auth",
    "mode": "wide",
    "dur": 15
+  },
+  {
+   "k": "evidence",
+   "mode": "wide",
+   "dur": 12
   },
   {
    "k": "n_chat",
@@ -76,9 +91,19 @@
    "dur": 12
   },
   {
+   "k": "today",
+   "mode": "wide",
+   "dur": 13
+  },
+  {
+   "k": "assistant",
+   "mode": "wide",
+   "dur": 22
+  },
+  {
    "k": "future",
    "mode": "wide",
-   "dur": 15
+   "dur": 18
   },
   {
    "k": "outro",
@@ -311,21 +336,91 @@
    "role": [
     [
      0.3,
-     "«حارس» يحمي الجميع في دولة الإمارات…"
+     "هدف «حارس» درع ذكي في كل لحظة…"
     ],
     [
      6.0,
-     "…من أول رسالة مشبوهة حتى وصول البلاغ إلى الجهة المختصة."
+     "…من أول رسالة مشبوهة حتى إزالة الموقع الوهمي."
     ]
    ],
    "future": [
     [
      0.3,
-     "وهذه مجرد البداية."
+     "وخلال أشهر قليلة يتطور «حارس» خطوة بخطوة…"
     ],
     [
-     7.6,
-     "كلما زادت البيانات والحالات، أصبح «حارس» أذكى وأقرب إلى الناس."
+     8.0,
+     "…من التدريب، إلى كل هاتف، إلى الربط الرسمي، حتى يصبح درعاً وطنياً كاملاً."
+    ]
+   ],
+   "site": [
+    [
+     0.3,
+     "سارة وصلها رابط لا يبدو فيه أي شيء مريب."
+    ],
+    [
+     4.4,
+     "«حارس» يفتح الموقع بنفسه بأمان، فيجد صفحة بنك وهمية تطلب بطاقتها."
+    ],
+    [
+     9.0,
+     "هذا هو الفرق: يحكم على الموقع نفسه، لا على شكل الرابط."
+    ]
+   ],
+   "ad": [
+    [
+     0.3,
+     "خالد رأى إعلان سيارة بسعر مغرٍ جداً."
+    ],
+    [
+     5.0,
+     "أرسله إلى «حارس»: سعرها في السوق أعلى بكثير، والمعلن يطلب عربوناً قبل المعاينة."
+    ],
+    [
+     10.0,
+     "بضغطة يصل الإعلان إلى رادار الحملات، فيحمي غيره."
+    ]
+   ],
+   "evidence": [
+    [
+     0.3,
+     "وللجهة المختصة: لكل موقع وهمي ملف أدلة جاهز."
+    ],
+    [
+     5.5,
+     "مَن سجّله، ومَن يستضيفه، وكيف يُبلَّغ كلٌّ منهما، ومسودات الإزالة والحجب."
+    ]
+   ],
+   "today": [
+    [
+     0.3,
+     "واليوم يعمل «حارس» فعلاً، على واتساب والويب."
+    ],
+    [
+     7.0,
+     "وقسناه على مواقع احتيال حيّة، لا على بيانات جاهزة."
+    ]
+   ],
+   "assistant": [
+    [
+     0.3,
+     "والتحديث التالي: «حارس» مساعد ذكي في كل هاتف، مثل سيري."
+    ],
+    [
+     4.5,
+     "على أي تطبيق تسأله: هل هذا حقيقي؟ فيقرأ الشاشة ويقارن السعر."
+    ],
+    [
+     9.5,
+     "ويفحص رابط الرسالة قبل أن تضغطه."
+    ],
+    [
+     13.0,
+     "وينبّهك على شاشة المكالمة إن كان الرقم مُبلَّغاً عنه."
+    ],
+    [
+     17.0,
+     "وإن وقعت في الفخ، تكلّمه بصوتك فيرشدك خطوة بخطوة."
     ]
    ]
   },
@@ -336,8 +431,8 @@
    "open_wa": "افتح المحادثة في واتساب"
   },
   "problem": {
-   "l1": "تصل إلى الناس كل يوم رسائل احتيال…",
-   "l2": "ومن يقع ضحية لا يعرف ماذا يفعل في الساعة الأولى.",
+   "l1": "تصل إلى الناس كل يوم رسائل وروابط وإعلانات وهمية…",
+   "l2": "أغلب الفحص يحكم على شكل الرابط فقط، والضحية لا تعرف ماذا تفعل في الساعة الأولى، والموقع الوهمي يبقى يعمل.",
    "l3": "وهنا يأتي دور «حارس».",
    "sms": [
     [
@@ -349,8 +444,8 @@
      "طردك متوقف. ادفع 5 دراهم رسوم توصيل."
     ],
     [
-     "مبروك!",
-     "ربحت جائزة، أرسل رمز التحقق لاستلامها."
+     "إعلان",
+     "سيارة رياضية 2024 بـ200 ألف فقط، احجزها بعربون 1000 درهم."
     ],
     [
      "فرصة عمل",
@@ -596,48 +691,48 @@
    ]
   },
   "role": {
-   "title": "دور «حارس»",
+   "title": "الهدف: درع ذكي يحمي في كل لحظة",
    "items": [
     [
      "🛡️",
-     "يحذّرك قبل الجريمة"
+     "يحذّرك قبل أن تضغط"
     ],
     [
      "🧭",
-     "يرشدك في أول ساعة"
+     "يرشدك إن وقعت"
     ],
     [
      "🗣️",
      "يوصّل بلاغك بلغتك"
     ],
     [
-     "📢",
-     "يحمي المجتمع بالتنبيهات"
+     "🧹",
+     "يساعد على إزالة الموقع الوهمي"
     ]
    ]
   },
   "future": {
-   "title": "الخطوات القادمة",
+   "title": "التطور خلال أشهر: من التدريب إلى درع كامل",
    "items": [
     [
      "🎓",
-     "التدريب على بيانات حقيقية",
-     "مع الجهة الشريكة، ليصبح الكشف أدق"
+     "الشهر 1–2 · التدريب",
+     "يتعلم من البلاغات التي يؤكدها الضباط، ويقرأ كل الصفحات بمتصفح حقيقي. الهدف: كشف أكثر من 80%"
     ],
     [
-     "🧩",
-     "حالات أكثر",
-     "استدراج الأطفال · الأصوات المزيّفة بالذكاء الاصطناعي · رموز QR الاحتيالية · الهجمات على الشركات"
+     "📱",
+     "الشهر 3–4 · في كل هاتف",
+     "مساعد مثل سيري: يفحص الرسائل تلقائياً، وينبّه أثناء المكالمات، ويقرأ الشاشة بأمرك"
     ],
     [
      "🔗",
-     "ربط مباشر",
-     "مع الشرطة والبنوك وشركات الاتصالات"
+     "الشهر 5–6 · الربط الرسمي",
+     "البلاغ يدخل نظام القضايا مباشرة، وUAE PASS، وقائمة الحظر الرسمية، ورقم قصير للرسائل النصية"
     ],
     [
-     "🌍",
-     "لغات أكثر",
-     "الفارسية · البنغالية · الفلبينية · الصينية…"
+     "🛡️",
+     "بعدها · الدرع الوطني",
+     "فحص روابط الرسائل على مستوى الشبكة قبل أن تصل إلى الهاتف، وداخل التطبيقات الرسمية"
     ]
    ]
   },
@@ -663,14 +758,14 @@
    "problem": [
     [
      0.6,
-     "تصل إلى الناس كل يوم رسائل احتيال."
+     "تصل إلى الناس كل يوم رسائل وروابط وإعلانات وهمية."
     ],
     [
      4.2,
-     "ومن يقع ضحية لا يعرف ماذا يفعل في الساعة الأولى."
+     "وأغلب الفحص يحكم على شكل الرابط فقط، والضحية لا تعرف ماذا تفعل، والموقع الوهمي يبقى يعمل."
     ],
     [
-     8.0,
+     10.0,
      "وهنا يأتي دور «حارس»."
     ]
    ],
@@ -695,6 +790,94 @@
    "»": "",
    " · ": "، ",
    "…": "."
+  },
+  "site": {
+   "msg": "مرحباً، هذا الرابط الذي طلبته:",
+   "risk": "مؤشرات احتيال عالية · رابط تصيّد",
+   "head": "🌐 فتح «حارس» الموقع بأمان:",
+   "findings": [
+    "يتحوّل إلى صفحة بنك ليس نطاقه",
+    "تطلب رقم البطاقة وكلمة المرور",
+    "وتطلب رمز التحقق الذي يصلك برسالة"
+   ],
+   "advice": "لا تُدخل أي بيانات. البنك الحقيقي لا يطلب رمز التحقق عبر رابط.",
+   "url": "haris-uae.onrender.com/demo/go"
+  },
+  "ad": {
+   "cmd": "إعلان",
+   "ask": "📢 أرسل لي نص الإعلان أو رابطه كما هو، وسأفحصه.",
+   "text": "بورش كايين 2024 للبيع بـ200 ألف درهم، أقل من سعر السوق بداعي السفر. لحجزها حوّل عربون 1000 درهم وتعال شوفها.",
+   "risk": "إعلان وهمي (بيع أو تأجير)",
+   "reasons": [
+    "سعرها في السوق أعلى بكثير من 200 ألف",
+    "يطلب عربوناً قبل أن ترى السيارة"
+   ],
+   "advice": "لا تدفع عربوناً قبل المعاينة، وتعامل مع جهات مرخّصة فقط. أبلغ عبر «أمان» 8002626.",
+   "sent": "✅ أُرسل الإعلان إلى رادار الحملات · أبلغ عنه 4 أشخاص"
+  },
+  "evidence": {
+   "title": "ملف أدلة إزالة الموقع الوهمي",
+   "items": [
+    [
+     "🏢",
+     "مَن سجّل النطاق، وبريد الإبلاغ لديه، من السجلات الرسمية"
+    ],
+    [
+     "🖥️",
+     "مَن يستضيف الموقع، وعنوان الخادم، وبريد الإبلاغ"
+    ],
+    [
+     "🔏",
+     "بصمة الصفحة ووقت الفحص، دليلاً لملف القضية"
+    ],
+    [
+     "✉️",
+     "ثلاث مسودات جاهزة: تعليق النطاق، إزالة الصفحة، الحجب داخل الدولة"
+    ]
+   ]
+  },
+  "today": {
+   "title": "دوره اليوم: يعمل الآن",
+   "items": [
+    [
+     "💬",
+     "على واتساب والويب، بخمس لغات"
+    ],
+    [
+     "🌐",
+     "يفتح الموقع ويحكم عليه، ويكشف الإعلانات الوهمية"
+    ],
+    [
+     "🏛️",
+     "يوصّل البلاغ، ويجمع البلاغات المتشابهة في حملة"
+    ],
+    [
+     "🧾",
+     "يجهّز ملف أدلة لإزالة الموقع"
+    ]
+   ],
+   "stats": "📊 مُقاس على مواقع حيّة: 0 إنذارات خاطئة على 23 موقعاً حقيقياً · 52% كشف على مواقع احتيال لم يرها من قبل"
+  },
+  "assistant": {
+   "title": "التحديث التالي: «حارس» في كل هاتف، مثل سيري",
+   "items": [
+    [
+     "على أي تطبيق",
+     "«يا حارس، هل هذا حقيقي؟»: يقرأ الشاشة ويقارن السعر"
+    ],
+    [
+     "رسالة نصية",
+     "يفحص الرابط قبل أن تضغطه، وينقل الاحتيال جانباً"
+    ],
+    [
+     "مكالمة واردة",
+     "ينبّهك على شاشة المكالمة إن كان الرقم مُبلَّغاً عنه"
+    ],
+    [
+     "«وقعت في الفخ»",
+     "بصوتك: يتصل بالبنك أولاً، ثم يوصّل البلاغ"
+    ]
+   ]
   }
  },
  "en": {
@@ -861,21 +1044,91 @@
    "role": [
     [
      0.3,
-     "Haris protects everyone in the UAE…"
+     "Haris's goal is a smart shield at every moment…"
     ],
     [
      6.0,
-     "…from the first suspicious message to the report reaching the authority."
+     "…from the first suspicious message to the fake site taken down."
     ]
    ],
    "future": [
     [
      0.3,
-     "And this is only the start."
+     "Over the next few months, Haris grows step by step…"
     ],
     [
-     7.6,
-     "The more data and cases it learns, the smarter and closer to people Haris becomes."
+     8.0,
+     "…from training, to every phone, to the official link-up, until it is a full national shield."
+    ]
+   ],
+   "site": [
+    [
+     0.3,
+     "Sara gets a link with nothing suspicious about it."
+    ],
+    [
+     4.4,
+     "Haris opens the site itself, safely, and finds a fake bank page asking for her card."
+    ],
+    [
+     9.0,
+     "That is the difference: it judges the site, not just the link."
+    ]
+   ],
+   "ad": [
+    [
+     0.3,
+     "Khalid sees a car ad at an unbelievable price."
+    ],
+    [
+     5.0,
+     "He sends it to Haris: the market price is far higher, and the seller wants a deposit before viewing."
+    ],
+    [
+     10.0,
+     "One tap sends the ad to the campaign radar, to protect others."
+    ]
+   ],
+   "evidence": [
+    [
+     0.3,
+     "And for the authority: a ready takedown file for every fake site."
+    ],
+    [
+     5.5,
+     "Who registered it, who hosts it, how to reach each one, and drafts to remove and block it."
+    ]
+   ],
+   "today": [
+    [
+     0.3,
+     "And today Haris really works, on WhatsApp and the web."
+    ],
+    [
+     7.0,
+     "Measured on live phishing sites, not on a ready-made dataset."
+    ]
+   ],
+   "assistant": [
+    [
+     0.3,
+     "The next update: Haris as a smart assistant on every phone, like Siri."
+    ],
+    [
+     4.5,
+     "On any app, ask: is this real? It reads the screen and checks the price."
+    ],
+    [
+     9.5,
+     "It checks a text message's link before you tap it."
+    ],
+    [
+     13.0,
+     "And warns you on the call screen when the number has been reported."
+    ],
+    [
+     17.0,
+     "If you've been scammed, just talk to it, and it guides you step by step."
     ]
    ]
   },
@@ -886,25 +1139,25 @@
    "open_wa": "Open the chat in WhatsApp"
   },
   "problem": {
-   "l1": "Every day, people receive scam messages…",
-   "l2": "and victims don't know what to do in the first hour.",
-   "l3": "That's where Haris comes in.",
+   "l1": "Every day, people receive fake messages, links and ads…",
+   "l2": "Most checks judge only what a link looks like, victims don't know what to do in the first hour, and the fake site stays online.",
+   "l3": "That is where Haris comes in.",
    "sms": [
     [
      "Bank",
      "Your card is blocked. Update your details via the link within an hour."
     ],
     [
-     "Delivery",
+     "Courier",
      "Your parcel is on hold. Pay a 5 dirham delivery fee."
     ],
     [
-     "Congratulations!",
-     "You won a prize. Send the verification code to claim it."
+     "Ad",
+     "2024 sports car, only 200,000. Book it with a 1,000 deposit."
     ],
     [
      "Job offer",
-     "Work from home for 900 dirhams a day."
+     "Work from home, 900 dirhams a day."
     ]
    ]
   },
@@ -1146,48 +1399,48 @@
    ]
   },
   "role": {
-   "title": "What Haris does",
+   "title": "The goal: a smart shield at every moment",
    "items": [
     [
      "🛡️",
-     "Warns you before the crime"
+     "Warns you before you tap"
     ],
     [
      "🧭",
-     "Guides you in the first hour"
+     "Guides you if it happens"
     ],
     [
      "🗣️",
-     "Carries your report in your language"
+     "Delivers your report in your language"
     ],
     [
-     "📢",
-     "Protects the community with warnings"
+     "🧹",
+     "Helps take the fake site down"
     ]
    ]
   },
   "future": {
-   "title": "What comes next",
+   "title": "The next months: from training to a full shield",
    "items": [
     [
      "🎓",
-     "Training on real data",
-     "with the partner authority, for sharper detection"
+     "Months 1–2 · Training",
+     "Learns from the reports officers confirm, and reads every page with a real browser. Target: over 80% caught"
     ],
     [
-     "🧩",
-     "More cases",
-     "child grooming · AI-cloned voices · QR-code scams · attacks on businesses"
+     "📱",
+     "Months 3–4 · On every phone",
+     "An assistant like Siri: checks messages automatically, warns during calls, reads the screen when asked"
     ],
     [
      "🔗",
-     "Direct links",
-     "with the police, banks and telecom providers"
+     "Months 5–6 · Official link-up",
+     "Reports go straight into the case system, UAE PASS, the official block list, a short SMS number"
     ],
     [
-     "🌍",
-     "More languages",
-     "Persian · Bengali · Tagalog · Chinese…"
+     "🛡️",
+     "Then · A national shield",
+     "Links in text messages checked on the network before they reach the phone, and inside official apps"
     ]
    ]
   },
@@ -1202,6 +1455,134 @@
     "Guides you",
     "Carries your report"
    ]
+  },
+  "site": {
+   "msg": "Hi, here is the link you asked for:",
+   "risk": "High risk of fraud · Phishing link",
+   "head": "🌐 Haris opened the site safely:",
+   "findings": [
+    "It redirects to a bank page on a domain that isn't the bank's",
+    "It asks for the card number and password",
+    "And for the code sent to your phone"
+   ],
+   "advice": "Don't enter anything. A real bank never asks for your code through a link.",
+   "url": "haris-uae.onrender.com/demo/go"
+  },
+  "ad": {
+   "cmd": "ad",
+   "ask": "📢 Send me the ad's text or link as it is, and I'll check it.",
+   "text": "2024 Porsche Cayenne for sale at AED 200,000, below market, owner travelling. Send a 1,000 deposit to hold it and come see it.",
+   "risk": "Fake ad (sale or rental)",
+   "reasons": [
+    "Its market price is far above 200,000",
+    "It asks for a deposit before you see the car"
+   ],
+   "advice": "Never pay a deposit before viewing, and deal only with licensed companies. Report to Aman on 8002626.",
+   "sent": "✅ Sent to the campaign radar · reported by 4 people"
+  },
+  "evidence": {
+   "title": "Takedown file for a fake website",
+   "items": [
+    [
+     "🏢",
+     "Who registered the domain, and their abuse contact, from the official registries"
+    ],
+    [
+     "🖥️",
+     "Who hosts the site, the server address and the abuse contact"
+    ],
+    [
+     "🔏",
+     "A fingerprint of the page and the time of the check, for the case file"
+    ],
+    [
+     "✉️",
+     "Three drafts: suspend the domain, take the page down, block it inside the UAE"
+    ]
+   ]
+  },
+  "today": {
+   "title": "What it does today: live now",
+   "items": [
+    [
+     "💬",
+     "On WhatsApp and the web, in five languages"
+    ],
+    [
+     "🌐",
+     "Opens the website and judges it, and catches fake ads"
+    ],
+    [
+     "🏛️",
+     "Delivers reports and groups similar ones into a campaign"
+    ],
+    [
+     "🧾",
+     "Prepares a takedown file for the site"
+    ]
+   ],
+   "stats": "📊 Measured on live sites: 0 false alarms on 23 real websites · 52% caught on phishing sites it had never seen"
+  },
+  "assistant": {
+   "title": "Next update: Haris on every phone, like Siri",
+   "items": [
+    [
+     "On any app",
+     "“Haris, is this real?” It reads the screen and checks the price"
+    ],
+    [
+     "A text message",
+     "Checks the link before you tap and moves the scam aside"
+    ],
+    [
+     "An incoming call",
+     "Warns on the call screen when the number has been reported"
+    ],
+    [
+     "“I've been scammed”",
+     "By voice: call the bank first, then the report goes in"
+    ]
+   ]
+  },
+  "narration_extra": {
+   "poster": [
+    [
+     0.4,
+     "Haris, your smart shield. Scan the code with your phone's camera."
+    ]
+   ],
+   "problem": [
+    [
+     0.6,
+     "Every day, people receive fake messages, links and ads."
+    ],
+    [
+     4.2,
+     "Most checks judge only what a link looks like, victims don't know what to do, and the fake site stays online."
+    ],
+    [
+     10.0,
+     "That is where Haris comes in."
+    ]
+   ],
+   "privacy": [
+    [
+     0.3,
+     "Your privacy comes first. Nothing reaches the authority without your consent, Haris does not keep your messages, a report is deleted after seven days, and you can stop alerts at any time."
+    ]
+   ],
+   "outro": [
+    [
+     0.4,
+     "Haris, your smart shield. It warns you, guides you, and delivers your report. Try it now."
+    ]
+   ]
+  },
+  "say": {
+   "…": ".",
+   "UAE PASS": "U A E Pass",
+   "116111": "one one six, one one one",
+   "(into Arabic for the officer),": "into Arabic for the officer,"
   }
  }
 }

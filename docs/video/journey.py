@@ -1,8 +1,8 @@
 """The Haris journey video: the poster, then a resident, a visitor and a child, the authority's screen,
 community warnings, privacy, how it works, and what comes next.
 
-Haris does not speak: captions appear beside him, he points at each step, and calm music
-(composed here in code, so there is no licence to clear) plays.
+Haris narrates each line (voice.py records it), captions appear beside him, he points at each step,
+and hopeful music (composed here in code, so there is no licence to clear) plays under his voice.
     python3 docs/video/journey.py ar               # one language
     python3 docs/video/journey.py all              # ar, en
     python3 docs/video/journey.py ar --stills 3,20 # only draw frames at these seconds
@@ -24,22 +24,25 @@ FPS, LEAD, SR = 30, 0.5, 44100
 
 
 # --- Music -------------------------------------------------------------------
-# Calm and unobtrusive, so the viewer can read: a soft pad, a slow piano-like arpeggio,
-# a quiet bass and a sparse melody, at 60 beats a minute, ending on a held chord.
+# Hopeful and steady, and quiet enough to sit under the narration: a warm pad, a plucked
+# arpeggio in eighth notes, a soft pulse (kick and shaker), a bass and a bell-like melody,
+# at 84 beats a minute in C major (Am - F - C - G), ending on a held C chord.
 
-BPM = 60
+BPM = 84
 BEAT = 60 / BPM
 BAR = 4 * BEAT
-PROGRESSION = [  # one chord a bar: notes for the pad, the arpeggio and the bass root
-    ("Dmaj7", [50, 54, 57, 61], 38), ("Bm7", [47, 50, 54, 57], 35),
-    ("Gmaj7", [43, 47, 50, 54], 31), ("A6", [45, 49, 52, 54], 33),
-    ("Dmaj7", [50, 54, 57, 61], 38), ("F#m7", [42, 45, 49, 52], 30),
-    ("Gmaj7", [43, 47, 50, 54], 31), ("Asus", [45, 50, 52, 57], 33),
+PROGRESSION = [  # one chord a bar: notes for the pad and the arpeggio, and the bass root
+    ("Am", [57, 60, 64, 67], 45), ("F", [53, 57, 60, 64], 41),
+    ("C", [48, 55, 60, 64], 36), ("G", [55, 59, 62, 67], 43),
+    ("Am", [57, 60, 64, 69], 45), ("F", [53, 57, 60, 65], 41),
+    ("C", [52, 55, 60, 64], 36), ("Gsus", [55, 60, 62, 67], 43),
 ]
-FINAL = ("D", [50, 54, 57, 62], 38)
-# a quiet melody over 8 bars: (bar, beat, midi, beats)
-MELODY = [(0, 0, 69, 3), (1, 0, 66, 2), (1, 2, 69, 2), (2, 0, 71, 3), (3, 0, 69, 4),
-          (4, 0, 73, 3), (5, 0, 69, 2), (5, 2, 66, 2), (6, 0, 67, 3), (7, 0, 69, 4)]
+FINAL = ("C", [48, 55, 60, 64, 67], 36)
+# a bell melody over 8 bars: (bar, beat, midi, beats)
+MELODY = [(0, 0, 76, 1.5), (0, 1.5, 74, 0.5), (0, 2, 72, 2), (1, 0, 72, 1), (1, 1, 69, 3),
+          (2, 0, 67, 1.5), (2, 1.5, 72, 0.5), (2, 2, 76, 2), (3, 0, 74, 4),
+          (4, 0, 76, 1.5), (4, 1.5, 79, 0.5), (4, 2, 76, 2), (5, 0, 77, 1), (5, 1, 72, 3),
+          (6, 0, 72, 1.5), (6, 1.5, 74, 0.5), (6, 2, 76, 2), (7, 0, 74, 4)]
 
 
 def hz(m: float) -> float:
@@ -57,8 +60,9 @@ def env(n: int, attack: float, release: float) -> np.ndarray:
 
 
 def music(total: float) -> np.ndarray:
-    n = int(total * SR) + 4 * SR
+    n = int(total * SR) + 6 * SR
     left, right = np.zeros(n), np.zeros(n)
+    rng = np.random.default_rng(11)
 
     def add(sig, start, pan=0.0, gain=1.0):
         s = int(start * SR)
@@ -69,58 +73,71 @@ def music(total: float) -> np.ndarray:
         right[s:e] += sig[: e - s] * gain * (1 + pan) / 2
 
     bars = int(np.ceil(total / BAR))
-    lp = butter(2, 1600, "low", fs=SR, output="sos")
+    lp = butter(2, 1400, "low", fs=SR, output="sos")
+    plp = butter(2, 3200, "low", fs=SR, output="sos")
+    hp = butter(2, 6500, "high", fs=SR, output="sos")
+    # one-shot sounds
+    tk = np.arange(int(0.35 * SR)) / SR
+    kick = np.sin(2 * np.pi * np.cumsum(45 + 70 * np.exp(-tk * 30)) / SR) * np.exp(-tk * 9)
+    shaker = sosfilt(hp, rng.standard_normal(int(0.09 * SR))) * np.exp(-np.arange(int(0.09 * SR)) / SR * 45)
     for b in range(bars):
         last = b >= bars - 2
-        name, notes, root = FINAL if last else PROGRESSION[b % len(PROGRESSION)]
-        start = b * BAR
-        length = int((BAR + 1.8) * SR) if not last else int((2 * BAR + 2) * SR)
         if last and b == bars - 1:
             continue
+        name, notes, root = FINAL if last else PROGRESSION[b % len(PROGRESSION)]
+        start = b * BAR
+        length = int((BAR + 1.5) * SR) if not last else int((2 * BAR + 2.5) * SR)
         t = np.arange(length) / SR
-        # pad: soft sines with a slow swell, slightly detuned left and right
+        # pad: soft, slightly detuned, with a slow swell
         for m in notes:
-            for det, pan in ((-4, -0.5), (4, 0.5)):
-                f = hz(m) * 2 ** (det / 1200)
-                tone = np.sin(2 * np.pi * f * t) + 0.25 * np.sin(4 * np.pi * f * t) + 0.08 * np.sin(6 * np.pi * f * t)
-                add(sosfilt(lp, tone) * env(length, 1.6, 2.0), start, pan, 0.030)
-        # bass from bar 2
-        if b >= 2:
-            bl = int((BAR + 0.6) * SR) if not last else length
-            tb = np.arange(bl) / SR
-            bass = np.sin(2 * np.pi * hz(root) * tb) * env(bl, 0.3, 1.2)
-            add(bass, start, 0, 0.10)
-        # piano-like arpeggio, one note a beat, from bar 2 until the last chord
-        if 2 <= b and not last:
-            order = [0, 1, 2, 3] if b % 2 == 0 else [3, 2, 1, 2]
-            for i in range(4):
-                m = notes[order[i]] + 12
-                ta = np.arange(int(2.4 * SR)) / SR
-                key = (np.sin(2 * np.pi * hz(m) * ta) + 0.35 * np.sin(4 * np.pi * hz(m) * ta) + 0.1 * np.sin(6 * np.pi * hz(m) * ta))
-                key *= np.exp(-ta * 1.6) * np.clip(ta / 0.006, 0, 1)
-                add(key, start + i * BEAT, 0.25 if i % 2 else -0.25, 0.055)
-    # the melody: a soft flute-like line every other 8-bar phrase, from bar 10
-    flp = butter(2, 2400, "low", fs=SR, output="sos")
-    for phrase in range(10, bars - 4, 16):
+            for det, pan in ((-5, -0.6), (5, 0.6)):
+                f = hz(m - 12) * 2 ** (det / 1200)
+                tone = np.sin(2 * np.pi * f * t) + 0.3 * np.sin(4 * np.pi * f * t) + 0.1 * np.sin(6 * np.pi * f * t)
+                add(sosfilt(lp, tone) * env(length, 1.2, 1.6), start, pan, 0.024)
+        if last:
+            continue
+        # plucked arpeggio in eighth notes, from bar 1
+        if b >= 1:
+            pattern = [0, 1, 2, 3, 2, 1, 2, 3] if b % 2 == 0 else [0, 2, 1, 3, 2, 3, 1, 2]
+            for k, idx in enumerate(pattern):
+                m = notes[idx] + 12
+                ln = int(0.9 * SR)
+                ta = np.arange(ln) / SR
+                f = hz(m)
+                pl = sum(np.sin(2 * np.pi * f * h * ta) / h ** 1.3 for h in range(1, 6))
+                pl = sosfilt(plp, pl) * np.exp(-ta * 5.5) * np.clip(ta / 0.003, 0, 1)
+                add(pl, start + k * BEAT / 2, 0.35 if k % 2 else -0.35, 0.040 if k % 2 else 0.050)
+        # bass and pulse from bar 4
+        if b >= 4:
+            for k, beats in ((0, 1.5), (1.5, 0.5), (2, 2)):
+                bl = int(beats * BEAT * SR)
+                tb = np.arange(bl) / SR
+                bass = (np.sin(2 * np.pi * hz(root) * tb) + 0.2 * np.sin(4 * np.pi * hz(root) * tb)) * env(bl, 0.02, 0.15)
+                add(bass, start + k * BEAT, 0, 0.085)
+            for k in range(4):
+                add(kick, start + k * BEAT, 0, 0.11 if k % 2 == 0 else 0.07)
+            for k in range(8):
+                add(shaker, start + k * BEAT / 2 + 0.01, 0.4, 0.020 if k % 2 else 0.011)
+    # bell melody: every other 8-bar phrase, from bar 8
+    for phrase in range(8, bars - 4, 16):
         for bar, beat, m, beats in MELODY:
             s = (phrase + bar) * BAR + beat * BEAT
             if s > (bars - 3) * BAR:
                 break
-            ln = int((beats * BEAT + 0.6) * SR)
+            ln = int((beats * BEAT + 1.2) * SR)
             tm = np.arange(ln) / SR
-            vib = 1 + 0.003 * np.sin(2 * np.pi * 4.5 * tm) * np.clip(tm - 0.4, 0, 1)
-            ph = 2 * np.pi * hz(m) * np.cumsum(vib) / SR
-            tone = np.sin(ph) + 0.18 * np.sin(2 * ph) + 0.05 * np.sin(3 * ph)
-            add(sosfilt(flp, tone) * env(ln, 0.25, 0.6), s, 0.1, 0.045)
+            f = hz(m)
+            bell = (np.sin(2 * np.pi * f * tm) + 0.4 * np.sin(2 * np.pi * 2.0 * f * tm) * np.exp(-tm * 3)
+                    + 0.15 * np.sin(2 * np.pi * 3.0 * f * tm) * np.exp(-tm * 6))
+            add(bell * np.exp(-tm * 1.8) * np.clip(tm / 0.004, 0, 1), s, -0.15, 0.040)
 
-    # a soft hall
-    rng = np.random.default_rng(7)
-    ir_t = np.arange(int(3.0 * SR)) / SR
-    irs = [rng.standard_normal(len(ir_t)) * np.exp(-ir_t / 0.8) for _ in range(2)]
+    # a soft room
+    ir_t = np.arange(int(2.2 * SR)) / SR
+    irs = [rng.standard_normal(len(ir_t)) * np.exp(-ir_t / 0.55) for _ in range(2)]
     wet = [fftconvolve(ch, ir)[:n] for ch, ir in zip((left, right), irs)]
-    mix = np.stack([left + 0.02 * wet[0], right + 0.02 * wet[1]], axis=1)
+    mix = np.stack([left + 0.018 * wet[0], right + 0.018 * wet[1]], axis=1)
     fade = np.ones(n)
-    fi, fo = int(2.5 * SR), int(4.0 * SR)
+    fi, fo = int(1.5 * SR), int(4.0 * SR)
     fade[:fi] = np.linspace(0, 1, fi)
     end = int(total * SR)
     fade[end - fo:end] = np.linspace(1, 0, fo)

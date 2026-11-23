@@ -167,6 +167,12 @@ blockquote { border-inline-start: 5px solid var(--brand); background: #F4F7F6; b
 .tli .ic { width: 96px; height: 96px; font-size: 44px; }
 .tli b { display: block; font-size: 40px; color: var(--brand); }
 .tli div > span { display: block; font-size: 29px; color: #33424D; line-height: 1.5; margin-top: 2px; }
+.phones4 { display: flex; justify-content: space-between; gap: 22px; min-height: 600px; }
+.ph4 { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+.ph4 img { width: 232px; height: auto; filter: drop-shadow(0 14px 22px rgba(10,46,42,.22)); }
+.ph4 b { font-size: 30px; color: var(--brand); line-height: 1.25; }
+.ph4 span { font-size: 22px; color: #33424D; line-height: 1.45; }
+.panel h2.tight { margin-bottom: 26px; font-size: 48px; }
 .minis { display: flex; justify-content: space-between; gap: 18px; }
 .mini { flex: 1; height: 720px; border-radius: 40px; background: #10181A; padding: 10px; box-shadow: 0 18px 40px rgba(10,46,42,.25); }
 .mini .scr { width: 100%; height: 100%; border-radius: 31px; background: linear-gradient(170deg, #2C5E57, #12302C); padding: 26px 10px 10px; display: flex; flex-direction: column; gap: 12px; }
@@ -306,6 +312,25 @@ function build() {
       <div class="in" data-at="6.2">💡 ${esc(u.check.advice)}</div>
       <div class="btns" data-at="8.6"><div class="btn" data-tapat="10.4">${esc(u.wa.report)}</div><div class="btn">${esc(u.wa.scammed)}</div><div class="btn">${esc(u.wa.again)}</div></div>
       </div>${composer(u.wa.composer)}`, "left:60px"),
+    site: phone(`${header(u.wa.title, u.wa.verified)}<div class="chat">
+      <div class="out" data-at="0.6">${esc(u.site.msg)}<div class="ltr" dir="ltr" style="color:#1F5FBF;font-weight:600;text-align:left">${esc(u.site.url)}</div></div>
+      <div class="sys" data-at="1.8" data-until="3.4">🌐 ${esc(u.wa.typing)}</div>
+      <div class="in" data-at="3.4"><div class="risk">🔴 ${esc(u.site.risk)}</div>
+        <div data-at="4.0" style="font-weight:700;margin-top:6px">${esc(u.site.head)}</div>
+        ${u.site.findings.map((r, i) => `<div data-at="${4.6 + i * 0.8}">• ${esc(r)}</div>`).join("")}</div>
+      <div class="in" data-at="8.2">💡 ${esc(u.site.advice)}</div>
+      </div>${composer(u.wa.composer)}`, "left:60px"),
+    ad: phone(`${header(u.wa.title, u.wa.verified)}<div class="chat">
+      <div class="out" data-at="0.5" style="font-weight:600">${esc(u.ad.cmd)}</div>
+      <div class="in" data-at="1.3">${esc(u.ad.ask)}</div>
+      <div class="out" data-at="2.6">${esc(u.ad.text)}</div>
+      <div class="sys" data-at="3.6" data-until="5.0">${esc(u.wa.typing)}</div>
+      <div class="in" data-at="5.0"><div class="risk">🔴 ${esc(u.ad.risk)}</div>
+        ${u.ad.reasons.map((r, i) => `<div data-at="${5.6 + i * 0.7}">• ${esc(r)}</div>`).join("")}</div>
+      <div class="in" data-at="7.4">💡 ${esc(u.ad.advice)}</div>
+      <div class="btns" data-at="9.2"><div class="btn" data-tapat="10.6">${esc(u.wa.report)}</div><div class="btn">${esc(u.wa.scammed)}</div></div>
+      <div class="sys" data-at="11.4">${esc(u.ad.sent)}</div>
+      </div>${composer(u.wa.composer)}`, "left:60px"),
     a_help: phone(`${header(u.wa.title, u.wa.verified)}<div class="chat">
       <div class="sys" data-at="0.4">🗓️ ${esc(u.help.later)}</div>
       <div class="btns" data-at="0.8"><div class="btn" data-tapat="1.6">${esc(u.wa.scammed)}</div></div>
@@ -407,12 +432,19 @@ function build() {
       </div><div class="stopline" data-at="5.0">${esc(u.broadcast.stop)}</div></div>`,
     privacy: `<div class="panel"><h2 data-at="0.2">🔒 ${esc(u.privacy.title)}</h2><div class="grid2">
       ${u.privacy.items.map(([ic, t], i) => `<div class="pcard" data-at="${0.8 + i * 1.3}"><span class="ic">${ic}</span><span>${esc(t)}</span></div>`).join("")}</div></div>`,
+    evidence: `<div class="panel"><h2 data-at="0.2">🧾 ${esc(u.evidence.title)}</h2><div class="grid2">
+      ${u.evidence.items.map(([ic, t], i) => `<div class="pcard" data-at="${0.8 + i * 1.3}"><span class="ic">${ic}</span><span>${esc(t)}</span></div>`).join("")}</div></div>`,
+    today: `<div class="panel"><h2 data-at="0.2">✅ ${esc(u.today.title)}</h2><div class="grid2">
+      ${u.today.items.map(([ic, t], i) => `<div class="pcard" data-at="${0.7 + i * 0.9}"><span class="ic">${ic}</span><span>${esc(t)}</span></div>`).join("")}</div>
+      <div class="fallback" data-at="7.0">${esc(u.today.stats)}</div></div>`,
     how: `<div class="panel"><h2 data-at="0.2">⚙️ ${esc(u.how.title)}</h2><div class="flow">
       ${u.how.nodes.map(([ic, b, s], i) => (i ? `<div class="arrow" data-at="${0.4 + i * 1.1}">${ARROW}</div>` : "") + `<div class="node ${i === 1 ? "haris" : ""}" data-at="${0.6 + i * 1.1}"><span class="ic">${i === 1 ? `<img src="${LOGO}" style="width:96px;height:96px;border-radius:50%">` : ic}</span><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join("")}</div>
       <div class="fallback" data-at="5.6">${esc(u.how.fallback)}</div>
       <div class="tech" data-at="7.0">${u.how.tech.map((t) => `<span>${esc(t)}</span>`).join("")}</div></div>`,
     role: `<div class="panel"><h2 data-at="0.2">${esc(u.role.title)}</h2><div class="roles">
       ${u.role.items.map(([ic, t], i) => `<div class="pcard" data-at="${0.8 + i * 1.2}"><span class="ic">${ic}</span><span>${esc(t)}</span></div>`).join("")}</div></div>`,
+    assistant: `<div class="panel"><h2 class="tight" data-at="0.2">📱 ${esc(u.assistant.title)}</h2><div class="phones4">
+      ${u.assistant.items.map(([b, t], i) => `<div class="ph4" data-at="${(u.captions.assistant[i + 1] || [1 + i * 3])[0] - 0.2}"><img src="img/phone-${D.lang}-p${i + 1}.png" alt=""><b>${esc(b)}</b><span>${esc(t)}</span></div>`).join("")}</div></div>`,
     future: `<div class="panel"><h2 data-at="0.2">🚀 ${esc(u.future.title)}</h2><div class="tl">
       ${u.future.items.map(([ic, b, s], i) => `<div class="tli" data-at="${0.9 + i * 1.6}"><span class="ic">${ic}</span><div><b>${esc(b)}</b><span>${esc(s)}</span></div></div>`).join("")}</div></div>`,
     outro: `<div class="hero"><img class="mapbg" src="../poster/uae-map-light.svg" alt="" style="inset-inline-start:40px;top:160px">
