@@ -435,3 +435,15 @@ def test_the_judges_demo_message_is_caught_only_by_the_visit(monkeypatch):
     monkeypatch.setenv("HARIS_SITE_CHECK", "1")
     monkeypatch.setattr(sitecheck, "_get", fake_get)
     assert detector.analyze(message, "ar", use_llm=False)["risk"] == "high"
+def test_the_phishing_database_sample_is_one_per_domain_and_repeatable():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "fetch_phishing_database", Path(__file__).resolve().parents[1] / "scripts" / "fetch_phishing_database.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    lines = ["# header", "", "https://a.top/1", "https://a.top/2", "http://b.xyz/", "ftp://c.cc/", "https://d.click/x"]
+    first = mod.sample(lines, 10, "2026-11-24")
+    assert first == mod.sample(lines, 10, "2026-11-24")  # same day, same sample
+    hosts = [h.split("/")[2] for h in first]
+    assert len(hosts) == len(set(hosts)) == 3            # one per domain, ftp and comments dropped
+    assert len(mod.sample(lines, 2, "x")) == 2
