@@ -114,7 +114,7 @@ for _brand, (_names, _domains) in GLOBAL_BRANDS.items():
 FREE_HOSTS = (
     "square.site", "netlify.app", "vercel.app", "pages.dev", "workers.dev", "github.io", "gitlab.io",
     "web.app", "firebaseapp.com", "glitch.me", "replit.app", "repl.co", "onrender.com", "herokuapp.com",
-    "wixsite.com", "weebly.com", "webflow.io", "framer.website", "framer.app", "typedream.app",
+    "wixsite.com", "weebly.com", "weeblysite.com", "webflow.io", "framer.website", "framer.app", "typedream.app",
     "godaddysites.com", "carrd.co", "blogspot.com", "sites.google.com", "notion.site", "gitbook.io",
     "000webhostapp.com", "wordpress.com", "ukit.me", "tilda.ws", "mystrikingly.com", "jimdosite.com",
 )
