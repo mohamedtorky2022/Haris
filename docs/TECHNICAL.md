@@ -136,9 +136,32 @@ The false alarm was a gap in the official list, not in the scoring: `etisalat.ae
 
 Round 2 changed four things, each tested for false alarms as well: `ai_medium` from 20 to 25; the `free_host` flag; brands that phishing kits imitate worldwide (`GLOBAL_BRANDS`, matched only in the page title, with their real domains treated as official); and 5.5 s between sites in the benchmark so the AI reads every page. Because these changes were made after looking at this list, they must be measured on a **new** list, not the same one; re-running on the same 42 sites would overstate the result.
 
+**Second measurement, on a held-out list.** `fetch_phishstats.py --days 4 --exclude phishing-today.txt` took 60 more sites from the same days, none on a domain of the first list, so none of them had been seen while tuning. 33 answered, 27 did not. Caught **17 of 33 (52%)**, up from 43%. `free_host` took part in 7 of the catches.
+
+The AI read 20 of the 33 pages. The rest gave it nothing to read: most misses were on Square (`square.site`) and Weebly (`weeblysite.com`), whose pages are built by JavaScript in the browser, so the HTML Haris fetches is an almost empty shell with no text and no form. That is a limit of the visit, not of the verdict. The fix is to render the page in a headless browser before reading it, which is heavier than Render's free plan allows; it is the first item for a pilot. After this run `weeblysite.com` (Weebly's newer address, 6 of the misses) was added to `FREE_HOSTS`; that change has not been measured yet.
+
+| | Genuine sites | Live phishing sites |
+| --- | --- | --- |
+| Sites that answered | 23 | 42 (first list), 33 (held-out list) |
+| Result | **0 false alarms** | 43% caught, then **52% on the held-out list** after round 2 |
+| Main limit | 8 of 31 refuse visits from cloud servers | pages built by JavaScript on free website builders |
+
 **The demo page.** `/demo/go` answers with a redirect to `/demo/falcon-bank.html`, a page of the fictional "Falcon National Bank" (بنك الصقر الوطني), registered in `urls.py` and `sitecheck.py` with the reserved `.example` domain as its official one. It asks for a card number, expiry, CVV, password and one-time code, carries a red "training page" banner in Arabic and English, has no form action and a disabled button, and is marked `noindex`. Its link scores 0 offline, and a neutral message carrying it is rated low without the visit and high with it (`tests/test_sitecheck.py`).
 
 **Measuring it.** `scripts/evaluate_sites.py` takes labelled addresses (a `.txt` with one per line and `--label`, or a `.json` list) and, with `--server https://haris-uae.onrender.com`, sends each one to the deployed `/api/site`, so the visits come from the server and not the tester's computer. It prints and saves (`<file>-results.md`) how many phishing sites were caught, how many genuine sites raised a false alarm, and how many did not answer, which are counted apart. `data/samples/sites.json` holds 31 genuine sites, including the hard cases: sign-in pages of big brands that are not on the official list, and news sites that name banks. Phishing addresses are not committed: they die within a day, so the list should come from the partner authority on the day of the run. Free public feeds have terms to check first; OpenPhish's, for example, do not allow use for detection or product work without written permission. The tests in `tests/test_sitecheck.py` cover the logic against pages the suite serves itself, including the refusal of private addresses.
+
+### Takedown evidence (`evidence.py`, `POST /api/authority/evidence`)
+
+Detection alone does not stop a fake site; someone has to have it taken down. For one address, the authority gets a file it can act on:
+
+| Part | Source |
+| --- | --- |
+| What the page does | The live inspection above, with the page's SHA-256 as it was read, so the evidence shows exactly what was seen and when |
+| Registrar | The domain's RDAP record (via rdap.org, which forwards to the registry): registrar name, IANA id, abuse e-mail and phone, registration and expiry dates, name servers, status |
+| Host | The server's address, then that address's RDAP record: network, owner, country, abuse e-mail. A page on a free website builder is flagged, because the request then goes to the platform, not the registrar |
+| Drafts | A suspension request to the registrar and a takedown request to the host, in English, and a request to block the site inside the UAE, in Arabic |
+
+Rules: every contact comes from the registries' records and a missing one stays empty, never guessed; nothing is sent automatically; the query string is dropped, in the server and again in the browser before the address reaches the address bar, so no victim identifier is kept; the endpoint needs the authority's access code. The training page's file says plainly that it is the demo and its drafts must not be sent. On the dashboard, each scammer identifier that is a website links to `evidence.html?url=…`.
 
 ### Scoring
 

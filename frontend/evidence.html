@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>ملف أدلة الإزالة | لوحة الجهة المختصة</title>
+  <link rel="icon" href="haris.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="ops.css?v=20261123">
+  <link rel="stylesheet" href="evidence.css?v=20261123">
+</head>
+<body>
+  <header class="ops-top">
+    <div class="brand">
+      <span class="seal"><img src="haris.svg" alt="" width="34" height="34"></span>
+      <div>
+        <h1>مركز البلاغات الإلكترونية</h1>
+        <p>لوحة تجريبية لجهة مختصة · بلاغات أرسلها أصحابها عبر «حارس»</p>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="أقسام اللوحة">
+      <a href="reports.html">البلاغات</a>
+      <a href="authority.html">رادار الحملات</a>
+      <a href="evidence.html" aria-current="page">أدلة الإزالة</a>
+    </nav>
+    <div class="status-strip">
+      <span class="demo">نسخة تجريبية</span>
+    </div>
+  </header>
+
+  <main class="ev">
+    <h2>ملف أدلة لإزالة موقع وهمي</h2>
+    <p class="ev-lead">أدخل رابط الموقع الوهمي. يفتحه «حارس» في بيئة آمنة، ويجمع من السجلات الرسمية مَن سجّل النطاق ومَن يستضيفه وكيف يُبلَّغ كلٌّ منهما، ثم يجهّز مسودات طلبات الإزالة والحجب. لا يُرسَل أي شيء تلقائياً.</p>
+
+    <form id="login" class="login" hidden>
+      <label for="token">رمز الدخول للجهة المختصة</label>
+      <input id="token" type="password" autocomplete="off">
+      <button type="submit">دخول</button>
+      <p id="login-error" class="err" role="alert"></p>
+    </form>
+
+    <form id="ask" class="ev-ask">
+      <label for="url">رابط الموقع</label>
+      <input id="url" type="url" dir="ltr" placeholder="https://…" required>
+      <button type="submit" id="go">إعداد ملف الأدلة</button>
+    </form>
+    <p id="status" class="ev-status" role="status" aria-live="polite"></p>
+
+    <section id="file" class="ev-file" hidden></section>
+  </main>
+  <script src="evidence.js?v=20261123"></script>
+</body>
+</html>
