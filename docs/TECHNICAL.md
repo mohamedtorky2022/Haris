@@ -106,21 +106,23 @@ The link analysis above only reads the link's text, so a brand-new domain with a
 | `threat_list` | 60 | Listed by Google Safe Browsing |
 | `ai_high` / `ai_medium` | 40 / 20 | The model read the page and judged it a scam |
 | `new_domain` | 30 | Registered less than 30 days ago |
-| `brand_on_page` | 25 | A known brand is named on the page, on a domain that is not that brand's |
-| `brand_with_form` | 25 | …and the page is asking for a password, card or code: the classic phishing page |
+| `brand_with_form` | 35 | The classic phishing page: under a brand's name (in its title) it asks for a password, card or code; or it names a brand anywhere and asks for a card or code |
+| `brand_on_page` | 20 | A known brand in the page's title, on a domain that is not that brand's. A brand only mentioned in the text (a news story, a shop listing) does not count |
 | `card_form` / `otp_form` | 25 each | Asks for a card number or CVV / for the one-time code |
-| `password_form` | 20 | Asks for a password on a domain that is not official |
+| `password_form` | 15 | Asks for a password on a domain that is not official. Weak alone: many genuine sites have a login box |
 | `bad_certificate` | 20 | Invalid, expired, or issued for another name |
 | `young_domain` | 15 | Registered less than 6 months ago |
 | `offsite_form` | 15 | A form sends what you type to another domain |
-| `new_certificate` | 10 | Certificate issued in the last 7 days |
+| `new_certificate` | 5 | Certificate issued in the last 7 days. Weak alone: free certificates renew every 60–90 days |
 | `cross_domain_redirect` | 10 | The link ends on a different registered domain than it started |
 
 Points are capped at 100 per site, and at 60 of a message's total score. A site on an official domain is not scored at all, except that an invalid certificate is still reported. A site that does not answer is reported as unreachable and scores nothing: a dead phishing link is not evidence either way.
 
 **Staying safe while visiting** — see the threat table in section 4. In short: public addresses only, the victim's identifier stripped from the link, nothing executed, small limits, and the whole thing switchable off.
 
-**Measuring it.** `scripts/evaluate_sites.py` takes a file of labelled addresses (`data/samples/sites.json` holds 10 genuine UAE sites; phishing addresses are not committed, since they go dead within days and should come from the partner authority or a feed such as PhishTank or OpenPhish on the day of the run) and prints how many phishing sites were caught, how many genuine ones raised a false alarm, and how many had already been taken down. The tests in `tests/test_sitecheck.py` cover the logic against pages the suite serves itself, including the refusal of private addresses.
+These weights were set to avoid false alarms on genuine sites before any measurement: a genuine news site with a login box that names two banks in its text scores below 25 (`tests/test_sitecheck.py`).
+
+**Measuring it.** `scripts/evaluate_sites.py` takes labelled addresses (a `.txt` with one per line and `--label`, or a `.json` list) and, with `--server https://haris-uae.onrender.com`, sends each one to the deployed `/api/site`, so the visits come from the server and not the tester's computer. It prints and saves (`<file>-results.md`) how many phishing sites were caught, how many genuine sites raised a false alarm, and how many did not answer, which are counted apart. `data/samples/sites.json` holds 31 genuine sites, including the hard cases: sign-in pages of big brands that are not on the official list, and news sites that name banks. Phishing addresses are not committed: they die within a day, so the list should come from the partner authority on the day of the run. Free public feeds have terms to check first; OpenPhish's, for example, do not allow use for detection or product work without written permission. The tests in `tests/test_sitecheck.py` cover the logic against pages the suite serves itself, including the refusal of private addresses.
 
 ### Scoring
 

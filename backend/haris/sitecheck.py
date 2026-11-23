@@ -52,16 +52,16 @@ CACHE_TTL, CACHE_SIZE = 3600, 300
 
 FLAG_WEIGHTS = {
     "threat_list": 60,        # on Google Safe Browsing
-    "brand_on_page": 25,      # names a known brand, but the domain is not the brand's
-    "brand_with_form": 25,    # ...and asks for a password, card or code: the classic phishing page
+    "brand_on_page": 20,      # a known brand in the page title, on a domain that is not the brand's
+    "brand_with_form": 35,    # a known brand on the page AND a password, card or code form: classic phishing
     "new_domain": 30,         # registered less than 30 days ago
     "card_form": 25,          # asks for a card number, CVV or expiry
     "otp_form": 25,           # asks for a one-time code
-    "password_form": 20,      # asks for a password on a domain that isn't official
+    "password_form": 15,      # asks for a password on a domain that isn't official (many real sites do)
     "bad_certificate": 20,    # the certificate is invalid, expired or for another name
     "young_domain": 15,       # registered less than 6 months ago
     "offsite_form": 15,       # a form sends what you type to another domain
-    "new_certificate": 10,    # certificate issued in the last 7 days
+    "new_certificate": 5,     # issued in the last 7 days; weak alone, since free certificates renew often
     "cross_domain_redirect": 10,
     "ai_high": 40,            # the model judged the page itself a scam
     "ai_medium": 20,
@@ -479,8 +479,11 @@ def inspect(url: str, lang: str = "en", use_llm: bool = True) -> dict:
         report.text = " ".join(page.text)[:6000]
         haystack = f"{report.title} {report.text}".lower()
         if not official:
+            # A brand only named in the body (a news story, a shop listing) is not impersonation.
+            # A phishing page puts the brand in its title, or asks for details under the brand's name.
             report.brands = [b for b, names in BRAND_NAMES.items() if any(n in haystack for n in names)]
-            if report.brands:
+            title = report.title.lower()
+            if any(n in title for b in report.brands for n in BRAND_NAMES[b]):
                 report.flags.append("brand_on_page")
             fields = " ".join(f for form in page.forms for f in form["fields"])
             if "password" in fields:
@@ -489,7 +492,10 @@ def inspect(url: str, lang: str = "en", use_llm: bool = True) -> dict:
                 report.flags.append("card_form")
             if _OTP.search(fields):
                 report.flags.append("otp_form")
-            if report.brands and {"password_form", "card_form", "otp_form"} & set(report.flags):
+            # Under a brand's name (in the title) any sensitive form counts; a brand merely mentioned in
+            # the text counts only with a card or code form, since many genuine sites have a login box.
+            if ("brand_on_page" in report.flags and {"password_form", "card_form", "otp_form"} & set(report.flags)) \
+                    or (report.brands and {"card_form", "otp_form"} & set(report.flags)):
                 report.flags.append("brand_with_form")
             for form in page.forms:
                 target = urlsplit(urljoin(report.final_url, form["action"])).hostname or domain
