@@ -338,3 +338,18 @@ def test_a_bad_paste_in_the_host_settings_is_cleaned(monkeypatch):
     monkeypatch.setenv("WHATSAPP_APP_SECRET", ' "abc" ')
     s = wa.settings()
     assert s["token"] == "EAAtoken123" and s["app_secret"] == "abc"
+
+
+def test_the_ad_command_asks_for_the_ad_and_the_next_message_is_checked():
+    from haris import whatsapp
+    out = whatsapp.handle({"type": "text", "from": "971500000001", "text": "إعلان", "reply_id": None})
+    assert "نص الإعلان" in out[0]["text"]["body"]
+    out = whatsapp.handle({"type": "text", "from": "971500000001", "reply_id": None,
+                           "text": "Porsche 911 2023 for sale, only AED 200,000, below market price. Send a deposit to hold the car."})
+    body = str(out)
+    assert "report:" in body and "scammed" in body  # report to the radar, or "I paid": a full report
+
+
+def test_the_welcome_mentions_the_ad_command():
+    from haris import whatsapp
+    assert "إعلان" in str(whatsapp.welcome("ar"))

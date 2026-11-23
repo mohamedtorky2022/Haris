@@ -470,6 +470,10 @@ inbox.ON_ACTION.append(notify_case)
 
 
 FILE_WORDS = {"بلاغ", "قدم بلاغ", "تقديم بلاغ", "ابلاغ", "report", "file a report", "رپورٹ", "रिपोर्ट", "заявление"}
+# "I saw a fake ad": the next message (the ad) is checked as usual, and a suspicious ad gets the buttons to
+# report it to the radar or, if the person paid, to file a full report.
+AD_WORDS = {"إعلان", "اعلان", "إعلان وهمي", "اعلان وهمي", "ابلاغ عن اعلان", "الإبلاغ عن إعلان", "ad", "fake ad",
+            "report an ad", "اشتہار", "جعلی اشتہار", "विज्ञापन", "नकली विज्ञापन", "объявление", "фальшивое объявление"}
 
 
 def report(token: str, sender: str, lang: str) -> list[dict]:
@@ -539,12 +543,14 @@ def handle(msg: dict) -> list[dict]:
         if is_greeting(text):
             return welcome(lang)
         question = None if draft else inbox.open_question(msg["from"])
-        if question and _clean(text) not in {_clean(w) for w in FILE_WORDS} and not alerts.command(text):
+        if question and _clean(text) not in {_clean(w) for w in FILE_WORDS | AD_WORDS} and not alerts.command(text):
             inbox.answer_from_whatsapp(question[0], msg["from"], text)
             return _with_buttons(TEXT[question[1]]["file"]["case_reply_ok"].format(ref=question[0]),
                                  [_button("check", question[1]), _button("guide", question[1])], question[1])
         if _clean(text) in {_clean(w) for w in FILE_WORDS}:
             return file_start(msg["from"], lang)
+        if _clean(text) in {_clean(w) for w in AD_WORDS}:
+            return [{"type": "text", "text": {"body": TEXT[lang]["ask_ad"]}}]
         wanted = alerts.command(text)
         if wanted == "subscribe":
             return alerts_on(msg["from"], lang)

@@ -95,6 +95,7 @@
       [tr("check"), askCheck],
       [tr("help"), chooseSituation],
       [tr("report"), startReport],
+      [tr("fakeAd"), startFakeAd],
       [tr("howTo"), showGuide],
       ...(myCases().length ? [[tr("myReports"), showCases]] : []),
     ]);
@@ -115,7 +116,7 @@
   }
 
   // ---- Check a message ----
-  async function check(text) {
+  async function check(text, then) {
     const r = await api("/api/check", { text, lang });
     if (!r) return;
     const parts = [
@@ -146,6 +147,7 @@
     if (redactedCount) notes.unshift(tr("redacted", { n: redactedCount }));
     parts.push(el("p", { class: "note", text: notes.join(" · ") }));
     bubble(parts);
+    if (then) return then(r);
 
     const next = [[tr("reportIt"), () => confirmReport(text)], [tr("checkAnother"), askCheck]];
     if (r.risk !== "low") next.push([tr("interacted"), chooseSituation]);
@@ -259,6 +261,56 @@
       const items = res.ok ? await res.json() : [];
       if (items.length) bubble([el("h3", { text: tr("officialAlerts") }), ...items.map(officialAlert)]);
     } catch { /* the radar is optional */ }
+  }
+
+  // ---- Report a fake ad (sale or rental), as Abu Dhabi Police asked the public to ----
+  // 1. Paste the ad, its link, or a screenshot of it. 2. Haris checks it. 3. Where was it seen?
+  // 4. Paid nothing: it goes to the campaign radar, grouped by the advertiser's number or link.
+  //    Paid: it becomes a full report to the authority, with the ad already in the story.
+  const PLATFORMS = ["Instagram", "Facebook", "TikTok", "Snapchat", "Dubizzle", "X", "WhatsApp / Telegram"];
+
+  function startFakeAd() {
+    mode = "fakead";
+    bubble(tr("adAsk"));
+    showTools(true);
+    input.focus();
+  }
+
+  async function adReceived(text, images) {
+    showTools(false);
+    let ad = text;
+    if (images.length) {  // a screenshot of the ad: the AI reads it into text and the advertiser's details
+      const r = await api("/api/extract", { lang, text, images, incident_type: "suspicious_only" });
+      const f = (r && r.fields) || {};
+      const read = [f.description, ...(f.scammer_identifiers || [])].filter(Boolean).join("\n");
+      if (r && !r.images_read && !text) { bubble(tr("adImageNotRead")); return startFakeAd(); }
+      ad = [text, read].filter(Boolean).join("\n");
+    }
+    if (!ad) return startFakeAd();
+    await check(ad, () => adWhere(ad, images));
+  }
+
+  function adWhere(ad, images) {
+    bubble(tr("adWhere"));
+    setChips([...PLATFORMS.map((p) => [p, () => adPaid(ad, images, p)]), [tr("adOther"), () => adPaid(ad, images, tr("adOther"))]]);
+  }
+
+  function adPaid(ad, images, platform) {
+    bubble(tr("adPaid"));
+    setChips([[tr("adPaidNo"), () => confirmReport(`[${tr("adTag")} · ${platform}]\n${ad}`)],
+              [tr("adPaidYes"), () => adToReport(ad, images, platform)]]);
+  }
+
+  async function adToReport(ad, images, platform) {
+    mode = "report";
+    phase = "story";
+    draft = { lang, incident_type: "money_sent" };
+    reportImages = [];
+    urgentShown = false;
+    const items = await api(`/api/playbooks?lang=${lang}`);
+    if (items) incidentTitles = Object.fromEntries(items.map((pb) => [pb.id, pb.title]));
+    bubble(tr("adToReport"));
+    await sendStory(tr("adStory", { platform, ad }), images);
   }
 
   // ---- Report: "tell it your way, Haris sorts it out" ----
@@ -652,6 +704,7 @@
     else if (mode === "report" && (phase === "field" || phase === "edit")) answerField(text);
     else if (mode === "report" && phase === "summary") { phase = "more"; sendStory(text, images); }
     else if (mode === "radar" && text) confirmReport(text);
+    else if (mode === "fakead") adReceived(text, images);
     else if (mode === "reply" && text) sendReply(text);
     else if (mode === "visitor" && text) visitorAnswer(text);
     else if (text) check(text);
