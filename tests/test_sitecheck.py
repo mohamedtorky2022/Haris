@@ -508,3 +508,26 @@ def test_a_weather_outlook_is_not_microsoft(monkeypatch):
 
 def test_the_ai_finding_a_page_suspicious_is_enough_for_medium():
     assert sitecheck.FLAG_WEIGHTS["ai_medium"] >= 25
+
+
+def test_a_held_out_list_never_repeats_a_measured_domain(tmp_path):
+    import importlib.util
+    from datetime import datetime, timedelta, timezone
+    spec = importlib.util.spec_from_file_location(
+        "fetch_phishstats", Path(__file__).resolve().parents[1] / "scripts" / "fetch_phishstats.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    entries = [{"url": "https://seen.top/x", "date": now}, {"url": "https://new.xyz/", "date": now}]
+    seen = {"seen.top"}  # what --exclude loads from the first list
+    assert mod.fresh(entries, datetime.now(timezone.utc) - timedelta(days=3), 10, seen) == ["https://new.xyz/"]
+
+
+def test_the_benchmark_explains_a_missing_list():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "evaluate_sites", Path(__file__).resolve().parents[1] / "scripts" / "evaluate_sites.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    with pytest.raises(SystemExit, match="does not exist"):
+        mod.read_cases(["no-such-list.txt"], ["phishing"], None)
