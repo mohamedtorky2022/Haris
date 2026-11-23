@@ -31,6 +31,12 @@ from .text import SUPPORTED_LANGS, detect_language, normalize
 from .translations import section
 
 log = logging.getLogger("haris.whatsapp")
+if not log.handlers:  # uvicorn configures only its own loggers; make ours reach the service log too
+    _h = logging.StreamHandler()
+    _h.setFormatter(logging.Formatter("%(levelname)s: haris.whatsapp: %(message)s"))
+    log.addHandler(_h)
+    log.setLevel(logging.INFO)
+    log.propagate = False
 
 GRAPH_URL = "https://graph.facebook.com"
 DEFAULT_VERSION = "v26.0"
@@ -614,9 +620,29 @@ def send(to: str, message: dict) -> bool:
     return False
 
 
+def _describe(payload: dict) -> str:
+    """What a webhook carries, for the service log: fields, message types and statuses, never text or numbers."""
+    parts = []
+    for entry in payload.get("entry") or []:
+        for change in entry.get("changes") or []:
+            value = change.get("value") or {}
+            msgs = value.get("messages") or []
+            sts = value.get("statuses") or []
+            desc = [f"field={change.get('field')}"]
+            if msgs:
+                desc.append("messages=" + ",".join(
+                    f"{m.get('type')}" + ("" if m.get("from") else "(no from; keys=" + "/".join(sorted(m)) + ")")
+                    for m in msgs))
+            if sts:
+                desc.append("statuses=" + ",".join(str(st.get("status")) for st in sts))
+            parts.append(" ".join(desc))
+    return "; ".join(parts) or "empty"
+
+
 def process(payload: dict) -> int:
     """Handle every new message in a webhook payload. Returns how many messages were sent."""
     sent = 0
+    log.info("webhook: %s", _describe(payload))
     for entry in payload.get("entry") or []:  # Meta tells us when a reply could not be delivered
         for change in entry.get("changes") or []:
             for st in (change.get("value") or {}).get("statuses") or []:
@@ -638,6 +664,7 @@ def process(payload: dict) -> int:
             replies.append(contact_card())
         if not over and alerts.command(msg["text"]) is None and alerts.auto_subscribe(msg["from"], lang):
             replies.append({"type": "text", "text": {"body": alerts.TEXT[lang]["auto_notice"]}})
-        for reply in replies:
-            sent += send(msg["from"], reply)
+        ok = sum(send(msg["from"], reply) for reply in replies)
+        sent += ok
+        log.info("webhook: answered a %s message with %d of %d replies", msg["type"] or "?", ok, len(replies))
     return sent
