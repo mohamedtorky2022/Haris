@@ -122,6 +122,15 @@ Points are capped at 100 per site, and at 60 of a message's total score. A site 
 
 These weights were set to avoid false alarms on genuine sites before any measurement: a genuine news site with a login box that names two banks in its text scores below 25 (`tests/test_sitecheck.py`).
 
+**First measurement, 23 November 2026**, on the deployed server (`--server https://haris-uae.onrender.com`), 31 genuine sites:
+
+| Run | Answered | False alarms | Did not answer |
+| --- | ---: | ---: | ---: |
+| 1 | 23 | 1 (`www.eand.ae`, 90 points) | 8 |
+| 2, after adding `eand.ae` to the official domains | 23 | **0** | 8 |
+
+The false alarm was a gap in the official list, not in the scoring: `etisalat.ae` now redirects to `eand.ae`, so e&'s real top-up page looked like a page posing as e& and asking for a card. The highest score left on a genuine site is 15 (`github.com`, a sign-in form). The 8 sites that did not answer (Emirates Post, Aramex, ADCB, Salik, Noon, Emirates, Google sign-in, Al Bayan) refuse visits from cloud servers; a phishing site behind the same kind of protection would also go unread, which is the main limit of visiting from a data centre. The detection rate on live phishing sites is not measured yet.
+
 **Measuring it.** `scripts/evaluate_sites.py` takes labelled addresses (a `.txt` with one per line and `--label`, or a `.json` list) and, with `--server https://haris-uae.onrender.com`, sends each one to the deployed `/api/site`, so the visits come from the server and not the tester's computer. It prints and saves (`<file>-results.md`) how many phishing sites were caught, how many genuine sites raised a false alarm, and how many did not answer, which are counted apart. `data/samples/sites.json` holds 31 genuine sites, including the hard cases: sign-in pages of big brands that are not on the official list, and news sites that name banks. Phishing addresses are not committed: they die within a day, so the list should come from the partner authority on the day of the run. Free public feeds have terms to check first; OpenPhish's, for example, do not allow use for detection or product work without written permission. The tests in `tests/test_sitecheck.py` cover the logic against pages the suite serves itself, including the refusal of private addresses.
 
 ### Scoring
