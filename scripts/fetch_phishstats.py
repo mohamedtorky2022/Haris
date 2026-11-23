@@ -70,6 +70,8 @@ def main() -> int:
     ap.add_argument("--days", type=int, default=3, help="keep entries from the last N days (default 3)")
     ap.add_argument("--limit", type=int, default=60, help="how many links (default 60)")
     ap.add_argument("--out", default="phishing-today.txt", help="output file (default phishing-today.txt)")
+    ap.add_argument("--exclude", nargs="*", default=[],
+                    help="earlier list files whose domains must not appear again, for a fresh test set")
     args = ap.parse_args()
     load_env()
 
@@ -78,9 +80,14 @@ def main() -> int:
         headers["X-API-Key"] = os.environ["PHISHSTATS_API_KEY"]
     since = datetime.now(timezone.utc) - timedelta(days=args.days)
     seen: set[str] = set()
+    for path in args.exclude:  # a held-out list: no domain that was already measured, or tuned on
+        for line in Path(path).read_text(encoding="utf-8").splitlines():
+            if line.strip().lower().startswith(("http://", "https://")):
+                seen.add((urlsplit(line.strip()).hostname or "").lower())
+    excluded = len(seen)
     picked: list[str] = []
     newest_seen: datetime | None = None
-    for page in (1, 2, 3):
+    for page in range(1, 7):
         req = urllib.request.Request(API.format(page=page), headers=headers)
         try:
             with urllib.request.urlopen(req, timeout=60) as resp:
@@ -108,7 +115,8 @@ def main() -> int:
     out = Path(args.out)
     out.write_text(f"# Phishing sites reported to PhishStats since {since:%Y-%m-%d}. Do not open them.\n"
                    + "\n".join(picked) + "\n", encoding="utf-8")
-    print(f"Wrote {len(picked)} phishing sites from the last {args.days} days (one per domain) to {out}.")
+    print(f"Wrote {len(picked)} phishing sites from the last {args.days} days (one per domain) to {out}"
+          + (f", none of them among the {excluded} domains in {', '.join(args.exclude)}." if args.exclude else "."))
     print(f"Next: python3 scripts/evaluate_sites.py {out} --label phishing --server https://haris-uae.onrender.com")
     return 0
 

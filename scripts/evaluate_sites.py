@@ -59,6 +59,8 @@ def read_cases(paths: list[str], labels: list[str], limit: int | None) -> list[d
     cases: list[dict] = []
     for i, path in enumerate(paths):
         p = Path(path)
+        if not p.exists():
+            raise SystemExit(f"{path} does not exist. Was the list written? (the fetch script says so if not)")
         if p.suffix == ".json":
             items = json.loads(p.read_text(encoding="utf-8"))
         else:
