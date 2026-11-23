@@ -38,7 +38,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 THRESHOLD = 25
-SERVER_DELAY = float(__import__("os").getenv("HARIS_BENCH_DELAY", "2.2"))  # the public API allows 30 requests a minute
+# 5.5 s between sites keeps each visit's AI reading under the free Gemini tier's limit; at 2.2 s the AI
+# paused and read only 25 of 42 pages (23 November 2026).
+SERVER_DELAY = float(__import__("os").getenv("HARIS_BENCH_DELAY", "5.5"))
 LOCAL_DELAY = 0.3
 
 

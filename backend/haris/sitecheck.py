@@ -64,7 +64,8 @@ FLAG_WEIGHTS = {
     "new_certificate": 5,     # issued in the last 7 days; weak alone, since free certificates renew often
     "cross_domain_redirect": 10,
     "ai_high": 40,            # the model judged the page itself a scam
-    "ai_medium": 20,
+    "ai_medium": 25,          # the AI read the page and found it suspicious: enough for "medium" on its own
+    "free_host": 10,          # on a free website builder's sub-address; weak alone, adds up with the rest
 }
 
 # Names that appear on the page itself, in Arabic and English, for the brands in urls.py.
@@ -90,6 +91,42 @@ BRAND_NAMES: dict[str, tuple[str, ...]] = {
     "noon": ("noon.com",),
     "falconbank": ("falcon national bank", "بنك الصقر الوطني"),  # fictional, for the training page
 }
+
+# Brands outside the UAE list in urls.py that phishing kits imitate and UAE residents also receive,
+# with their real domains. Names are matched only in the page title (see brand_on_page), so a news
+# story mentioning them is not a match. Measured on 23 November 2026: 3 of 24 missed sites posed as these.
+GLOBAL_BRANDS: dict[str, tuple[tuple[str, ...], tuple[str, ...]]] = {
+    "microsoft": (("microsoft", "office 365", "microsoft 365", "outlook web", "sign in to outlook", "onedrive", "sharepoint"),
+                  ("microsoft.com", "office.com", "live.com", "outlook.com", "microsoftonline.com", "office365.com")),
+    "apple": (("apple id", "icloud"), ("apple.com", "icloud.com")),
+    "paypal": (("paypal",), ("paypal.com",)),
+    "netflix": (("netflix",), ("netflix.com",)),
+    "att": (("at&t",), ("att.com", "att.net")),
+    "docusign": (("docusign",), ("docusign.com", "docusign.net")),
+    "adobe": (("adobe sign", "adobe document cloud"), ("adobe.com",)),
+    "google": (("google account", "gmail"), ("google.com", "gmail.com")),
+}
+for _brand, (_names, _domains) in GLOBAL_BRANDS.items():
+    BRAND_NAMES.setdefault(_brand, _names)
+
+# Free website builders and hosts. A sub-address on them costs nothing and inherits the platform's old,
+# trusted domain, so the domain-age check never fires; half of the sites missed on 23 November were here.
+FREE_HOSTS = (
+    "square.site", "netlify.app", "vercel.app", "pages.dev", "workers.dev", "github.io", "gitlab.io",
+    "web.app", "firebaseapp.com", "glitch.me", "replit.app", "repl.co", "onrender.com", "herokuapp.com",
+    "wixsite.com", "weebly.com", "webflow.io", "framer.website", "framer.app", "typedream.app",
+    "godaddysites.com", "carrd.co", "blogspot.com", "sites.google.com", "notion.site", "gitbook.io",
+    "000webhostapp.com", "wordpress.com", "ukit.me", "tilda.ws", "mystrikingly.com", "jimdosite.com",
+)
+
+
+def _global_official(domain: str) -> bool:
+    return any(domain == d or domain.endswith("." + d) for _, domains in GLOBAL_BRANDS.values() for d in domains)
+
+
+def _free_host(domain: str) -> bool:
+    return any(domain.endswith("." + h) for h in FREE_HOSTS)
+
 
 _CARD = re.compile(r"card|cvv|cvc|cc-?num|expir|exp-?date|بطاقة|البطاقة", re.I)
 _OTP = re.compile(r"otp|one.?time|verification.?code|sms.?code|رمز التحقق|رمز التفعيل|كلمة المرور لمرة", re.I)
@@ -455,8 +492,10 @@ def inspect(url: str, lang: str = "en", use_llm: bool = True) -> dict:
         report.error = type(exc).__name__ if str(exc) != "dns" else "dns"
 
     domain = report.final_domain
-    official = _is_official(domain)
+    official = _is_official(domain) or _global_official(domain)
     first = (urlsplit(start).hostname or "").lower()
+    if _free_host(domain) and not official:
+        report.flags.append("free_host")
     if report.redirects and registrable(domain) != registrable(first):
         report.flags.append("cross_domain_redirect")
     report.flags = list(dict.fromkeys(report.flags))
