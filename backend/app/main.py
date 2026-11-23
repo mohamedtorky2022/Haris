@@ -174,7 +174,7 @@ async def protect(request: Request, call_next):
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "version": __version__, "ai_enabled": llm.enabled(), "ai_provider": llm.provider(), "ai_model": llm.model_name(), "site_check_enabled": sitecheck.enabled(), "threat_list_enabled": bool(os.getenv("GOOGLE_SAFE_BROWSING_KEY")), "whatsapp_enabled": whatsapp.enabled(), "inbox_retention_days": inbox.retention_days()}
+    return {"status": "ok", "version": __version__, "commit": os.getenv("RENDER_GIT_COMMIT", "")[:7] or None, "ai_enabled": llm.enabled(), "ai_provider": llm.provider(), "ai_model": llm.model_name(), "site_check_enabled": sitecheck.enabled(), "threat_list_enabled": bool(os.getenv("GOOGLE_SAFE_BROWSING_KEY")), "whatsapp_enabled": whatsapp.enabled(), "inbox_retention_days": inbox.retention_days()}
 
 
 @app.post("/api/check")
