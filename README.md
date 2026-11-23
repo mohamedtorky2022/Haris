@@ -59,7 +59,7 @@ The next version, a mobile app and a WhatsApp channel, is designed in an officia
 
 **Campaign poster: «حارس» درعك الذكي ("Haris, your smart shield").** An A3 poster shows the name, that line, and three words for what Haris does (يحذّرك · يرشدك · يوصّل بلاغك: it warns you, guides you, and carries your report). Below them a golden shield holds the map of the UAE, its seven emirates linked by a digital network, while viruses, fake links and phishing hooks bounce off its edge; Haris stands beside it. The QR code at the bottom is Haris's official WhatsApp message QR, created by Meta's Cloud API for +971 50 312 3535 (`https://wa.me/message/ZQRY2FJGR3KFN1`): it works with the phone camera and with WhatsApp's own scanner, which rejects ordinary links and contact cards, and opens the chat with «مرحباً حارس» typed in. Haris's first reply carries its contact card, so one tap saves it as «حارس». The source is in `docs/poster/` (`poster.html` and a rendered `haris-poster.png`); `qr.svg` is that official code (Meta's own image is `haris-qr-whatsapp-official.png`), `qr-contact.svg` is a contact card (vCard) and `qr-chat.svg` a plain `wa.me` link. `docs/poster/qr.py` draws any of them.
 
-**WhatsApp Business profile.** The profile picture is `docs/poster/haris-whatsapp.png` (Haris inside the golden shield, cropped to fit WhatsApp's circle). The profile's website is a one-page introduction to Haris (`docs/landing/index.html`): the shield, «درعك الذكي», what Haris does, how to start, the five languages, the privacy promises, a WhatsApp button and the same QR code. It is published as a free page with a fixed link, so it does not depend on the tunnel. Its footer links to the privacy policy (`docs/landing/privacy.html`, Arabic and English), which is the Privacy Policy URL the Meta app needs to go Live: what Haris processes on WhatsApp and the web, why, how long each item is kept, who it is shared with (Meta, the redacted text to the AI provider, the authority only when the user sends a report), and how to delete it («إيقاف»/STOP removes the alert subscription; everything else expires on its own).
+**WhatsApp Business profile.** The profile picture is `docs/poster/haris-whatsapp.png` (drawn from `haris-whatsapp.svg`) (Haris inside the golden shield, cropped to fit WhatsApp's circle). The profile's website is a one-page introduction to Haris (`docs/landing/index.html`): the shield, «درعك الذكي», what Haris does, how to start, the five languages, the privacy promises, a WhatsApp button and the same QR code. It is published as a free page with a fixed link, so it does not depend on the tunnel. Its footer links to the privacy policy (`docs/landing/privacy.html`, Arabic and English), which is the Privacy Policy URL the Meta app needs to go Live: what Haris processes on WhatsApp and the web, why, how long each item is kept, who it is shared with (Meta, the redacted text to the AI provider, the authority only when the user sends a report), and how to delete it («إيقاف»/STOP removes the alert subscription; everything else expires on its own).
 
 A new business number shows as digits for people who haven't saved it, until Meta approves its display name (in practice the name appears for everyone only on high-volume or Official Business accounts). So the first time someone greets Haris, for example by scanning the QR, Haris replies with its menu and then its own contact card: one tap on «إضافة جهة اتصال» saves the number as «حارس».
 
@@ -174,24 +174,26 @@ Open <http://127.0.0.1:8000/reports.html>. The queue puts the critical cases fir
 
 The test number cannot receive messages from the public. The poster's QR code points to Haris's own number, +971 50 312 3535, which must be registered in the same Meta app (Phone number ID and token in `.env`) for Haris to answer the people who scan it.
 
-**Journey video** (Arabic, narrated, about 4:10; English, captions only, about 3:40). It opens on the campaign poster and its QR code, shows the problem in a few seconds, then follows three people, each in their own scene:
+**Journey video** (Arabic, narrated by Hamdan, about 5:50; English, narrated by Ryan, about 5:05; FreeTTS neural voices, with music composed in code). It opens on the campaign poster and its QR code and the problem (fake messages, links and ads), then follows the people Haris protects, each in their own scene:
 
+- **Sara gets a harmless-looking link:** Haris opens the site itself, safely, finds a fake bank page asking for her card, and rates it high risk.
+- **Khalid sees a car ad far below the market price:** Haris spots the deposit before viewing, and one tap sends the ad to the campaign radar.
 - **Ahmed, a resident of Abu Dhabi:** a forwarded parcel scam gets a "high risk" rating before he pays; later a card scam gets the emergency plan, a voice note becomes the report file, and he sends it with his consent and UAE PASS. The authority's screen then shows the report at the top of the queue as "urgent, money", with the step to take now, and Ahmed is told when the officer takes it.
 - **Anna, a visitor from Russia with no Emirates ID:** she writes in Russian, confirms her identity with her passport and says she leaves within 3 days. On the authority's screen the visitor badge moves her report up, her story is in Arabic with the Russian original below, and the Tourism Police are suggested. The officer asks in Arabic, Anna gets the question in Russian in Haris's voice, and her reply comes back in Arabic.
 - **A 15-year-old student:** Haris tells him it is not his fault, asks for no personal data, and hands him to child protection (116111) or to a parent.
 
-Then the community part (the campaign radar, the warning previewed in five languages and approved by the officer, the WhatsApp alert reaching every subscriber in their language), privacy, how Haris works (with the local rules carrying on if the AI is down), what Haris does, what comes next (training on real data, more cases, direct links with the police, banks and telecom providers, more languages), and a closing card with the QR code. The Arabic captions are in Modern Standard Arabic. In the English version the authority's screen is shown in English and labelled as such, because the real screen is in Arabic. The Arabic version is narrated in Modern Standard Arabic by the neural voice Hamdan (ar-AE), generated with FreeTTS.ai; the English version has captions only. `voice.py` cuts the long recordings into one clip per caption at the pauses between lines, trims the silences, starts each caption with its line, and lengthens a scene when its lines need more time. Haris speaks the narration: his mouth opens with the loudness of the voice in each frame, he blinks every 3 seconds, and he nods and points at the screen with every line, all on one GSAP timeline (`vendor/gsap.min.js`) that the renderer seeks frame by frame, so every render is identical. The music is calm and composed in code (`journey.py`), so there is no licence to clear, and it steps back while the narrator speaks. Names, numbers and reference codes are fictional, and every screen is labelled as a demo.
+Then the community part (the campaign radar, the warning previewed in five languages and approved by the officer, the WhatsApp alert reaching every subscriber in their language), privacy, how Haris works (with the local rules carrying on if the AI is down), the takedown evidence file, then the goal (a smart shield at every moment), what Haris does today with its measured results, the next update (Haris as an assistant on every phone, like Siri, shown on four phones), the stages over the coming months (training, every phone, the official link-up, a national shield), and a closing card with the QR code. The Arabic captions are in Modern Standard Arabic. In the English version the authority's screen is shown in English and labelled as such, because the real screen is in Arabic. The Arabic version is narrated in Modern Standard Arabic by the neural voice Hamdan (ar-AE) and the English version by Ryan (en-GB), both generated with FreeTTS.ai. `voice.py` cuts the recordings into one clip per caption at the pauses between lines, trims the silences, starts each caption with its line, and lengthens a scene when its lines need more time. Haris speaks the narration: his mouth opens with the loudness of the voice in each frame, he blinks every 3 seconds, and he nods and points at the screen with every line, all on one GSAP timeline (`vendor/gsap.min.js`) that the renderer seeks frame by frame, so every render is identical. The music is hopeful and composed in code (`journey.py`, C major at 84 beats a minute with a soft pulse), so there is no licence to clear, and it steps back while the narrator speaks. Names, numbers and reference codes are fictional, and every screen is labelled as a demo.
 
 ```bash
 bash docs/video/fetch_fonts.sh        # IBM Plex Arabic and Devanagari (Open Font License)
 python3 docs/video/journey.py all     # needs ffmpeg and Playwright's Chromium; writes docs/video/out/Haris-journey-<lang>.mp4
 python3 docs/video/journey.py ar --stills 33,73   # draw single frames at those seconds, to check a scene
 python3 docs/video/voice.py lines ar     # the lines to narrate (out/voice-ar/lines.json, chunks.json)
-python3 docs/video/voice.py split ar     # cut hamdan1.mp3, hamdan2.mp3, hamdan3.mp3 into one clip per line
+python3 docs/video/voice.py split ar     # cut the recordings (hamdan1.mp3, hamdan2.mp3 …, one per chunk) into one clip per line
 python3 docs/video/voice.py timing ar    # measure the clips; journey.py then times the scenes to them
 ```
 
-Scenes, timings and captions are in `docs/video/journey.json`, and the drawing is `docs/video/journey.html`. The poster is rendered from `docs/poster/poster.html` with `python3 docs/poster/render.py docs/poster/poster.html docs/poster/haris-poster.png` (it uses the local fonts, so it works offline). An earlier narrated version (`render.py`, voices from `build_voice.sh`) is kept for reference.
+Scenes, timings and captions are in `docs/video/journey.json`, and the drawing is `docs/video/journey.html`. The poster is rendered from `docs/poster/poster.html` with `python3 docs/poster/render.py docs/poster/poster.html docs/poster/haris-poster.png` (it uses the local fonts, so it works offline).
 
 ### Tests and evaluation
 
@@ -325,7 +327,7 @@ Measured on 20 November 2026 with `gemini-3.5-flash-lite` on the free tier. The 
 - Dictation uses the browser's built-in speech service (in Chrome this is Google's, in Safari Apple's); the user sees and can correct the text before it is sent.
 - The model prompt treats the message strictly as data, so instructions hidden inside a scam message are ignored.
 - Rate limiting, input size limits, strict security headers, and all server text rendered with `textContent` (no HTML injection).
-- Haris is defensive only: it never visits, scans or contacts the links or numbers it analyses.
+- Haris is defensive only. It visits a link only to read the page as text from its own server (public addresses and ports 80/443 only, nothing on the page runs, the victim's identifier is stripped first), and it never contacts the numbers it analyses or sends anything to registrars or hosts itself.
 - Test data is synthetic. No real victim's data is in this repository.
 
 Details: [`docs/TECHNICAL.md`](docs/TECHNICAL.md#privacy-design).
@@ -338,23 +340,33 @@ haris/
 ├── requirements.txt            runtime: FastAPI, Uvicorn, Pydantic
 ├── requirements-dev.txt        tests: pytest, httpx
 ├── .env.example                optional AI settings (no real keys)
+├── render.yaml                 Render deployment (web service and database)
 ├── backend/
 │   ├── app/main.py             FastAPI routes, middleware, static front end
-│   └── haris/                 the core engine (pure Python), including the WhatsApp channel
-├── frontend/                   index.html, styles.css, app.js; reports.html and authority.html (the authority's demo dashboards)
-├── data/samples/messages.json  labelled synthetic test messages
-├── scripts/evaluate.py         accuracy on the samples
-├── scripts/radar_demo.py       sends 10 reports of one campaign, for a live demo
-├── scripts/alerts_demo.py      adds fictional WhatsApp alert subscribers (never messaged)
-├── scripts/inbox_demo.py       fills the reports dashboard with 30 fictional reports
+│   └── haris/                  the core engine (pure Python): detection, live site check, takedown evidence, radar, WhatsApp
+├── frontend/                   the chat (index.html, app.js), the authority's dashboards (reports, authority, evidence), five locales
+│   └── demo/                   the fictional bank page used for the live site-check demo
+├── data/samples/               labelled synthetic messages, hard cases, and genuine sites for false-alarm checks
+├── scripts/
+│   ├── evaluate.py             accuracy on the sample messages
+│   ├── evaluate_sites.py       live site-check benchmark (genuine sites and live phishing lists)
+│   ├── fetch_phishstats.py, fetch_phishtank.py, fetch_phishing_database.py   fresh phishing lists for the benchmark
+│   ├── radar_demo.py           sends reports of one campaign, for a live demo
+│   ├── alerts_demo.py          adds fictional WhatsApp alert subscribers (never messaged)
+│   ├── inbox_demo.py           fills the reports dashboard with fictional reports
+│   ├── teach.py                adds a labelled example the AI learns from
+│   └── haris-up.sh             runs Haris locally with a public tunnel
 ├── tests/                      unit and API tests
 └── docs/
+    ├── JUDGES.md               try Haris in 3 minutes (for the judges)
+    ├── SUBMISSION.md           submission text and the demo video script
     ├── TECHNICAL.md            architecture, model choices, privacy design
     ├── landing/                one-page site for the WhatsApp Business profile, and the privacy policy
     ├── poster/                 campaign poster (HTML source, QR, UAE map, rendered PNG)
-    ├── video/                  journey video (Arabic and English) and an earlier narrated version
-    ├── Haris-presentation.pptx     presentation (English)
-    └── Haris-presentation-ar.pptx  presentation (Arabic)
+    ├── video/                  journey video source (scenes, narration tools, fonts, phone illustrations)
+    ├── Haris-presentation-ar.pptx  full presentation (Arabic): technical build, the eight stages, results, goals and roadmap
+    ├── Haris-presentation-ar.pdf   the same presentation as PDF
+    └── Haris-presentation.pptx     presentation (English)
 ```
 
 ## 8. Third-party software and ownership
