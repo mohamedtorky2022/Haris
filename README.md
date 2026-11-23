@@ -7,11 +7,11 @@
 > **Judges: [try Haris in 3 minutes](docs/JUDGES.md)** · **للجنة: [جرّب «حارس» في 3 دقائق](docs/JUDGES.md)** · **[Submission text · نص التسليم](docs/SUBMISSION.md)**
 
 
-> **حارس** مساعد ذكي يحمي كل من يعيش في الإمارات من الاحتيال والجرائم الإلكترونية، بلغته: يفحص الرسائل والروابط المشبوهة، ويرشد الضحية خطوة بخطوة، ويجهّز ملف بلاغ منظماً للشرطة. لا يحفظ رسائل المستخدمين، ويخفي بياناتهم الشخصية قبل أي تحليل.
+> **حارس** مساعد ذكي يحمي كل من يعيش في الإمارات من الاحتيال والجرائم الإلكترونية، بلغته: يفحص الرسائل المشبوهة، ويفتح الرابط بأمان ويحكم على الموقع نفسه بالذكاء الاصطناعي، ويكشف إعلانات البيع والتأجير الوهمية، ويرشد الضحية خطوة بخطوة، ويجهّز ملف بلاغ منظماً للجهة المختصة، ومعه ملف أدلة لإزالة الموقع الوهمي. لا يحفظ رسائل المستخدمين، ويخفي بياناتهم الشخصية قبل أي تحليل.
 
 Haris is a chat assistant that helps anyone in the UAE spot online scams, act fast when they have been scammed, and hand the police a complete report. It speaks Arabic, English, Urdu, Hindi and Russian, works for visitors without an Emirates ID, and stores nothing users send unless they choose to send a report.
 
-This repository is the hackathon MVP: a FastAPI backend and a WhatsApp-style web chat.
+This repository is the hackathon MVP, live today: a FastAPI backend, a web chat, a WhatsApp channel through Meta's Cloud API, and the authority's demo dashboards (reports, campaign radar, takedown evidence). 286 automated tests.
 
 ---
 
@@ -49,13 +49,15 @@ Haris starts with **fraud**, the most common and costly cybercrime, and is built
 - **Checks the websites behind the links**, not only the wording of the link: redirects, domain age, certificate, what the page asks for, impersonated brand, threat lists, and the AI's reading of the page.
 - **Detects 16 scam types:** one-time code theft, bank and government impersonation, fake delivery, fake jobs, fake investments, fake prizes, extortion, fake tech support, phishing links, romance scams, fake "money recovery" offers aimed at people already scammed, fake shops, listings and rentals, fake charities, and fake visas or residency, and **fake ads for sale or rent** (cars sold far below the market price with a deposit "to hold the car", bikes, rest houses, farms and desert camps), the scam Abu Dhabi Police warned about on 22 November 2026.
 - **Guides and reports 10 situations** (listed above).
-- **Next:** protecting children from grooming (with specialists reviewing the wording), voice calls and AI-cloned voices, QR codes and screenshot checks, attacks on businesses (data leaks, outages), and rumours and fake news.
+- **Next update: Haris on every phone, like Siri.** On Android Haris can be the default assistant; on iPhone it works with Siri ("Hey Siri, ask Haris"), the Action Button and the Share menu. It reads the screen on request and checks the price of an ad, checks a text message's link before it is tapped, warns on the call screen when the number is on the campaign radar, and guides a victim by voice. The engine behind it runs today; what is left is the phone app.
+- **The months ahead:** months 1–2, training on reports confirmed by officers and reading every page with a real browser (target: over 80% of live phishing sites caught); months 3–4, the phone assistant; months 5–6, the official link-up (reports straight into the case system, UAE PASS, the official block list, a short SMS number); then a national shield that checks links in text messages at network level, before they reach the phone.
+- **Also next:** protecting children from grooming (with specialists reviewing the wording), voice calls and AI-cloned voices, QR codes and screenshot checks, attacks on businesses (data leaks, outages), and rumours and fake news.
 
 ### Using it
 
 Open Haris and pick a language. The menu offers four things: **check a message or link**, **I've been scammed, what now?**, **prepare a police report**, and **how do I use Haris?**, a short in-app guide in Arabic, English and Urdu that explains the three steps and how reporting an ignored scam protects others. Once a report has been sent to the authority, **My reports** appears too, with its status and any message from the officer.
 
-The next version, a mobile app and a WhatsApp channel, is designed in an official government style: home and quick check, check result, report by voice or screenshots, report summary, official warnings and the campaign radar, and the same flows inside a WhatsApp business chat.
+The WhatsApp channel is live. The phone app that comes next (see above) is designed in an official government style: home and quick check, check result, report by voice or screenshots, report summary, official warnings and the campaign radar.
 
 **Campaign poster: «حارس» درعك الذكي ("Haris, your smart shield").** An A3 poster shows the name, that line, and three words for what Haris does (يحذّرك · يرشدك · يوصّل بلاغك: it warns you, guides you, and carries your report). Below them a golden shield holds the map of the UAE, its seven emirates linked by a digital network, while viruses, fake links and phishing hooks bounce off its edge; Haris stands beside it. The QR code at the bottom is Haris's official WhatsApp message QR, created by Meta's Cloud API for +971 50 312 3535 (`https://wa.me/message/ZQRY2FJGR3KFN1`): it works with the phone camera and with WhatsApp's own scanner, which rejects ordinary links and contact cards, and opens the chat with «مرحباً حارس» typed in. Haris's first reply carries its contact card, so one tap saves it as «حارس». The source is in `docs/poster/` (`poster.html` and a rendered `haris-poster.png`); `qr.svg` is that official code (Meta's own image is `haris-qr-whatsapp-official.png`), `qr-contact.svg` is a contact card (vCard) and `qr-chat.svg` a plain `wa.me` link. `docs/poster/qr.py` draws any of them.
 
@@ -133,6 +135,8 @@ uvicorn app.main:app --reload --env-file ../.env
 
 - **Claude:** `ANTHROPIC_API_KEY` from the Claude Console. Claude Max, Ultra and Team plans include monthly API credits.
 - **Gemini, free:** `GEMINI_API_KEY` from Google AI Studio (aistudio.google.com/apikey). The free tier needs no card; Google may use free-tier requests to improve its products, which is one more reason Haris redacts personal data first.
+
+- **A second Gemini model (optional):** `GEMINI_FALLBACK_MODEL`. When the main model hits its rate limit, calls go to the second model until the main one is free again; with both paused, the rules answer.
 
 `GET /api/health` shows which provider and model are answering. Without a key, Haris runs entirely on its rules engine and works offline.
 
