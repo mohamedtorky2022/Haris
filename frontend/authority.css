@@ -57,3 +57,11 @@ button:focus-visible, input:focus-visible { outline: 3px solid #f5b400; outline-
 .empty { color: var(--muted); text-align: center; padding: 30px; }
 @media (max-width: 700px) { .counters { grid-template-columns: repeat(2, 1fr); } }
 .login[hidden] { display: none; }
+
+/* Fake ads in the radar */
+.flag.ad { color: #8a5a00; border-color: #c89a2e; background: #fff7e6; }
+.platforms { margin: 4px 0 6px; font-weight: 600; color: #5b4300; }
+.ad-hint { margin: 8px 0 0; padding: 8px 10px; border-radius: 8px; background: #fff7e6; color: #4a3a12; font-size: 13.5px; }
+.id .ev-link { color: var(--green, #0a4740); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.list-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.ads-only { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; cursor: pointer; }

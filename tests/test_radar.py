@@ -78,3 +78,22 @@ def test_reporter_ids_and_card_numbers_are_not_stored(tmp_path):
     radar.report("Pay now with card 4111 1111 1111 1111 at https://bad-pay.top", "my-secret-device-id", "en")
     raw = (tmp_path / "radar.db").read_bytes()
     assert b"my-secret-device-id" not in raw and b"4111 1111" not in raw
+
+
+def test_fake_ads_from_several_platforms_are_one_campaign_with_its_platforms():
+    ad = "بورش كايين 2024 للبيع بسعر 200 ألف درهم، أقل من سعر السوق. حوّل عربون 1000 درهم لحجز السيارة على الرقم 0501112233"
+    radar.report(f"[إعلان وهمي · Instagram]\n{ad}", "device-aaaa-1111", "ar")
+    radar.report(f"[إعلان وهمي · TikTok]\n{ad}", "device-bbbb-2222", "ar")
+    radar.report(f"[Fake ad · Instagram]\n{ad}", "device-cccc-3333", "en")
+    found = [c for c in radar.campaigns("ar") if c["ad"]]
+    assert len(found) == 1
+    c = found[0]
+    assert c["people"] == 3 and c["platforms"] == ["Instagram", "TikTok"]
+    assert c["category"] == "fake_ad"
+    assert not c["sample"].startswith("[")  # the tag is shown as platforms, not in the text
+    assert any(i["kind"] == "phone" for i in c["identifiers"])
+
+
+def test_an_ordinary_report_is_not_an_ad():
+    radar.report("عزيزي العميل، طردك محتجز. ادفع 5 دراهم: https://emirates-post-ae.top/track", "device-dddd-4444", "ar")
+    assert not any(c["ad"] for c in radar.campaigns("ar"))
