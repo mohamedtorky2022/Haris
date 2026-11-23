@@ -42,7 +42,7 @@ OFFICIAL_BRANDS: dict[str, tuple[str, ...]] = {
     "icp": ("icp.gov.ae",),
     "uaepass": ("uaepass.ae",),
     "moi": ("moi.gov.ae",),
-    "etisalat": ("etisalat.ae", "eand.com"),
+    "etisalat": ("etisalat.ae", "eand.ae", "eand.com"),  # e& moved its UAE site to eand.ae
     "salik": ("salik.ae",),
     "rta": ("rta.ae",),
     "dewa": ("dewa.gov.ae",),
