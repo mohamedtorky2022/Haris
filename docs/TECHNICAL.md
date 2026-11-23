@@ -150,6 +150,19 @@ The AI read 20 of the 33 pages. The rest gave it nothing to read: most misses we
 
 **Measuring it.** `scripts/evaluate_sites.py` takes labelled addresses (a `.txt` with one per line and `--label`, or a `.json` list) and, with `--server https://haris-uae.onrender.com`, sends each one to the deployed `/api/site`, so the visits come from the server and not the tester's computer. It prints and saves (`<file>-results.md`) how many phishing sites were caught, how many genuine sites raised a false alarm, and how many did not answer, which are counted apart. `data/samples/sites.json` holds 31 genuine sites, including the hard cases: sign-in pages of big brands that are not on the official list, and news sites that name banks. Phishing addresses are not committed: they die within a day, so the list should come from the partner authority on the day of the run. Free public feeds have terms to check first; OpenPhish's, for example, do not allow use for detection or product work without written permission. The tests in `tests/test_sitecheck.py` cover the logic against pages the suite serves itself, including the refusal of private addresses.
 
+### Takedown evidence (`evidence.py`, `POST /api/authority/evidence`)
+
+Detection alone does not stop a fake site; someone has to have it taken down. For one address, the authority gets a file it can act on:
+
+| Part | Source |
+| --- | --- |
+| What the page does | The live inspection above, with the page's SHA-256 as it was read, so the evidence shows exactly what was seen and when |
+| Registrar | The domain's RDAP record (via rdap.org, which forwards to the registry): registrar name, IANA id, abuse e-mail and phone, registration and expiry dates, name servers, status |
+| Host | The server's address, then that address's RDAP record: network, owner, country, abuse e-mail. A page on a free website builder is flagged, because the request then goes to the platform, not the registrar |
+| Drafts | A suspension request to the registrar and a takedown request to the host, in English, and a request to block the site inside the UAE, in Arabic |
+
+Rules: every contact comes from the registries' records and a missing one stays empty, never guessed; nothing is sent automatically; the query string is dropped, in the server and again in the browser before the address reaches the address bar, so no victim identifier is kept; the endpoint needs the authority's access code. The training page's file says plainly that it is the demo and its drafts must not be sent. On the dashboard, each scammer identifier that is a website links to `evidence.html?url=…`.
+
 ### Scoring
 
 ```

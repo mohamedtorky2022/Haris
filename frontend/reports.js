@@ -24,6 +24,13 @@
     financial: "عاجلة مالياً: أبلغ وحدة الاحتيال في البنك الآن، فالساعة الأولى هي الأهم لتجميد المبلغ.",
   };
 
+  // A scammer identifier that is a website gets a link to its takedown evidence file.
+  const isLink = (s) => /^(https?:\/\/|www\.)\S+$/i.test(s) || /^[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(s);
+  const cleanLink = (u) => {  // drop the query string: it may carry the victim's identifier
+    try { const x = new URL(u.includes("://") ? u : `http://${u}`); return `${x.protocol}//${x.host}${x.pathname}`; }
+    catch { return u.split(/[?#]/)[0]; }
+  };
+
   const list = document.getElementById("list");
   const detail = document.getElementById("detail");
   const login = document.getElementById("login");
@@ -197,7 +204,11 @@
     }
     parts.push(facts(d));
     if (f.scammer_identifiers.length) {
-      parts.push(el("h3", { text: "بيانات المحتال" }), el("div", { class: "ids" }, f.scammer_identifiers.map((i) => el("span", { class: "id" }, ltr(i)))));
+      parts.push(el("h3", { text: "بيانات المحتال" }), el("div", { class: "ids" }, f.scammer_identifiers.map((i) =>
+        isLink(i)
+          ? el("span", { class: "id" }, [ltr(i), el("a", { class: "ev-link", href: `evidence.html?url=${encodeURIComponent(cleanLink(i))}`,
+                                                          target: "_blank", rel: "noopener", text: " · ملف أدلة الإزالة ↗" })])
+          : el("span", { class: "id" }, ltr(i)))));
     }
     if (f.steps_taken.length) {
       const steps = tr.steps_taken && tr.steps_taken.length === f.steps_taken.length ? tr.steps_taken : null;

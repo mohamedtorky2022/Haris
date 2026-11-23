@@ -1,0 +1,49 @@
+/* Takedown evidence page. Builds on ops.css; prints cleanly for the case file. */
+.ev { max-width: 980px; margin: 0 auto; padding: 20px 16px 48px; }
+.ev h2 { margin: 6px 0 4px; font-size: 22px; }
+.ev-lead { margin: 0 0 16px; color: var(--muted); }
+.ev-ask { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 12px; }
+.ev-ask label { font-weight: 600; }
+.ev-ask input { flex: 1 1 320px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; text-align: left; }
+.ev-ask button, .ev-actions button, .ev-draft button { border: 0; border-radius: 8px; padding: 9px 16px; font-weight: 600; cursor: pointer;
+  background: var(--green); color: #fff; }
+.ev-ask button[disabled] { opacity: .6; cursor: progress; }
+.ev-status { min-height: 1.6em; margin: 10px 2px; color: var(--muted); }
+.ev-status.err { color: var(--critical); }
+
+.ev-file { display: grid; gap: 14px; }
+.ev-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
+.ev-card h3 { margin: 0 0 8px; font-size: 16px; }
+.ev-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.ev-risk { padding: 3px 12px; border-radius: 999px; font-weight: 700; color: #fff; }
+.ev-risk.high { background: var(--critical); }
+.ev-risk.medium { background: var(--financial); }
+.ev-risk.low { background: var(--indicator); }
+.ev-domain { font-size: 18px; font-weight: 700; direction: ltr; unicode-bidi: isolate; }
+.ev-notes { margin: 10px 0 0; padding: 10px 12px; background: var(--gold-soft); border-radius: 8px; }
+.ev-notes p { margin: 4px 0; }
+.ev-facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 0; }
+.ev-facts dt { color: var(--muted); }
+.ev-facts dd { margin: 0; overflow-wrap: anywhere; }
+.ev-facts .ltr { direction: ltr; unicode-bidi: isolate; text-align: right; }
+.ev-findings { margin: 0; padding-inline-start: 20px; }
+.ev-findings li { margin: 2px 0; }
+.ev-missing { color: var(--muted); font-style: italic; }
+.ev-draft { border-top: 1px dashed var(--line); padding-top: 12px; margin-top: 12px; }
+.ev-draft:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+.ev-draft h4 { margin: 0 0 6px; }
+.ev-draft pre { margin: 8px 0; padding: 10px 12px; background: var(--bg); border-radius: 8px; white-space: pre-wrap;
+  overflow-wrap: anywhere; font: 13.5px/1.55 ui-monospace, Menlo, Consolas, monospace; }
+.ev-draft pre[dir="ltr"] { text-align: left; }
+.ev-draft .ev-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.ev-draft a.mail { display: inline-block; padding: 9px 16px; border-radius: 8px; background: var(--gold); color: #fff; font-weight: 600;
+  text-decoration: none; }
+.ev-warn { margin: 0 0 10px; color: var(--financial); font-weight: 600; }
+.ev-actions { display: flex; gap: 8px; justify-content: flex-start; }
+
+@media print {
+  .ops-top, .ev-ask, .ev-status, .ev-actions, .ev-btns, .login, .ev-lead { display: none !important; }
+  body { background: #fff; }
+  .ev-card { break-inside: avoid; border-color: #bbb; }
+}

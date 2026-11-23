@@ -18,7 +18,7 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from haris import __version__, alerts, inbox, llm, persist, radar, sitecheck, whatsapp
+from haris import __version__, alerts, evidence, inbox, llm, persist, radar, sitecheck, whatsapp
 from haris.detector import analyze
 from haris.i18n import SITE_FLAGS, t
 from haris.intake import MAX_IMAGES, extract
@@ -189,6 +189,22 @@ def demo_redirect():
     Haris following a link to where it really ends."""
     from fastapi.responses import RedirectResponse
     return RedirectResponse("/demo/falcon-bank.html", status_code=302)
+
+
+class EvidenceRequest(BaseModel):
+    url: str = Field(..., min_length=4, max_length=2000, description="The fake website to build a takedown file for")
+
+
+@app.post("/api/authority/evidence")
+def authority_evidence(body: EvidenceRequest, request: Request):
+    """Takedown evidence for one website: findings, registrar, host, and draft requests (authority only)."""
+    require_authority(request)
+    if not sitecheck.enabled():
+        raise HTTPException(status_code=503, detail="Live website inspection is switched off")
+    file = evidence.build(body.url)
+    if (file["site"].get("error") or "").startswith("refused"):
+        raise HTTPException(status_code=400, detail="That address cannot be inspected")
+    return file
 
 
 @app.post("/api/site")

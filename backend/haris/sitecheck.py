@@ -21,6 +21,7 @@ short timeouts. HARIS_SITE_CHECK=0 turns the visit off.
 
 from __future__ import annotations
 
+import hashlib
 import http.client
 import ipaddress
 import json
@@ -435,6 +436,7 @@ class SiteReport:
     ai: dict | None = None
     error: str | None = None
     text: str = ""
+    sha256: str = ""  # of the page as it was read, so evidence can show exactly what was seen
 
     @property
     def score(self) -> int:
@@ -445,7 +447,7 @@ class SiteReport:
                 "reachable": self.reachable, "status": self.status, "redirects": self.redirects,
                 "title": self.title[:120], "domain_age_days": self.domain_age_days,
                 "cert_age_days": self.cert_age_days, "flags": self.flags, "brands": self.brands,
-                "ai": self.ai, "score": self.score, "error": self.error}
+                "ai": self.ai, "score": self.score, "error": self.error, "sha256": self.sha256 or None}
 
 
 def _clean(url: str) -> str:
@@ -479,6 +481,7 @@ def inspect(url: str, lang: str = "en", use_llm: bool = True) -> dict:
             elif got["status"] < 300 and "html" in got["type"].lower():
                 page = _Page()
                 page.feed(got["body"].decode("utf-8", "replace"))
+                report.sha256 = hashlib.sha256(got["body"]).hexdigest()
                 if page.refresh:
                     nxt = urljoin(current, page.refresh)
             if not nxt:
