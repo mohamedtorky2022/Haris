@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from . import llm
-from .i18n import ADVICE, CATEGORY_LABELS, REASONS, RISK_LABELS, RISK_SUMMARY, URL_FLAGS, t
+from . import llm, sitecheck
+from .i18n import ADVICE, CATEGORY_LABELS, REASONS, RISK_LABELS, RISK_SUMMARY, SITE_FLAGS, URL_FLAGS, t
 from .redact import redact
 from .rules import COMBOS, SMALL_AMOUNT, SMALL_AMOUNT_WEIGHT, match_signals
 from .text import normalize, pick_language
@@ -12,6 +12,8 @@ from .urls import analyze_url, extract_urls
 HIGH_THRESHOLD = 55
 MEDIUM_THRESHOLD = 25
 MAX_LINK_POINTS = 50
+MAX_SITE_POINTS = 60
+MAX_SITES = 2  # sites visited per message, to keep the reply quick
 RISK_ORDER = {"low": 0, "medium": 1, "high": 2}
 LLM_SCORE = {"low": 15, "medium": 45, "high": 80}
 
@@ -28,7 +30,7 @@ def risk_level(score: int) -> str:
     return "low"
 
 
-def analyze(text: str, lang: str | None = None, use_llm: bool = True) -> dict:
+def analyze(text: str, lang: str | None = None, use_llm: bool = True, inspect_sites: bool = True) -> dict:
     lang = pick_language(lang, text)
     normalized = normalize(text)
 
@@ -57,6 +59,16 @@ def analyze(text: str, lang: str | None = None, use_llm: bool = True) -> dict:
         codes.append("official_link")
         score = max(0, score - 15)
 
+    # Visit the sites themselves: a brand-new phishing domain can look clean in the link alone.
+    sites: dict[str, dict] = {}
+    if inspect_sites and sitecheck.enabled():
+        for link in [link for link in links if not link.official][:MAX_SITES]:
+            sites[link.url] = sitecheck.inspect(link.url, lang, use_llm)
+    site_points = max((s["score"] for s in sites.values()), default=0)
+    if site_points >= 20:
+        score += min(MAX_SITE_POINTS, site_points)
+        codes.append("risky_website")
+
     score = min(100, score)
     risk = risk_level(score)
 
@@ -66,12 +78,18 @@ def analyze(text: str, lang: str | None = None, use_llm: bool = True) -> dict:
         category = categorized[0].category
     elif any("brand_lookalike" in link.flags for link in risky_links):
         category = "phishing_link"
+    elif "risky_website" in codes:
+        category = "phishing_link"
+    if any((s.get("ai") or {}).get("risk") == "high" for s in sites.values()) and risk != "high":
+        risk, score = "high", max(score, HIGH_THRESHOLD)  # the AI read the page itself and calls it a scam
     if risk == "low":
         category = "unknown"  # don't label a message with a scam type we are not warning about
 
     redaction = redact(text)
     engine = "rules"
     reasons = [t(REASONS, c, lang) for c in codes]
+    for site in sites.values():
+        reasons += [r for r in (site.get("ai") or {}).get("reasons", []) if r not in reasons]
     advice = list(ADVICE.get(category, {}).get(lang, [])) + list(t(ADVICE, "general", lang))
 
     if use_llm and llm.enabled():
@@ -103,6 +121,7 @@ def analyze(text: str, lang: str | None = None, use_llm: bool = True) -> dict:
                 "official": link.official,
                 "flags": link.flags,
                 "flag_labels": [t(URL_FLAGS, f, lang) for f in link.flags],
+                "site": _site_view(sites[link.url], lang) if link.url in sites else None,
             }
             for link in links
         ],
@@ -111,3 +130,13 @@ def analyze(text: str, lang: str | None = None, use_llm: bool = True) -> dict:
         "engine": engine,
         "language": lang,
     }
+
+
+def _site_view(site: dict, lang: str) -> dict:
+    """What the live visit found, with each finding in the reader's language."""
+    view = {k: site[k] for k in ("final_domain", "reachable", "status", "redirects", "title", "domain_age_days",
+                                 "cert_age_days", "flags", "score", "ai", "error")}
+    view["flag_labels"] = [t(SITE_FLAGS, f, lang) for f in site["flags"]]
+    if not site["reachable"]:
+        view["flag_labels"].append(t(SITE_FLAGS, "unreachable", lang))
+    return view

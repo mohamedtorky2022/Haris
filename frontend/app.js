@@ -136,6 +136,7 @@
         parts.push(el("div", { class: link.official ? "link-card official" : "link-card" }, [
           el("code", { text: link.domain || link.url }),
           flags.length ? el("div", { class: "flags", text: flags.join(" · ") }) : null,
+          link.site ? siteCard(link.site) : null,
         ]));
       }
     }
@@ -193,6 +194,25 @@
   }
 
   // ---- Campaign radar: a message nobody fell for still helps catch the campaign ----
+  // What the live visit of the website found: where the link really ends, how old the domain is,
+  // and what the page asks for. Shown under the link it belongs to.
+  function siteCard(site) {
+    const lines = [];
+    if (site.final_domain) lines.push(`${tr("siteFinal")} ${site.final_domain}`);
+    if (site.redirects && site.redirects.length) lines.push(tr("siteRedirects", { n: site.redirects.length }));
+    lines.push(site.domain_age_days === null || site.domain_age_days === undefined
+      ? tr("siteAgeUnknown")
+      : tr("siteAge", { n: site.domain_age_days }));
+    if (site.ai && site.ai.impersonates) lines.push(tr("siteImpersonates", { who: site.ai.impersonates }));
+    const findings = site.flag_labels || [];
+    return el("div", { class: `site-card${findings.length ? " risky" : ""}` }, [
+      el("div", { class: "site-head", text: tr("siteVisited") }),
+      site.title ? el("div", { class: "site-title", text: site.title }) : null,
+      el("div", { class: "site-facts", text: lines.join(" · ") }),
+      findings.length ? list(findings) : el("div", { class: "site-clean", text: site.reachable ? tr("siteClean") : tr("siteUnreachable") }),
+    ]);
+  }
+
   function officialAlert(b) {
     return el("div", { class: "official-alert", role: "alert" }, [
       el("strong", { text: b.title }),

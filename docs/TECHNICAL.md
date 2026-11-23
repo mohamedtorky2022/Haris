@@ -83,6 +83,45 @@ Each link is judged from its structure alone, with no network request:
 
 Links on official domains (any `*.gov.ae`, `u.ae`, and the listed brands' real domains) score zero and are marked as official. Link points are capped at 50 per message.
 
+
+### Live website inspection (`sitecheck.py`)
+
+The link analysis above only reads the link's text, so a brand-new domain with an innocent name passes it. For every non-official link in a message (the first 2), and on `POST /api/site` for a single address, Haris opens the site the way the victim's phone would and reports what it finds.
+
+**What it collects**
+
+| Step | What it answers |
+| --- | --- |
+| Redirects, hop by hop | Where the link really ends. HTTP 3xx and `<meta refresh>` are both followed, up to 5 hops, and every host on the way is recorded. |
+| TLS certificate | Whether it is valid for that name, and how many days ago it was issued. A certificate issued days ago, on a domain claiming to be a bank, is a strong sign. |
+| RDAP (the registry service that replaced WHOIS) | How old the domain is. Most phishing domains are days old. |
+| Google Safe Browsing | Whether the address is already on a global threat list. Optional: set `GOOGLE_SAFE_BROWSING_KEY` (free). |
+| The page itself | Title and visible text, the form fields, and where each form sends what you type. Parsed with Python's `HTMLParser`; no JavaScript is executed. |
+| The AI | The page text, redacted, plus the facts above: is this a fraud site, and who is it pretending to be? |
+
+**Flags and points**
+
+| Flag | Points | Meaning |
+| --- | ---: | --- |
+| `threat_list` | 60 | Listed by Google Safe Browsing |
+| `ai_high` / `ai_medium` | 40 / 20 | The model read the page and judged it a scam |
+| `new_domain` | 30 | Registered less than 30 days ago |
+| `brand_on_page` | 25 | A known brand is named on the page, on a domain that is not that brand's |
+| `brand_with_form` | 25 | …and the page is asking for a password, card or code: the classic phishing page |
+| `card_form` / `otp_form` | 25 each | Asks for a card number or CVV / for the one-time code |
+| `password_form` | 20 | Asks for a password on a domain that is not official |
+| `bad_certificate` | 20 | Invalid, expired, or issued for another name |
+| `young_domain` | 15 | Registered less than 6 months ago |
+| `offsite_form` | 15 | A form sends what you type to another domain |
+| `new_certificate` | 10 | Certificate issued in the last 7 days |
+| `cross_domain_redirect` | 10 | The link ends on a different registered domain than it started |
+
+Points are capped at 100 per site, and at 60 of a message's total score. A site on an official domain is not scored at all, except that an invalid certificate is still reported. A site that does not answer is reported as unreachable and scores nothing: a dead phishing link is not evidence either way.
+
+**Staying safe while visiting** — see the threat table in section 4. In short: public addresses only, the victim's identifier stripped from the link, nothing executed, small limits, and the whole thing switchable off.
+
+**Measuring it.** `scripts/evaluate_sites.py` takes a file of labelled addresses (`data/samples/sites.json` holds 10 genuine UAE sites; phishing addresses are not committed, since they go dead within days and should come from the partner authority or a feed such as PhishTank or OpenPhish on the day of the run) and prints how many phishing sites were caught, how many genuine ones raised a false alarm, and how many had already been taken down. The tests in `tests/test_sitecheck.py` cover the logic against pages the suite serves itself, including the refusal of private addresses.
+
 ### Scoring
 
 ```
@@ -93,6 +132,7 @@ score = Σ signal weights
                                extortion, deposit or visa + payment: +10, job or visa + upfront fee: +10,
                                recovery + "police": +10)
       + min(50, Σ risky link points)
+      + min(60, the highest live website score)   when that score is 25 or more
       + 15 if a risky link appears with a payment, card, OTP or ID request
       + 10 if a risky link appears with bank, government or courier impersonation
       − 15 if every link is official and no OTP or card request is present
@@ -103,7 +143,7 @@ risk = high    if score ≥ 55
        low     otherwise
 ```
 
-The category is the category of the heaviest signal that fired (`phishing_link` when only a look-alike link was found). A low-risk result is never given a scam category, and its summary always says the message is not certainly safe.
+The category is the category of the heaviest signal that fired (`phishing_link` when only a look-alike link, or only the live website check, raised the alarm). When the AI has read the page itself and calls it a fraud site, the result is high risk whatever the points add up to. A low-risk result is never given a scam category, and its summary always says the message is not certainly safe.
 
 ### Evaluation
 
@@ -284,7 +324,9 @@ The police report keeps the **scammer's** numbers and links on purpose, because 
 | Someone reads another person's case | Status and replies need the private token; the server keeps only its hash and compares in constant time; a guessed reference alone returns "not found" |
 | A machine translation changes the meaning or a number | Numbers and links never pass through the model; the original stays beside every translation; a failed check marks the case "needs a translator" |
 | Holding victims' reports longer than needed | Deleted after 7 days whatever their status; no screenshots stored |
-| Using the tool offensively | It only analyses text. It never opens, scans or contacts the links or numbers it sees |
+| Using the tool offensively | Haris visits the websites people ask about, so the visit is fenced in: only `http`/`https` on ports 80 and 443, the host is resolved first and refused if it is a private, loopback, link-local or reserved address, and the connection goes to that checked address, so the server cannot be pointed at its own network or at a cloud metadata service. At most 5 redirects, 400 KB and a 5-second timeout per hop. Nothing on the page is executed: the HTML is parsed as text. It never contacts the phone numbers it sees. `HARIS_SITE_CHECK=0` turns the visit off entirely. |
+| Telling the scammer that the victim opened the link | The query string and fragment are dropped before the visit, because they usually carry the victim's own identifier. Haris sends no cookies, no referrer and no credentials. |
+| Haris being used to attack the visited site | One request per page, no forms submitted, no files downloaded, no repeated visits: a verdict is reused for an hour. |
 
 ### Regulation
 
@@ -318,6 +360,8 @@ The design follows the data-minimisation and purpose-limitation principles of UA
 - Screenshots are read only when the AI is on; voice notes sent as audio files are not analysed yet. On WhatsApp, images and voice notes get a polite answer pointing to the app.
 - The WhatsApp demo runs on Meta's test number, which reaches only 5 verified phones. Its short-term memory (retries, rate limit, report tokens) lives in one server process; several servers would need a shared store such as Redis.
 - Dictation accuracy depends on the browser's speech service; Haris can fix misheard words but not words the service didn't hear at all.
-- Link analysis is offline and structural; it has no live reputation data.
+- The live website check sees the page as a plain browser does. A site that renders only with JavaScript, hides behind a CAPTCHA, or serves a harmless page to data-centre addresses and the real scam page to phones on a UAE network, will look clean. A headless browser and a residential exit would narrow that gap.
+- Domain age comes from RDAP, which some registries answer slowly or not at all; threat-list data needs a Google Safe Browsing key (free), and the partner authority's own blocklist would be stronger.
+- The live check adds roughly one to three seconds to an answer, and is limited to the first 2 links in a message.
 - The Urdu, Hindi, Russian and dialect wording has not yet been reviewed by native speakers; the Hindi and Russian were drafted with AI help.
 - Official contact details come from public police announcements and must be confirmed by the partner authority before launch.

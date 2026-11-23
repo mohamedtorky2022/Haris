@@ -59,7 +59,8 @@
   "personal_info_request": "It asks for personal details such as your ID or passport.",
   "link_click": "It asks you to click a link.",
   "suspicious_link": "It contains a suspicious link.",
-  "official_link": "The link is on a known official domain."
+  "official_link": "The link is on a known official domain.",
+  "risky_website": "Visiting the website itself showed signs of fraud."
  },
  "url_flags": {
   "brand_lookalike": "imitates a known brand but is not its official site",
@@ -71,6 +72,23 @@
   "many_hyphens": "many hyphens in the domain",
   "many_subdomains": "many sub-domains",
   "no_https": "not encrypted (no https)"
+ },
+ "site_flags": {
+  "threat_list": "Listed on global dangerous-site lists",
+  "brand_on_page": "The page poses as a known organisation on a domain that is not theirs",
+  "brand_with_form": "Poses as a known organisation and asks for your details",
+  "new_domain": "The site was registered very recently (under a month ago)",
+  "young_domain": "The site was registered recently (under six months ago)",
+  "card_form": "Asks for your card number or security code",
+  "otp_form": "Asks for the verification code sent to your phone",
+  "password_form": "Asks for your password",
+  "offsite_form": "What you type is sent to another website",
+  "bad_certificate": "The security certificate is not valid",
+  "new_certificate": "The security certificate was issued days ago",
+  "cross_domain_redirect": "Sends you to a different site than the link shows",
+  "ai_high": "AI inspection of the page: a fraudulent site",
+  "ai_medium": "AI inspection of the page: worrying signs",
+  "unreachable": "The site is not responding now; it may be blocked or removed"
  },
  "advice": {
   "general": [

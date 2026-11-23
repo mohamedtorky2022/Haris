@@ -136,6 +136,21 @@ body {
 .link-card.official .flags { color: var(--low); }
 [dir="rtl"] .link-card .flags { direction: rtl; text-align: right; }
 
+.site-card {
+  margin-top: 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #e3e7e5;
+  border-inline-start: 3px solid var(--low);
+}
+.site-card.risky { border-inline-start-color: var(--high); }
+.site-head { font-weight: 700; font-size: .78rem; direction: inherit; }
+.site-title, .site-facts, .site-clean { font-size: .76rem; color: #5b6560; direction: inherit; }
+.site-title { font-weight: 600; color: #2d3330; }
+.site-card ul { margin: 4px 0 0; padding-inline-start: 16px; direction: inherit; }
+.site-card li { font-size: .78rem; color: var(--high); }
+
 .contact { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; border-bottom: 1px solid #eef0ef; }
 .contact:last-child { border-bottom: 0; }
 .contact a { font-weight: 600; direction: ltr; white-space: nowrap; }
