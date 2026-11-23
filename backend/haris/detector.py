@@ -80,6 +80,10 @@ def analyze(text: str, lang: str | None = None, use_llm: bool = True, inspect_si
         category = "phishing_link"
     elif "risky_website" in codes:
         category = "phishing_link"
+    # An ad to rent or sell (a car, bike, rest house, farm, camp) with money asked up front: name it as the police
+    # do, unless a more serious pattern (a stolen code, a fake bank or authority, extortion) is also present.
+    if {"rental_ad", "sale_ad"} & set(codes) and category not in ("otp_theft", "bank_impersonation", "gov_impersonation", "extortion"):
+        category = "fake_ad"
     if any((s.get("ai") or {}).get("risk") == "high" for s in sites.values()) and risk != "high":
         risk, score = "high", max(score, HIGH_THRESHOLD)  # the AI read the page itself and calls it a scam
     if risk == "low":

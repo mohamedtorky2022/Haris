@@ -150,6 +150,21 @@ The AI read 20 of the 33 pages. The rest gave it nothing to read: most misses we
 
 **Measuring it.** `scripts/evaluate_sites.py` takes labelled addresses (a `.txt` with one per line and `--label`, or a `.json` list) and, with `--server https://haris-uae.onrender.com`, sends each one to the deployed `/api/site`, so the visits come from the server and not the tester's computer. It prints and saves (`<file>-results.md`) how many phishing sites were caught, how many genuine sites raised a false alarm, and how many did not answer, which are counted apart. `data/samples/sites.json` holds 31 genuine sites, including the hard cases: sign-in pages of big brands that are not on the official list, and news sites that name banks. Phishing addresses are not committed: they die within a day, so the list should come from the partner authority on the day of the run. Free public feeds have terms to check first; OpenPhish's, for example, do not allow use for detection or product work without written permission. The tests in `tests/test_sitecheck.py` cover the logic against pages the suite serves itself, including the refusal of private addresses.
 
+### Fake ads, for sale or rent
+
+On 22 November 2026 Abu Dhabi Police warned about fake ads on social media for renting motorbikes, rest houses, farms and desert camps: tempting prices, links that copy real booking and payment sites, and payment in advance for a service that does not exist. The same trick sells cars far below the market price and asks a deposit "to hold the car" before anyone has seen it.
+
+| Signal | Points | Fires on |
+| --- | ---: | --- |
+| `rental_ad` | 15 | a rental or booking word with a car, bike, buggy, rest house, farm (ezba), camp or chalet |
+| `sale_ad` | 10 | a sale or price word with a car, a common car brand or model, or a bike |
+| `advance_booking` | 5 | a deposit or payment in advance; not when paying on arrival, at signing, at the office or at the transfer of ownership |
+| `too_good_deal` | 15 | "below the market price", "urgent sale", "because of travel", half price… |
+
+Alone each is weak, because genuine listings and bookings use the same words. Together they are strong: `rental_ad` or `sale_ad` with `advance_booking` +30, `sale_ad` with `too_good_deal` +20, with `deposit_to_reserve` or `owner_abroad` +15, `rental_ad` with `too_good_deal` +15, either with `transfer_only` +10. A message with either ad signal is named `fake_ad` unless a more serious type (code theft, bank or government impersonation, extortion) is also present. The rules cannot know that a 2024 Cayenne does not sell for 200,000 dirhams, so the AI prompt asks the model to compare the asked price with the usual UAE market price for the model and say it in a reason.
+
+**Reporting a fake ad.** In the chat, "Report a fake ad" takes the ad as text, a link or a screenshot (read by the AI), checks it, asks where it was seen and whether the person paid. Nothing paid: it goes to the campaign radar as `[Fake ad · <platform>]` and the ad text, so reports of the same advertiser's number or link become one campaign. Paid: the report flow starts with the incident "money sent" and the ad in the story. On WhatsApp, «إعلان» / "ad" asks for the ad; a suspicious one gets the usual buttons to report it to the radar or, after paying, to file a report.
+
 ### Takedown evidence (`evidence.py`, `POST /api/authority/evidence`)
 
 Detection alone does not stop a fake site; someone has to have it taken down. For one address, the authority gets a file it can act on:
@@ -188,7 +203,7 @@ The category is the category of the heaviest signal that fired (`phishing_link` 
 
 ### Evaluation
 
-`scripts/evaluate.py` runs the rules engine on `data/samples/messages.json`: 37 scam messages and 22 legitimate ones (OTP notices that say "never share", delivery confirmations, "pay cash on delivery", salary deposits, paid fines, donation receipts, visa approvals, genuine rental viewings, mall sales, family and spouse messages with words like "darling") across Arabic, English, Urdu and Hindi. Current result: **37/37 scams flagged as medium or high, 0/22 false alarms.**
+`scripts/evaluate.py` runs the rules engine on `data/samples/messages.json`: 45 scam messages and 26 legitimate ones (OTP notices that say "never share", delivery confirmations, "pay cash on delivery", salary deposits, paid fines, donation receipts, visa approvals, genuine rental viewings, mall sales, family and spouse messages with words like "darling") across Arabic, English, Urdu and Hindi. Current result: **45/45 scams flagged as medium or high, 0/26 false alarms.** The last 12 (7 scams, 5 genuine) are fake ads and their genuine look-alikes, added on 23 November 2026: a car with a 1,000-dirham deposit "to come and see it", a Porsche at 200,000 dirhams, winter bike, farm and camp rentals in five languages; and genuine ones such as a camp booking paid on arrival and a Camry paid at the transfer of ownership.
 
 This is a regression test, not an accuracy claim: the samples were written alongside the rules.
 

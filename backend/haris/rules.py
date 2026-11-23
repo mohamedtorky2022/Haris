@@ -59,8 +59,11 @@ SIGNALS: tuple[Signal, ...] = (
     Signal("payment_request", 15, groups=((
         "ادفع", "سدد", "سداد", "دفع", "تحويل", "حول المبلغ", "رسوم", "pay", "payment", "fee", "transfer", "settle",
         "ادائیگی", "ادا کریں", "فیس", "رقم بھیجیں"),),
-        # Paying in cash when the parcel arrives is the safe way to pay, not a red flag.
-        unless=("cash on delivery", "pay on delivery", "الدفع عند الاستلام", "دفع عند الاستلام", "ڈیلیوری پر ادائیگی")),
+        # Paying in cash when the parcel arrives, or at the camp on arrival, is the safe way to pay, not a red flag.
+        unless=("cash on delivery", "pay on delivery", "الدفع عند الاستلام", "دفع عند الاستلام", "ڈیلیوری پر ادائیگی",
+                "الدفع عند الوصول", "ادفع عند الوصول", "الدفع في الموقع", "pay on arrival", "payment on arrival",
+                "pay at the venue", "payment is at the venue", "payment at the venue", "pay at the camp",
+                "عند نقل الملكية", "عند التنازل", "in the rta", "at the transfer of ownership", "when ownership is transferred")),
     Signal("urgency", 15, groups=((
         "فورا", "فوراً", "حالا", "عاجل", "خلال 24 ساعة", "خلال ساعة", "خلال ساعتين", "اليوم فقط", "آخر فرصة",
         "آخر تحذير", "قبل فوات", "urgent", "immediately", "within 24 hours", "within 2 hours", "final notice",
@@ -131,6 +134,40 @@ SIGNALS: tuple[Signal, ...] = (
         "استرداد أموالك", "استرجاع أموالك", "نسترجع أموالك", "نسترد أموالك", "استعادة أموالك", "استرداد المبلغ المسروق",
         "recover your money", "recover your funds", "recover lost funds", "fund recovery", "funds recovery",
         "get your money back", "asset recovery", "recovery agent", "رقم واپس دلا", "پیسے واپس دلا"),)),
+    # Fake ads, for renting or selling. Abu Dhabi Police warned on 22 November 2026 about fake ads for renting
+    # motorbikes, rest houses, farms and desert camps, with a booking link and payment in advance; the same trick
+    # sells cars far below the market price and asks a deposit "to hold the car" before anyone sees it.
+    # An offer mentioned alone is not a warning (a genuine booking or listing says the same words); it adds up
+    # with money asked in advance, a price below the market, transfer-only payment or a link.
+    Signal("rental_ad", 15, groups=(
+        ("تأجير", "للتأجير", "للإيجار", "ايجار", "إيجار", "استئجار", "حجز", "احجز", "للحجز", "rent", "rental", "for hire",
+         "hire", "booking", "book now", "book your", "reserve", "کرایہ", "کرائے", "بکنگ"),
+        ("دراجة نارية", "دراجات نارية", "دراجات", "دباب", "دبابات", "بقي", "باجي", "قاري", "استراحة", "استراحات",
+         "عزبة", "عزب", "مزرعة", "مخيم", "مخيمات", "كشتة", "كشته", "خيمة", "خيام", "شاليه", "شاليهات", "كرفان",
+         "سيارة", "سيارات", "سياره", "motorbike", "motorcycle", "quad bike", "atv", "dune buggy", "buggy", "rest house",
+         "resthouse", "desert camp", "campsite", "camping", "camp", "chalet", "farm stay", "farmhouse", "caravan",
+         "car", "cars", "suv", "موٹر سائیکل", "کیمپ", "فارم ہاؤس", "گاڑی"),
+    )),
+    Signal("sale_ad", 10, groups=(
+        ("للبيع", "بيع", "أبيع", "ابيع", "معروضة", "معروض", "بسعر", "سعرها", "سعره", "for sale", "selling", "sell",
+         "asking price", "price", "برائے فروخت", "فروخت"),
+        ("سيارة", "سيارات", "سياره", "موديل", "بورش", "مرسيدس", "بي ام", "لكزس", "رنج روفر", "رينج روفر",
+         "لاندكروزر", "لاند كروزر", "باترول", "جي كلاس", "كامري", "تويوتا", "نيسان", "دراجة نارية", "دباب",
+         "car", "suv", "model", "mileage", "porsche", "mercedes", "bmw", "lexus", "range rover", "land cruiser", "patrol",
+         "g class", "g-class", "camry", "toyota", "nissan", "audi", "ferrari", "lamborghini", "motorbike", "motorcycle",
+         "گاڑی", "موٹر سائیکل"),
+    )),
+    # Weak alone (schools, salons and real agents take deposits too); strong next to an ad (combos below).
+    Signal("advance_booking", 5, groups=((
+        "عربون", "دفعة مقدمة", "دفعه مقدمه", "الدفع مقدما", "ادفع مقدما", "دفع مقدم", "مبلغ الحجز", "رسوم الحجز",
+        "لتأكيد الحجز", "لتاكيد الحجز", "تأكيد الحجز بالدفع", "حجز مقدم", "deposit", "advance payment",
+        "pay in advance", "pay upfront", "upfront payment", "booking fee", "reservation fee", "to confirm your booking",
+        "to confirm the booking", "secure your booking", "hold the car", "token amount", "ایڈوانس", "بکنگ فیس", "بکنگ کنفرم",
+        "بیعانہ"),),
+        unless=("الدفع عند الوصول", "ادفع عند الوصول", "الدفع في الموقع", "عند توقيع العقد", "عند التوقيع",
+                "في المكتب", "في مكتب", "عند الاستلام", "pay on arrival", "pay at the venue", "pay at the camp",
+                "at signing", "when you sign", "in person", "at our office", "at the office", "no deposit",
+                "بدون عربون", "تم تأكيد حجزك", "your booking is confirmed", "booking confirmed", "refunded")),
     # Shopping and rental scams: a deposit before seeing the item or flat, transfer-only payment, unreal prices.
     Signal("deposit_to_reserve", 25, category="shopping_scam", groups=((
         "عربون لحجز", "عربون للحجز", "عربون قبل المعاينة", "قبل المعاينة", "بدون معاينة", "دون معاينة",
@@ -145,8 +182,11 @@ SIGNALS: tuple[Signal, ...] = (
         "bank transfer only", "transfer only", "no cash on delivery", "no cod", "pay in advance only", "advance payment only",
         "صرف ایڈوانس", "صرف ٹرانسفر"),)),
     Signal("too_good_deal", 15, category="shopping_scam", groups=((
-        "خصم 90", "خصم 80", "تصفية كاملة", "نصف السعر", "ارخص من السوق", "90% off", "80% off",
-        "clearance sale", "half price", "below market price", "too good to miss", "آدھی قیمت"),)),
+        "خصم 90", "خصم 80", "تصفية كاملة", "نصف السعر", "ارخص من السوق", "أرخص من السوق", "أقل من سعر السوق",
+        "اقل من سعر السوق", "تحت سعر السوق", "سعر حرق", "بسعر حرق", "للبيع السريع", "بيع سريع", "مستعجل على البيع",
+        "بداعي السفر", "لداعي السفر", "90% off", "80% off", "clearance sale", "half price", "below market price",
+        "below market", "under market price", "urgent sale", "quick sale", "must sell", "too good to miss", "آدھی قیمت",
+        "مارکیٹ سے کم"),)),
     # Fake charity appeals: donations to a personal account or an unofficial link.
     Signal(
         "charity_appeal", 20, category="charity_scam",
@@ -204,6 +244,10 @@ HINDI: dict[str, tuple[tuple[str, ...], ...]] = {
     "romance_profile": (("ऑनलाइन मिले", "कभी नहीं मिले", "डेटिंग ऐप"),),
     "recovery_offer": (("पैसे वापस दिला", "रकम वापस दिला", "पैसा वापस दिला", "रिकवरी एजेंट"),),
     "deposit_to_reserve": (("देखने से पहले एडवांस", "बिना देखे", "बुकिंग के लिए एडवांस"),),
+    "rental_ad": (("किराए", "किराये", "किराया", "बुकिंग", "बुक करें"),
+                  ("बाइक", "मोटरसाइकिल", "क्वाड बाइक", "बग्गी", "कैंप", "शिविर", "शैले", "फार्म हाउस", "रेस्ट हाउस", "कार", "गाड़ी")),
+    "sale_ad": (("बिक्री", "बेचना", "बेच रहा", "कीमत"), ("कार", "गाड़ी", "मॉडल", "पोर्श", "मर्सिडीज़", "बाइक")),
+    "advance_booking": (("एडवांस", "अग्रिम भुगतान", "बुकिंग फीस", "बुकिंग फ़ीस", "बुकिंग कन्फर्म", "डिपॉजिट"),),
     "owner_abroad": (("मालिक विदेश में", "मैं विदेश में हूँ", "मैं विदेश में हूं"),),
     "transfer_only": (("सिर्फ़ ट्रांसफ़र", "सिर्फ ट्रांसफर", "केवल ट्रांसफर", "कैश ऑन डिलीवरी नहीं"),),
     "charity_appeal": (("दान", "चंदा", "ज़कात", "जकात"), ("भेजें", "ट्रांसफर", "खाता नंबर", "लिंक")),
@@ -244,6 +288,10 @@ RUSSIAN: dict[str, tuple[tuple[str, ...], ...]] = {
     "romance_profile": (("познакомились онлайн", "никогда не виделись", "сайт знакомств"),),
     "recovery_offer": (("вернем ваши деньги", "вернуть деньги", "возврат средств", "агент по возврату"),),
     "deposit_to_reserve": (("предоплата до просмотра", "без просмотра", "залог для брони"),),
+    "rental_ad": (("аренд", "прокат", "бронир", "забронир", "сдаю", "сдается"),
+                  ("мотоцикл", "квадроцикл", "багги", "кемпинг", "лагерь в пустыне", "шале", "ферм", "дом отдыха", "автомобил", "машин")),
+    "sale_ad": (("продаю", "продается", "продаётся", "продажа", "цена"), ("автомобил", "машин", "порше", "мерседес", "мотоцикл", "модель")),
+    "advance_booking": (("предоплат", "задаток", "оплата брони", "подтвердить бронь", "для подтверждения брони", "депозит"),),
     "owner_abroad": (("владелец за границей", "я сейчас за границей", "хозяин уехал"),),
     "transfer_only": (("только перевод", "только предоплата", "без наложенного платежа"),),
     "charity_appeal": (("пожертв", "благотворител", "закят"), ("отправьте", "переведите", "номер счета", "ссылк")),
@@ -289,6 +337,14 @@ COMBOS: tuple[tuple[tuple[str, ...], int], ...] = (
     (("deposit_to_reserve", "payment_request"), 10),
     (("deposit_to_reserve", "owner_abroad"), 15),
     (("too_good_deal", "transfer_only"), 15),
+    (("rental_ad", "advance_booking"), 30),
+    (("rental_ad", "too_good_deal"), 15),
+    (("rental_ad", "transfer_only"), 10),
+    (("sale_ad", "advance_booking"), 30),
+    (("sale_ad", "too_good_deal"), 20),
+    (("sale_ad", "deposit_to_reserve"), 15),
+    (("sale_ad", "owner_abroad"), 15),
+    (("sale_ad", "transfer_only"), 10),
     (("charity_appeal", "personal_account"), 20),
     (("visa_offer", "upfront_fee"), 10),
     (("visa_offer", "payment_request"), 10),

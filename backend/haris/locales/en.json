@@ -25,7 +25,8 @@
   "charity_scam": "Fake charity",
   "visa_scam": "Fake visa or residency",
   "recovery_scam": "Fake money recovery",
-  "unknown": "Not identified"
+  "unknown": "Not identified",
+  "fake_ad": "Fake ad (sale or rental)"
  },
  "reasons": {
   "deposit_to_reserve": "It asks for a deposit before you see the flat or item, or says the owner is abroad. This is how rental and listing scams work.",
@@ -60,7 +61,10 @@
   "link_click": "It asks you to click a link.",
   "suspicious_link": "It contains a suspicious link.",
   "official_link": "The link is on a known official domain.",
-  "risky_website": "Visiting the website itself showed signs of fraud."
+  "risky_website": "Visiting the website itself showed signs of fraud.",
+  "advance_booking": "It asks for a deposit or payment before you see the car or the place. That is how fake ads work: you pay, then the seller disappears.",
+  "rental_ad": "An ad or booking to rent a car, bike, rest house, farm or desert camp, the kind of offer Abu Dhabi Police warned about.",
+  "sale_ad": "An ad selling a car or bike. Fake ads offer them far below the market price to get a deposit."
  },
  "url_flags": {
   "brand_lookalike": "imitates a known brand but is not its official site",
@@ -145,6 +149,10 @@
   ],
   "phishing_link": [
    "Type the official website address yourself instead of tapping the link."
+  ],
+  "fake_ad": [
+   "Never pay a deposit before you see the car or the place yourself, and deal only with licensed companies and their official channels. A price far below the market is a warning sign, not a bargain.",
+   "Never enter card details or a verification code on a link sent with an ad. Report a suspicious ad to Aman on 8002626 or by SMS to 2828, or with \"Report a fake ad\" in Haris."
   ]
  },
  "playbooks": {
@@ -314,7 +322,7 @@
   "blocked": "Blocked the scammer"
  },
  "whatsapp": {
-  "welcome": "Hello, I'm Haris 🛡️\nForward me any suspicious message, or paste its text or link here, and I'll tell you how risky it is and what to do.\n\nI don't keep your messages, and I hide your personal details before checking.\n\n🔔 To get the authority's warnings about scam campaigns, send: ALERTS",
+  "welcome": "Hello, I'm Haris 🛡️\nForward me any suspicious message, or paste its text or link here, and I'll tell you how risky it is and what to do.\n\nI don't keep your messages, and I hide your personal details before checking.\n\n🔔 To get the authority's warnings about scam campaigns, send: ALERTS\n\n📢 Seen a suspicious ad for a sale or rental? Send: ad",
   "footer": "An AI assistant, not an official body · Emergency 999",
   "buttons": {
    "check": "Check a message",
@@ -419,7 +427,8 @@
    "case_reply_ok": "✅ I passed your answer to the authority (report {ref}).",
    "case_closed": "Your report *{ref}* was closed.",
    "case_assigned": "📋 Your report *{ref}* was passed to the team in charge, which will follow it through."
-  }
+  },
+  "ask_ad": "📢 Send me the ad's text or link as it is, with the advertiser's number if there is one. I'll check it, then you can report it to protect others, or file a full report if you paid.\n\nRemember: never pay a deposit before you see the car or the place yourself."
  },
  "inbox": {
   "status": {

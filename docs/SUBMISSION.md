@@ -25,14 +25,15 @@
 1. **يفحص الرابط من شكله:** انتحال اسم جهة معروفة، والامتدادات الخطرة، والروابط المختصرة، والحروف المتشابهة.
 2. **يفتح الموقع نفسه بأمان:** يتتبع التحويلات، ويقرأ عمر النطاق من السجلات الرسمية (RDAP)، والشهادة، وقوائم التهديد، وما تطلبه الصفحة (بطاقة، كلمة مرور، رمز تحقق)، والجهة التي تنتحلها. ثم **يقرأ الذكاء الاصطناعي الصفحة** ويحكم عليها، ويشرح السبب بلغة المستخدم. لا يُشغَّل شيء من الصفحة، ويُحذف معرّف الضحية من الرابط قبل الزيارة.
 3. **من الكشف إلى الإزالة:** لكل موقع وهمي يجهّز «حارس» للجهة المختصة ملف أدلة: مَن سجّل النطاق ومَن يستضيفه، وبريد الإبلاغ عن الإساءة لدى كلٍّ منهما من السجلات الرسمية، وبصمة SHA-256 للصفحة، وثلاث مسودات: تعليق النطاق، وإزالة الصفحة، وحجبه داخل الدولة. الضابط يراجع ويرسل، و«حارس» لا يرسل شيئاً بنفسه.
-4. **يكمل الطريق:** بلاغ بالصوت أو الكتابة أو لقطات الشاشة، ولوحة للجهة المختصة توجّه كل بلاغ إلى الفريق المناسب، ورادار يجمع البلاغات المتشابهة في حملة واحدة، وتنبيهات على واتساب.
+4. **الإبلاغ عن الإعلانات الوهمية:** استجابةً لتحذير شرطة أبوظبي في 22 نوفمبر 2026، يكشف «حارس» إعلانات البيع والتأجير الوهمية: سيارة بأقل بكثير من سعر السوق مع عربون قبل المعاينة، أو تأجير دراجات واستراحات وعزب ومخيمات بدفع مقدّم. ويقارن الذكاء الاصطناعي السعر بسعر السوق المعتاد للموديل. وبزر «أبلغ عن إعلان وهمي» يذهب الإعلان إلى رادار الحملات، أو يصبح بلاغاً كاملاً إن دفع المستخدم.
+5. **يكمل الطريق:** بلاغ بالصوت أو الكتابة أو لقطات الشاشة، ولوحة للجهة المختصة توجّه كل بلاغ إلى الفريق المناسب، ورادار يجمع البلاغات المتشابهة في حملة واحدة، وتنبيهات على واتساب.
 
 ### الأرقام (مُقاسة على الخادم الحيّ في 23 نوفمبر 2026)
 
 - **0 إنذارات خاطئة** على 23 موقعاً حقيقياً: بنوك، وشرطة، وصفحات دخول، ومواقع أخبار تذكر البنوك.
 - **52% من مواقع الاحتيال الحيّة كُشفت** (17 من 33) على قائمة مستقلة لم يُضبط النظام عليها، بعد 43% في الجولة الأولى. أغلب ما فات صفحات تُبنى بالجافاسكريبت على منصات مجانية، وقراءتها تحتاج متصفحاً حقيقياً، وهي أول خطوة في التجربة الميدانية.
 - **12 من 12** رسالة احتيال بصياغات جديدة كشفها الذكاء الاصطناعي، والقواعد وحدها 2 من 12.
-- **270 اختباراً آلياً.**
+- **284 اختباراً آلياً.**
 
 ### لمن
 
@@ -59,14 +60,15 @@ Scam links reach everyone, by SMS and WhatsApp, in at least five languages in th
 1. **Checks the link itself:** look-alike brand names, risky domain endings, shorteners, look-alike characters.
 2. **Opens the website safely:** follows the redirects, reads the domain's age from the official registries (RDAP), the certificate, threat lists, what the page asks for (card, password, one-time code) and whom it imitates. Then **the AI reads the page** and gives a verdict with reasons in the user's language. Nothing on the page runs, and the victim's identifier is stripped from the link first.
 3. **From detection to takedown:** for every fake site, the authority gets an evidence file: who registered the domain and who hosts it, each one's abuse contact from the official registries, a SHA-256 of the page, and three drafts: suspend the domain, take the page down, block it inside the UAE. The officer reviews and sends; Haris sends nothing itself.
-4. **The whole journey:** a report by voice, text or screenshots; a dashboard that routes each report to the right team; a radar that groups similar reports into one campaign; WhatsApp alerts.
+4. **Reporting fake ads:** following Abu Dhabi Police's warning of 22 November 2026, Haris catches fake sale and rental ads: a car far below the market price with a deposit before viewing, or bikes, rest houses, farms and camps paid in advance. The AI compares the price with the usual market price for the model. "Report a fake ad" sends the ad to the campaign radar, or turns it into a full report if the person paid.
+5. **The whole journey:** a report by voice, text or screenshots; a dashboard that routes each report to the right team; a radar that groups similar reports into one campaign; WhatsApp alerts.
 
 ### The numbers (measured on the live server, 23 November 2026)
 
 - **0 false alarms** on 23 real websites: banks, police, sign-in pages, news sites that name banks.
 - **52% of live phishing sites caught** (17 of 33) on a held-out list the system was not tuned on, up from 43% in the first round. Most misses are pages built by JavaScript on free website builders; reading them needs a headless browser, the first step of a pilot.
 - **12 of 12** scams in new wording caught with the AI; rules alone 2 of 12.
-- **270 automated tests.**
+- **284 automated tests.**
 
 ### Who it serves
 

@@ -1,61 +1,357 @@
 [
-  {"id": "ar-delivery-1", "label": "scam", "text": "عزيزي العميل، طردك محتجز بسبب عنوان غير مكتمل. ادفع 5 دراهم خلال 24 ساعة عبر الرابط: https://emirates-post-ae.top/track"},
-  {"id": "ar-bank-otp", "label": "scam", "text": "مرحبا، معك موظف البنك. حسابك سيتم إيقافه، أرسل لي الرمز الذي وصلك الآن حتى نحدّث بياناتك."},
-  {"id": "ar-gov-fine", "label": "scam", "text": "شرطة دبي: لديك مخالفة مرورية غير مسددة. سدد الغرامة فوراً لتجنب حجز المركبة http://dubaipolice-fines.online/pay"},
-  {"id": "ar-job", "label": "scam", "text": "فرصة عمل من المنزل! دخل يومي 800 درهم مقابل تقييم المنتجات. ادفع رسوم التسجيل 200 درهم للبدء."},
-  {"id": "ar-invest", "label": "scam", "text": "استثمر في العملات الرقمية مع خبرائنا وارباح مضمونة 30% أسبوعياً بدون مخاطرة. حول المبلغ إلى عنوان المحفظة."},
-  {"id": "ar-prize", "label": "scam", "text": "مبروك! ربحت جائزة 100,000 درهم في السحب الشهري. ادفع رسوم التحويل 50 درهم لاستلام الجائزة."},
-  {"id": "ar-extortion", "label": "scam", "text": "معي صورك ومحادثاتك. إذا لم تحول 5000 درهم خلال ساعة سأرسلها إلى عائلتك وأصدقائك."},
-  {"id": "ar-icp-id", "label": "scam", "text": "الهوية والجنسية: انتهت صلاحية بياناتك. أرسل صورة الهوية ورقم البطاقة البنكية لتحديثها https://bit.ly/icp-update"},
-  {"id": "ar-techsupport", "label": "scam", "text": "نحن الدعم الفني لاتصالات. جهازك مخترق، حمل التطبيق AnyDesk فوراً حتى نصلحه."},
-  {"id": "ar-salik", "label": "scam", "text": "سالك: رصيدك غير كافٍ. ادفع 10 دراهم الآن لتجنب الغرامة: salik-ae-pay.xyz"},
-  {"id": "en-delivery", "label": "scam", "text": "Aramex: your package is on hold due to unpaid customs fee of AED 7.50. Pay within 24 hours: https://aramex-delivery-uae.click/pay"},
-  {"id": "en-bank", "label": "scam", "text": "Emirates NBD alert: your card has been blocked. Click to verify your card number and CVV immediately: http://enbd-secure-verify.info"},
-  {"id": "en-job", "label": "scam", "text": "Part-time job! Earn AED 500 daily by liking videos. Pay a small registration fee to get started. Don't tell anyone, limited spots."},
-  {"id": "en-invest", "label": "scam", "text": "Guaranteed returns of 40% per month with our forex trading platform. Double your money, risk-free. Send USDT to start."},
-  {"id": "en-prize", "label": "scam", "text": "Congratulations! You have won an iPhone in our lucky draw. Pay AED 25 delivery fee to claim your prize: tinyurl.com/claim-now"},
-  {"id": "en-extortion", "label": "scam", "text": "I recorded you on video. Pay 2000 USDT to this wallet address or I will send the video to all your contacts and your family."},
-  {"id": "en-otp", "label": "scam", "text": "Hi, I sent you a verification code by mistake. Please send me the code you just received."},
-  {"id": "en-giftcard", "label": "scam", "text": "This is the Ministry of Interior. You have an outstanding fine. Pay with Google Play card codes today only to avoid arrest."},
-  {"id": "ur-job", "label": "scam", "text": "دبئی میں نوکری! تنخواہ 3000 درہم۔ ویزا فیس 1500 درہم ابھی بھیجیں تاکہ آپ کی سیٹ محفوظ ہو۔"},
-  {"id": "ur-prize", "label": "scam", "text": "مبارک ہو! آپ نے 50,000 درہم کا انعام جیتا ہے۔ انعام حاصل کرنے کے لیے 100 درہم فیس ادا کریں۔"},
-  {"id": "ur-otp", "label": "scam", "text": "میں بینک سے بات کر رہا ہوں۔ آپ کا اکاؤنٹ بند ہو جائے گا۔ جو کوڈ آیا ہے وہ مجھے فوری بتائیں۔"},
-  {"id": "ur-delivery", "label": "scam", "text": "آپ کا پارسل رکا ہوا ہے۔ ڈیلیوری کے لیے 5 درہم ادا کریں: http://emiratespost-uae.top"},
-  {"id": "ar-otp-legit", "label": "legit", "text": "رمز التحقق الخاص بك هو 482913. لا تشارك هذا الرمز مع أي شخص."},
-  {"id": "ar-delivered", "label": "legit", "text": "تم تسليم شحنتك بنجاح. شكراً لتسوقك معنا."},
-  {"id": "ar-family", "label": "legit", "text": "مرحبا، سنلتقي عند بيت جدتي الساعة 8 مساءً. لا تتأخر."},
-  {"id": "ar-salary", "label": "legit", "text": "تم إيداع راتب شهر نوفمبر في حسابك. الرصيد المتاح ظاهر في التطبيق."},
-  {"id": "ar-official-track", "label": "legit", "text": "يمكنك تتبع شحنتك عبر الموقع الرسمي https://www.emiratespost.ae"},
-  {"id": "en-otp-legit", "label": "legit", "text": "Your verification code is 739201. Never share this code with anyone, including bank staff."},
-  {"id": "en-fine-paid", "label": "legit", "text": "Your traffic fine of AED 400 has been paid successfully. Thank you. Dubai Police"},
-  {"id": "en-card-used", "label": "legit", "text": "Your card ending 4417 was used for AED 45.00 at Carrefour on 18 Nov."},
-  {"id": "en-meeting", "label": "legit", "text": "Reminder: interview for the accountant role at our Abu Dhabi office on Monday at 10 am."},
-  {"id": "en-statement", "label": "legit", "text": "Your monthly investment statement is now available in the app."},
-  {"id": "ur-family", "label": "legit", "text": "امی، میں دفتر سے نکل گیا ہوں، آدھے گھنٹے میں گھر پہنچوں گا۔"},
-  {"id": "ur-otp-legit", "label": "legit", "text": "آپ کا تصدیقی کوڈ 551203 ہے۔ یہ کوڈ کسی کو نہ بتائیں۔"},
-  {"id": "ar-romance", "label": "scam", "text": "حبيبتي، أنا عالق في المطار وأحتاج مبلغ لتذكرة الطيران، أرسل لي 3000 درهم اليوم. تعارفنا عبر الانترنت وسنلتقي قريبا"},
-  {"id": "en-romance", "label": "scam", "text": "My love, I am a doctor on a UN peacekeeping mission. We met online and I can't wait to see you, but I need money for my flight ticket. Please send me 2000 dollars"},
-  {"id": "ur-romance", "label": "scam", "text": "میری جان، میں ہسپتال میں ہوں، مجھے پیسے بھیج دو۔ ہم آن لائن ملے تھے لیکن میں تم سے سچا پیار کرتا ہوں"},
-  {"id": "en-recovery", "label": "scam", "text": "Dear customer, we are a fund recovery agency working with the police. We can recover your money lost to online trading. Pay a processing fee of AED 500 to open your file."},
-  {"id": "ar-recovery", "label": "scam", "text": "نحن مكتب محاماة متخصص، نستطيع استرداد أموالك المسروقة من منصات التداول خلال أسبوع. ادفع رسوم فتح الملف 900 درهم"},
-  {"id": "ar-family-love", "label": "legit", "text": "حبيبي أرسل لي صورة الفاتورة لما توصل البيت، وجيب معك خبز"},
-  {"id": "en-spouse", "label": "legit", "text": "Hi darling, can you pay for the groceries on the way home? Love you"},
-  {"id": "ar-rental", "label": "scam", "text": "شقة غرفة وصالة في المرسى بـ 2500 درهم شهرياً. المالك مسافر، حوّل عربون لحجز الشقة 1000 درهم قبل المعاينة"},
-  {"id": "en-rental", "label": "scam", "text": "Studio in JLT, AED 3,000 a month. I am abroad so I can't show it, send the deposit to reserve and I will courier the keys"},
-  {"id": "en-shop", "label": "scam", "text": "iPhone 16 Pro 80% off! Clearance sale, bank transfer only, no cash on delivery. Order on WhatsApp now"},
-  {"id": "ar-charity", "label": "scam", "text": "ساهم في علاج طفل مريض، تبرعك ينقذ حياة. حول على حسابي الشخصي رقم الحساب AE070331234567890123456"},
-  {"id": "en-visa", "label": "scam", "text": "Golden visa guaranteed in 48 hours, no requirements. Pay the processing fee of AED 3500 to our agent"},
-  {"id": "ur-visa", "label": "scam", "text": "دبئی کا ورک ویزا گارنٹی کے ساتھ، بغیر شرط۔ ویزا فیس 4000 درہم بھیجیں"},
-  {"id": "ar-rental-legit", "label": "legit", "text": "المعاينة غداً الساعة 5 مساءً، والعربون يُدفع عند توقيع العقد في مكتب الوسيط"},
-  {"id": "en-donation-receipt", "label": "legit", "text": "Thank you for your donation to Emirates Red Crescent. Your receipt number is 4821"},
-  {"id": "en-visa-approved", "label": "legit", "text": "Your visa application has been approved. Download it from the ICP app."},
-  {"id": "en-cod", "label": "legit", "text": "Your order has shipped and arrives tomorrow. Pay cash on delivery."},
-  {"id": "en-mall-sale", "label": "legit", "text": "Pay with your Visa card and get 70% off at the mall this weekend"},
-  {"id": "hi-delivery", "label": "scam", "text": "प्रिय ग्राहक, आपका पार्सल अधूरे पते के कारण रुका है। 24 घंटे में 5 दिरहम का भुगतान करें: https://emirates-post-ae.top/track"},
-  {"id": "hi-bank-otp", "label": "scam", "text": "आपका बैंक खाता बंद कर दिया जाएगा। तुरंत अपना ओटीपी कोड भेजें।"},
-  {"id": "hi-visa", "label": "scam", "text": "दुबई में वर्क वीज़ा गारंटी के साथ, बिना शर्त। वीजा फीस 4000 दिरहम भेजें"},
-  {"id": "hi-job", "label": "scam", "text": "घर से काम करें! रोज़ाना कमाई 500 दिरहम। रजिस्ट्रेशन फीस 100 दिरहम भेजें"},
-  {"id": "hi-otp-legit", "label": "legit", "text": "आपका OTP 482913 है। इसे किसी के साथ शेयर न करें।"},
-  {"id": "hi-family", "label": "legit", "text": "माँ, मैं शाम को घर आऊँगा, खाना बना लेना"},
-  {"id": "hi-cod", "label": "legit", "text": "आपका पार्सल कल पहुँचेगा। डिलीवरी पर भुगतान करें।"}
+ {
+  "id": "ar-delivery-1",
+  "label": "scam",
+  "text": "عزيزي العميل، طردك محتجز بسبب عنوان غير مكتمل. ادفع 5 دراهم خلال 24 ساعة عبر الرابط: https://emirates-post-ae.top/track"
+ },
+ {
+  "id": "ar-bank-otp",
+  "label": "scam",
+  "text": "مرحبا، معك موظف البنك. حسابك سيتم إيقافه، أرسل لي الرمز الذي وصلك الآن حتى نحدّث بياناتك."
+ },
+ {
+  "id": "ar-gov-fine",
+  "label": "scam",
+  "text": "شرطة دبي: لديك مخالفة مرورية غير مسددة. سدد الغرامة فوراً لتجنب حجز المركبة http://dubaipolice-fines.online/pay"
+ },
+ {
+  "id": "ar-job",
+  "label": "scam",
+  "text": "فرصة عمل من المنزل! دخل يومي 800 درهم مقابل تقييم المنتجات. ادفع رسوم التسجيل 200 درهم للبدء."
+ },
+ {
+  "id": "ar-invest",
+  "label": "scam",
+  "text": "استثمر في العملات الرقمية مع خبرائنا وارباح مضمونة 30% أسبوعياً بدون مخاطرة. حول المبلغ إلى عنوان المحفظة."
+ },
+ {
+  "id": "ar-prize",
+  "label": "scam",
+  "text": "مبروك! ربحت جائزة 100,000 درهم في السحب الشهري. ادفع رسوم التحويل 50 درهم لاستلام الجائزة."
+ },
+ {
+  "id": "ar-extortion",
+  "label": "scam",
+  "text": "معي صورك ومحادثاتك. إذا لم تحول 5000 درهم خلال ساعة سأرسلها إلى عائلتك وأصدقائك."
+ },
+ {
+  "id": "ar-icp-id",
+  "label": "scam",
+  "text": "الهوية والجنسية: انتهت صلاحية بياناتك. أرسل صورة الهوية ورقم البطاقة البنكية لتحديثها https://bit.ly/icp-update"
+ },
+ {
+  "id": "ar-techsupport",
+  "label": "scam",
+  "text": "نحن الدعم الفني لاتصالات. جهازك مخترق، حمل التطبيق AnyDesk فوراً حتى نصلحه."
+ },
+ {
+  "id": "ar-salik",
+  "label": "scam",
+  "text": "سالك: رصيدك غير كافٍ. ادفع 10 دراهم الآن لتجنب الغرامة: salik-ae-pay.xyz"
+ },
+ {
+  "id": "en-delivery",
+  "label": "scam",
+  "text": "Aramex: your package is on hold due to unpaid customs fee of AED 7.50. Pay within 24 hours: https://aramex-delivery-uae.click/pay"
+ },
+ {
+  "id": "en-bank",
+  "label": "scam",
+  "text": "Emirates NBD alert: your card has been blocked. Click to verify your card number and CVV immediately: http://enbd-secure-verify.info"
+ },
+ {
+  "id": "en-job",
+  "label": "scam",
+  "text": "Part-time job! Earn AED 500 daily by liking videos. Pay a small registration fee to get started. Don't tell anyone, limited spots."
+ },
+ {
+  "id": "en-invest",
+  "label": "scam",
+  "text": "Guaranteed returns of 40% per month with our forex trading platform. Double your money, risk-free. Send USDT to start."
+ },
+ {
+  "id": "en-prize",
+  "label": "scam",
+  "text": "Congratulations! You have won an iPhone in our lucky draw. Pay AED 25 delivery fee to claim your prize: tinyurl.com/claim-now"
+ },
+ {
+  "id": "en-extortion",
+  "label": "scam",
+  "text": "I recorded you on video. Pay 2000 USDT to this wallet address or I will send the video to all your contacts and your family."
+ },
+ {
+  "id": "en-otp",
+  "label": "scam",
+  "text": "Hi, I sent you a verification code by mistake. Please send me the code you just received."
+ },
+ {
+  "id": "en-giftcard",
+  "label": "scam",
+  "text": "This is the Ministry of Interior. You have an outstanding fine. Pay with Google Play card codes today only to avoid arrest."
+ },
+ {
+  "id": "ur-job",
+  "label": "scam",
+  "text": "دبئی میں نوکری! تنخواہ 3000 درہم۔ ویزا فیس 1500 درہم ابھی بھیجیں تاکہ آپ کی سیٹ محفوظ ہو۔"
+ },
+ {
+  "id": "ur-prize",
+  "label": "scam",
+  "text": "مبارک ہو! آپ نے 50,000 درہم کا انعام جیتا ہے۔ انعام حاصل کرنے کے لیے 100 درہم فیس ادا کریں۔"
+ },
+ {
+  "id": "ur-otp",
+  "label": "scam",
+  "text": "میں بینک سے بات کر رہا ہوں۔ آپ کا اکاؤنٹ بند ہو جائے گا۔ جو کوڈ آیا ہے وہ مجھے فوری بتائیں۔"
+ },
+ {
+  "id": "ur-delivery",
+  "label": "scam",
+  "text": "آپ کا پارسل رکا ہوا ہے۔ ڈیلیوری کے لیے 5 درہم ادا کریں: http://emiratespost-uae.top"
+ },
+ {
+  "id": "ar-otp-legit",
+  "label": "legit",
+  "text": "رمز التحقق الخاص بك هو 482913. لا تشارك هذا الرمز مع أي شخص."
+ },
+ {
+  "id": "ar-delivered",
+  "label": "legit",
+  "text": "تم تسليم شحنتك بنجاح. شكراً لتسوقك معنا."
+ },
+ {
+  "id": "ar-family",
+  "label": "legit",
+  "text": "مرحبا، سنلتقي عند بيت جدتي الساعة 8 مساءً. لا تتأخر."
+ },
+ {
+  "id": "ar-salary",
+  "label": "legit",
+  "text": "تم إيداع راتب شهر نوفمبر في حسابك. الرصيد المتاح ظاهر في التطبيق."
+ },
+ {
+  "id": "ar-official-track",
+  "label": "legit",
+  "text": "يمكنك تتبع شحنتك عبر الموقع الرسمي https://www.emiratespost.ae"
+ },
+ {
+  "id": "en-otp-legit",
+  "label": "legit",
+  "text": "Your verification code is 739201. Never share this code with anyone, including bank staff."
+ },
+ {
+  "id": "en-fine-paid",
+  "label": "legit",
+  "text": "Your traffic fine of AED 400 has been paid successfully. Thank you. Dubai Police"
+ },
+ {
+  "id": "en-card-used",
+  "label": "legit",
+  "text": "Your card ending 4417 was used for AED 45.00 at Carrefour on 18 Nov."
+ },
+ {
+  "id": "en-meeting",
+  "label": "legit",
+  "text": "Reminder: interview for the accountant role at our Abu Dhabi office on Monday at 10 am."
+ },
+ {
+  "id": "en-statement",
+  "label": "legit",
+  "text": "Your monthly investment statement is now available in the app."
+ },
+ {
+  "id": "ur-family",
+  "label": "legit",
+  "text": "امی، میں دفتر سے نکل گیا ہوں، آدھے گھنٹے میں گھر پہنچوں گا۔"
+ },
+ {
+  "id": "ur-otp-legit",
+  "label": "legit",
+  "text": "آپ کا تصدیقی کوڈ 551203 ہے۔ یہ کوڈ کسی کو نہ بتائیں۔"
+ },
+ {
+  "id": "ar-romance",
+  "label": "scam",
+  "text": "حبيبتي، أنا عالق في المطار وأحتاج مبلغ لتذكرة الطيران، أرسل لي 3000 درهم اليوم. تعارفنا عبر الانترنت وسنلتقي قريبا"
+ },
+ {
+  "id": "en-romance",
+  "label": "scam",
+  "text": "My love, I am a doctor on a UN peacekeeping mission. We met online and I can't wait to see you, but I need money for my flight ticket. Please send me 2000 dollars"
+ },
+ {
+  "id": "ur-romance",
+  "label": "scam",
+  "text": "میری جان، میں ہسپتال میں ہوں، مجھے پیسے بھیج دو۔ ہم آن لائن ملے تھے لیکن میں تم سے سچا پیار کرتا ہوں"
+ },
+ {
+  "id": "en-recovery",
+  "label": "scam",
+  "text": "Dear customer, we are a fund recovery agency working with the police. We can recover your money lost to online trading. Pay a processing fee of AED 500 to open your file."
+ },
+ {
+  "id": "ar-recovery",
+  "label": "scam",
+  "text": "نحن مكتب محاماة متخصص، نستطيع استرداد أموالك المسروقة من منصات التداول خلال أسبوع. ادفع رسوم فتح الملف 900 درهم"
+ },
+ {
+  "id": "ar-family-love",
+  "label": "legit",
+  "text": "حبيبي أرسل لي صورة الفاتورة لما توصل البيت، وجيب معك خبز"
+ },
+ {
+  "id": "en-spouse",
+  "label": "legit",
+  "text": "Hi darling, can you pay for the groceries on the way home? Love you"
+ },
+ {
+  "id": "ar-rental",
+  "label": "scam",
+  "text": "شقة غرفة وصالة في المرسى بـ 2500 درهم شهرياً. المالك مسافر، حوّل عربون لحجز الشقة 1000 درهم قبل المعاينة"
+ },
+ {
+  "id": "en-rental",
+  "label": "scam",
+  "text": "Studio in JLT, AED 3,000 a month. I am abroad so I can't show it, send the deposit to reserve and I will courier the keys"
+ },
+ {
+  "id": "en-shop",
+  "label": "scam",
+  "text": "iPhone 16 Pro 80% off! Clearance sale, bank transfer only, no cash on delivery. Order on WhatsApp now"
+ },
+ {
+  "id": "ar-charity",
+  "label": "scam",
+  "text": "ساهم في علاج طفل مريض، تبرعك ينقذ حياة. حول على حسابي الشخصي رقم الحساب AE070331234567890123456"
+ },
+ {
+  "id": "en-visa",
+  "label": "scam",
+  "text": "Golden visa guaranteed in 48 hours, no requirements. Pay the processing fee of AED 3500 to our agent"
+ },
+ {
+  "id": "ur-visa",
+  "label": "scam",
+  "text": "دبئی کا ورک ویزا گارنٹی کے ساتھ، بغیر شرط۔ ویزا فیس 4000 درہم بھیجیں"
+ },
+ {
+  "id": "ar-rental-legit",
+  "label": "legit",
+  "text": "المعاينة غداً الساعة 5 مساءً، والعربون يُدفع عند توقيع العقد في مكتب الوسيط"
+ },
+ {
+  "id": "en-donation-receipt",
+  "label": "legit",
+  "text": "Thank you for your donation to Emirates Red Crescent. Your receipt number is 4821"
+ },
+ {
+  "id": "en-visa-approved",
+  "label": "legit",
+  "text": "Your visa application has been approved. Download it from the ICP app."
+ },
+ {
+  "id": "en-cod",
+  "label": "legit",
+  "text": "Your order has shipped and arrives tomorrow. Pay cash on delivery."
+ },
+ {
+  "id": "en-mall-sale",
+  "label": "legit",
+  "text": "Pay with your Visa card and get 70% off at the mall this weekend"
+ },
+ {
+  "id": "hi-delivery",
+  "label": "scam",
+  "text": "प्रिय ग्राहक, आपका पार्सल अधूरे पते के कारण रुका है। 24 घंटे में 5 दिरहम का भुगतान करें: https://emirates-post-ae.top/track"
+ },
+ {
+  "id": "hi-bank-otp",
+  "label": "scam",
+  "text": "आपका बैंक खाता बंद कर दिया जाएगा। तुरंत अपना ओटीपी कोड भेजें।"
+ },
+ {
+  "id": "hi-visa",
+  "label": "scam",
+  "text": "दुबई में वर्क वीज़ा गारंटी के साथ, बिना शर्त। वीजा फीस 4000 दिरहम भेजें"
+ },
+ {
+  "id": "hi-job",
+  "label": "scam",
+  "text": "घर से काम करें! रोज़ाना कमाई 500 दिरहम। रजिस्ट्रेशन फीस 100 दिरहम भेजें"
+ },
+ {
+  "id": "hi-otp-legit",
+  "label": "legit",
+  "text": "आपका OTP 482913 है। इसे किसी के साथ शेयर न करें।"
+ },
+ {
+  "id": "hi-family",
+  "label": "legit",
+  "text": "माँ, मैं शाम को घर आऊँगा, खाना बना लेना"
+ },
+ {
+  "id": "hi-cod",
+  "label": "legit",
+  "text": "आपका पार्सल कल पहुँचेगा। डिलीवरी पर भुगतान करें।"
+ },
+ {
+  "id": "ar-winter-bike",
+  "label": "scam",
+  "text": "عرض الشتاء 🔥 تأجير دبابات وبقي للبر بـ 99 درهم فقط لليوم! العدد محدود، احجز الآن وادفع العربون عبر الرابط لتأكيد الحجز: https://desert-bikes-uae.shop/book"
+ },
+ {
+  "id": "ar-winter-ezba",
+  "label": "scam",
+  "text": "عزبة للإيجار في الختم مع خيمة وجلسة شتوية، 300 درهم لليلة بدل 1500. الحجز بتحويل دفعة مقدمة فقط، وأرسل لك الموقع بعد التحويل"
+ },
+ {
+  "id": "en-winter-camp",
+  "label": "scam",
+  "text": "Winter special! Private desert camp in Al Khatim with BBQ and quad bikes, half price this weekend only. Pay the booking fee here to confirm your booking: https://abudhabi-desertcamp.top/pay"
+ },
+ {
+  "id": "hi-winter-camp",
+  "label": "scam",
+  "text": "विंटर ऑफर! डेजर्ट कैंप और क्वाड बाइक किराए पर, सिर्फ आज। बुकिंग कन्फर्म करने के लिए एडवांस भेजें, सिर्फ ट्रांसफर"
+ },
+ {
+  "id": "ru-winter-buggy",
+  "label": "scam",
+  "text": "Аренда квадроциклов и багги в пустыне, только сегодня! Для подтверждения брони внесите предоплату по ссылке"
+ },
+ {
+  "id": "ar-winter-legit",
+  "label": "legit",
+  "text": "تم تأكيد حجزك في مخيم الصحراء يوم الجمعة الساعة 4 عصراً. الدفع عند الوصول. للاستفسار اتصل بنا"
+ },
+ {
+  "id": "en-winter-legit",
+  "label": "legit",
+  "text": "Thanks for renting with us! Your quad bike booking for Saturday 3 pm is confirmed. Please bring your Emirates ID; payment is at the venue."
+ },
+ {
+  "id": "ar-car-deposit",
+  "label": "scam",
+  "text": "للبيع لكزس LX موديل 2022 بحالة الوكالة، السعر 95 ألف درهم فقط للبيع السريع. لحجز السيارة ادفع عربون 1000 درهم وتعال شوفها"
+ },
+ {
+  "id": "ar-car-porsche",
+  "label": "scam",
+  "text": "بورش كايين موديل 2024 للبيع بسعر 200 ألف درهم، أقل من سعر السوق بداعي السفر. تواصل واتساب فقط"
+ },
+ {
+  "id": "en-car-porsche",
+  "label": "scam",
+  "text": "Porsche 911 2023 for sale, only AED 200,000, below market price, urgent sale. Send a deposit to hold the car and come see it this weekend."
+ },
+ {
+  "id": "ar-car-legit",
+  "label": "legit",
+  "text": "للبيع تويوتا كامري 2019، السعر 48 ألف درهم قابل للتفاوض، المعاينة في دبي، والدفع عند نقل الملكية في المرور"
+ },
+ {
+  "id": "en-car-legit",
+  "label": "legit",
+  "text": "2019 Toyota Camry for sale, AED 48,000, viewing in Dubai, test drive welcome. Payment at the transfer of ownership."
+ }
 ]
