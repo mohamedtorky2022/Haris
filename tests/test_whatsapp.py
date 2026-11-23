@@ -353,3 +353,37 @@ def test_the_ad_command_asks_for_the_ad_and_the_next_message_is_checked():
 def test_the_welcome_mentions_the_ad_command():
     from haris import whatsapp
     assert "إعلان" in str(whatsapp.welcome("ar"))
+
+
+def test_user_with_hidden_number_is_answered_by_user_id(monkeypatch):
+    """A WhatsApp username can hide the number: the reply goes to the business-scoped user ID."""
+    bodies = []
+
+    class Resp:
+        status = 200
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+
+    def fake_urlopen(request, timeout=0):
+        bodies.append(json.loads(request.data))
+        return Resp()
+
+    monkeypatch.setattr(wa.urllib.request, "urlopen", fake_urlopen)
+    msg = {"id": "u1", "from_user_id": "AE.13491208655302741918", "type": "text", "text": {"body": "مرحباً"}}
+    assert wa.incoming(webhook(msg))[0]["from"] == "AE.13491208655302741918"
+    assert wa.process(webhook(msg)) >= 1
+    assert all(b.get("recipient") == "AE.13491208655302741918" and "to" not in b for b in bodies)
+    assert not any(b.get("type") == "contacts" for b in bodies)  # the contact card needs a number
+
+
+def test_phone_number_still_goes_in_to(monkeypatch):
+    bodies = []
+
+    class Resp:
+        status = 200
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+
+    monkeypatch.setattr(wa.urllib.request, "urlopen", lambda r, timeout=0: (bodies.append(json.loads(r.data)), Resp())[1])
+    assert wa.send("971500000001", {"type": "text", "text": {"body": "hi"}})
+    assert bodies[0]["to"] == "971500000001" and "recipient" not in bodies[0]

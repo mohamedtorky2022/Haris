@@ -166,7 +166,10 @@ def incoming(payload: dict) -> list[dict]:
         for change in entry.get("changes") or []:
             value = change.get("value") or {}
             for m in value.get("messages") or []:
-                msg = {"id": m.get("id", ""), "from": m.get("from", ""), "type": m.get("type", ""),
+                # Since 2026 a user with a WhatsApp username may hide their number: the message then has
+                # no "from", only a business-scoped user ID ("from_user_id", e.g. "AE.1234…"), which works
+                # as the address for replies (see send()).
+                msg = {"id": m.get("id", ""), "from": m.get("from") or m.get("from_user_id") or "", "type": m.get("type", ""),
                        "text": "", "reply_id": ""}
                 if msg["type"] == "text":
                     msg["text"] = ((m.get("text") or {}).get("body") or "")[:MAX_TEXT]
@@ -604,7 +607,9 @@ def handle(msg: dict) -> list[dict]:
 def send(to: str, message: dict) -> bool:
     s = settings()
     url = f"{GRAPH_URL}/{s['version']}/{s['phone_id']}/messages"
-    body = {"messaging_product": "whatsapp", "recipient_type": "individual", "to": to, **message}
+    # A phone number goes in "to"; a business-scoped user ID (letters and a dot, e.g. "AE.1234…") in "recipient".
+    address = {"to": to} if to.isdigit() else {"recipient": to}
+    body = {"messaging_product": "whatsapp", "recipient_type": "individual", **address, **message}
     request = urllib.request.Request(
         url, data=json.dumps(body).encode(), method="POST",
         headers={"Authorization": f"Bearer {s['token']}", "Content-Type": "application/json"},
@@ -660,7 +665,7 @@ def process(payload: dict) -> int:
             continue
         lang = detect_language(msg["text"]) if msg["text"] else "ar"
         replies = [{"type": "text", "text": {"body": TEXT[lang]["too_many"]}}] if over else handle(msg)
-        if not over and msg["type"] == "text" and is_greeting(msg["text"]) and _first_welcome(msg["from"]):
+        if not over and msg["type"] == "text" and is_greeting(msg["text"]) and msg["from"].isdigit() and _first_welcome(msg["from"]):
             replies.append(contact_card())
         if not over and alerts.command(msg["text"]) is None and alerts.auto_subscribe(msg["from"], lang):
             replies.append({"type": "text", "text": {"body": alerts.TEXT[lang]["auto_notice"]}})
