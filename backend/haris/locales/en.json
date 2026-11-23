@@ -74,7 +74,7 @@
   "no_https": "not encrypted (no https)"
  },
  "site_flags": {
-  "threat_list": "Listed on global dangerous-site lists",
+  "threat_list": "Possibly a deceptive or harmful site, according to Google Safe Browsing. Advisory provided by Google: https://developers.google.com/safe-browsing/v4/advisory",
   "brand_on_page": "The page poses as a known organisation on a domain that is not theirs",
   "brand_with_form": "Poses as a known organisation and asks for your details",
   "new_domain": "The site was registered very recently (under a month ago)",

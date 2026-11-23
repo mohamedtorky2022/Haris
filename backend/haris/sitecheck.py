@@ -88,6 +88,7 @@ BRAND_NAMES: dict[str, tuple[str, ...]] = {
     "mashreq": ("mashreq", "بنك المشرق"),
     "amazon": ("amazon", "أمازون"),
     "noon": ("noon.com",),
+    "falconbank": ("falcon national bank", "بنك الصقر الوطني"),  # fictional, for the training page
 }
 
 _CARD = re.compile(r"card|cvv|cvc|cc-?num|expir|exp-?date|بطاقة|البطاقة", re.I)

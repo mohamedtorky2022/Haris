@@ -8,6 +8,7 @@ are switched off in these tests, each of which is covered on its own below.
 
 import http.server
 import threading
+from pathlib import Path
 
 import pytest
 
@@ -361,3 +362,76 @@ def test_eand_is_official():
     """Found by the first live run: etisalat.ae now redirects to eand.ae, e&'s own domain."""
     from haris.urls import _is_official
     assert _is_official("www.eand.ae") and _is_official("eand.ae")
+
+
+# --- The training page used in the live demo -----------------------------------------
+
+DEMO_PAGE = (Path(__file__).resolve().parents[1] / "frontend" / "demo" / "falcon-bank.html").read_bytes()
+
+
+def test_the_training_page_is_caught_after_its_redirect(monkeypatch):
+    """The demo link looks clean offline; only the visit shows the fictional bank asking for a card."""
+    from haris import detector
+    from haris.urls import analyze_url
+
+    def fake_get(url):
+        if url.endswith("/demo/go"):
+            return {"status": 302, "location": "/demo/falcon-bank.html", "type": "", "body": b"", "cert": {"valid": True}}
+        return {"status": 200, "location": None, "type": "text/html; charset=utf-8", "body": DEMO_PAGE,
+                "cert": {"valid": True}}
+
+    monkeypatch.setattr(sitecheck, "_get", fake_get)
+    link = "https://haris-uae.onrender.com/demo/go"
+    assert analyze_url(link).score == 0  # nothing to see in the link itself
+
+    r = inspect(link)
+    assert r["final_url"].endswith("/demo/falcon-bank.html")
+    assert "falconbank" in r["brands"]
+    assert {"brand_on_page", "card_form", "otp_form", "password_form", "brand_with_form"} <= set(r["flags"])
+
+    monkeypatch.setattr(detector, "extract_urls", lambda text: [link])
+    result = detector.analyze("عزيزي العميل، حدّث بطاقتك: " + link, "ar", use_llm=False)
+    assert result["risk"] == "high" and "risky_website" in result["signals"]
+
+
+def test_the_training_page_sends_nothing():
+    """It must never work as a real phishing page: no form action, no enabled submit button."""
+    page = DEMO_PAGE.decode()
+    assert "action=" not in page
+    assert "<script" not in page
+    assert "disabled" in page and "صفحة تدريبية" in page and "noindex" in page
+
+
+def test_the_phishtank_list_keeps_the_newest_online_sites_one_per_domain():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "fetch_phishtank", Path(__file__).resolve().parents[1] / "scripts" / "fetch_phishtank.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    entries = [
+        {"url": "https://a.top/1", "verified": "yes", "online": "yes", "submission_time": "2026-11-23T09:00:00+00:00"},
+        {"url": "https://a.top/2", "verified": "yes", "online": "yes", "submission_time": "2026-11-23T10:00:00+00:00"},
+        {"url": "https://b.xyz/", "verified": "yes", "online": "yes", "submission_time": "2026-11-23T08:00:00+00:00"},
+        {"url": "https://old.cc/", "verified": "yes", "online": "yes", "submission_time": "2026-11-01T08:00:00+00:00"},
+        {"url": "https://dead.top/", "verified": "yes", "online": "no", "submission_time": "2026-11-23T11:00:00+00:00"},
+        {"url": "https://unchecked.top/", "verified": "no", "online": "yes", "submission_time": "2026-11-23T11:00:00+00:00"},
+    ]
+    assert mod.newest(entries, 2) == ["https://a.top/2", "https://b.xyz/"]
+
+
+def test_the_judges_demo_message_is_caught_only_by_the_visit(monkeypatch):
+    """The message in docs/JUDGES.md: low on its own, high once the site is visited."""
+    from haris import detector
+
+    message = "مرحباً، هذا الرابط الذي طلبته: https://haris-uae.onrender.com/demo/go"
+    monkeypatch.setenv("HARIS_SITE_CHECK", "0")
+    assert detector.analyze(message, "ar", use_llm=False)["risk"] == "low"
+
+    def fake_get(url):
+        if url.endswith("/demo/go"):
+            return {"status": 302, "location": "/demo/falcon-bank.html", "type": "", "body": b"", "cert": {"valid": True}}
+        return {"status": 200, "location": None, "type": "text/html", "body": DEMO_PAGE, "cert": {"valid": True}}
+
+    monkeypatch.setenv("HARIS_SITE_CHECK", "1")
+    monkeypatch.setattr(sitecheck, "_get", fake_get)
+    assert detector.analyze(message, "ar", use_llm=False)["risk"] == "high"

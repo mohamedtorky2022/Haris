@@ -183,6 +183,14 @@ def check(body: CheckRequest):
     return radar.annotate(result, body.text, result["language"])
 
 
+@app.get("/demo/go", include_in_schema=False)
+def demo_redirect():
+    """The training link: one redirect hop, then the fictional bank's page, so the demo shows
+    Haris following a link to where it really ends."""
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse("/demo/falcon-bank.html", status_code=302)
+
+
 @app.post("/api/site")
 def site(body: SiteRequest):
     """Open the website in a safe way and judge the page itself: redirects, age, what it asks for, AI verdict."""

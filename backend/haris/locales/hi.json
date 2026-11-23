@@ -74,7 +74,7 @@
   "no_https": "एन्क्रिप्टेड नहीं (https नहीं)"
  },
  "site_flags": {
-  "threat_list": "वैश्विक खतरनाक वेबसाइट सूचियों में दर्ज",
+  "threat_list": "Google Safe Browsing के अनुसार संभवतः भ्रामक या हानिकारक साइट। Advisory provided by Google: https://developers.google.com/safe-browsing/v4/advisory",
   "brand_on_page": "पेज किसी जानी-मानी संस्था का नाम इस्तेमाल करता है, पर डोमेन उसका नहीं है",
   "brand_with_form": "जानी-मानी संस्था का रूप धरकर आपकी जानकारी मांगता है",
   "new_domain": "साइट बहुत हाल में रजिस्टर हुई (एक महीने से कम)",
