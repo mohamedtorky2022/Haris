@@ -84,8 +84,22 @@ _CACHE: OrderedDict[str, tuple[float, str]] = OrderedDict()
 CACHE_TTL, CACHE_SIZE = 3600, 500
 
 
+# Each Gemini model has its own free-tier limit. When GEMINI_FALLBACK_MODEL is set and the main model
+# pauses, calls go to the fallback until the main one is free again. (Several keys to stretch one model's
+# limit would break Google's terms; a second model is how the limits are meant to be used.)
+_fallback_until = 0.0
+
+
+def _fallback_model() -> str | None:
+    name = os.getenv("GEMINI_FALLBACK_MODEL", "").strip()
+    return name if name and name != os.getenv("GEMINI_MODEL", GEMINI_DEFAULT_MODEL) else None
+
+
 def _cooling_down() -> bool:
-    return time.monotonic() < _cooldown_until
+    now = time.monotonic()
+    if now >= _cooldown_until:
+        return False
+    return not (provider() == "gemini" and _fallback_model() and now >= _fallback_until)
 
 
 def _start_cooldown(seconds: float) -> None:
@@ -167,16 +181,32 @@ def gemini_parts(content) -> list[dict]:
 
 
 def _call_gemini(system: str, content, max_tokens: int, timeout: float) -> str | None:
-    key = os.getenv("GEMINI_API_KEY")
-    if not key:
+    """The main model, or the fallback while the main one is paused after a 429."""
+    if not os.getenv("GEMINI_API_KEY"):
         return None
+    main, fallback = os.getenv("GEMINI_MODEL", GEMINI_DEFAULT_MODEL), _fallback_model()
+    if time.monotonic() >= _cooldown_until:
+        text, limited = _gemini_once(main, system, content, max_tokens, timeout)
+        if text is not None or not limited:
+            return text
+        if not fallback:
+            return None
+    if fallback and time.monotonic() >= _fallback_until:
+        return _gemini_once(fallback, system, content, max_tokens, timeout)[0]
+    return None
+
+
+def _gemini_once(model: str, system: str, content, max_tokens: int, timeout: float) -> tuple[str | None, bool]:
+    """One call to one model: (text or None, whether the model said "too many requests")."""
+    global _fallback_until
+    key = os.getenv("GEMINI_API_KEY")
     body = {
         "systemInstruction": {"parts": [{"text": system}]},
         "contents": [{"role": "user", "parts": gemini_parts(content)}],
         "generationConfig": {"maxOutputTokens": max_tokens, "temperature": 0.2},
     }
     request = urllib.request.Request(
-        GEMINI_URL.format(model=os.getenv("GEMINI_MODEL", GEMINI_DEFAULT_MODEL)),
+        GEMINI_URL.format(model=model),
         data=json.dumps(body).encode(),
         headers={"x-goog-api-key": key, "content-type": "application/json"},
         method="POST",
@@ -185,14 +215,20 @@ def _call_gemini(system: str, content, max_tokens: int, timeout: float) -> str |
         with urllib.request.urlopen(request, timeout=timeout) as resp:
             payload = json.load(resp)
         parts = payload["candidates"][0]["content"].get("parts", [])
-        return "".join(p.get("text", "") for p in parts if not p.get("thought"))
+        return "".join(p.get("text", "") for p in parts if not p.get("thought")), False
     except urllib.error.HTTPError as exc:
         if exc.code == 429:
-            _start_cooldown(_retry_delay(exc.read(4000)))
+            delay = _retry_delay(exc.read(4000))
+            if model == os.getenv("GEMINI_MODEL", GEMINI_DEFAULT_MODEL):
+                _start_cooldown(delay)
+            else:
+                _fallback_until = time.monotonic() + max(5.0, min(delay, 120.0))
+            log.warning("Gemini %s: HTTP 429, pausing it", "main" if model != _fallback_model() else "fallback")
+            return None, True
         log.warning("Gemini call failed: HTTP %s", exc.code)
     except (OSError, ValueError, KeyError, IndexError) as exc:  # OSError includes socket.timeout
         log.warning("Gemini call failed: %s", type(exc).__name__)
-    return None
+    return None, False
 
 
 def assess(redacted_text: str, rule_codes: list[str], links: list[str], lang: str) -> dict | None:

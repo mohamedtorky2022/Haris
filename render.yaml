@@ -37,6 +37,8 @@ services:
         value: gemini
       - key: GEMINI_API_KEY
         sync: false
+      - key: GEMINI_FALLBACK_MODEL     # a second Gemini model, used while the main one is paused (own free limit)
+        sync: false
       - key: HARIS_SITE_CHECK          # open suspicious links in a safe sandbox and judge the page
         value: "1"
       - key: GOOGLE_SAFE_BROWSING_KEY  # optional free threat-list check; left unset is fine

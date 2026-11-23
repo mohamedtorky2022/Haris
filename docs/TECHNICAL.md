@@ -196,6 +196,8 @@ This is a regression test, not an accuracy claim: the samples were written along
 
 On the free tier, requests per minute are limited: an early run that sent one message a second got HTTP 429 on 27 of 59 calls, and Haris fell back to the rules each time. The evaluation now sends one message every 4.5 s, verdicts for a repeated message are reused for an hour, and after a 429 Haris stops calling for the delay Gemini asks. A real accuracy figure still needs a held-out set of genuine, anonymised messages from the partner authority.
 
+Each Gemini model has its own free-tier limit. With `GEMINI_FALLBACK_MODEL` set, a 429 from the main model pauses only that model, and calls go to the fallback until the main one is free again; with both paused, the rules answer. Several keys to stretch one model's limit would break Google's terms, so Haris uses a second model instead.
+
 ### Report intake: `POST /api/extract`
 
 The report is built from the victim's own account rather than a fixed questionnaire.

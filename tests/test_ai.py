@@ -126,3 +126,72 @@ def test_rate_limit_pauses_calls(monkeypatch):
     assert llm.assess("second", [], [], "en") is None  # no call while cooling down
     assert len(calls) == 1
     assert 30 < llm._cooldown_until - llm.time.monotonic() <= 37
+
+
+# --- A second model when the first one is paused -------------------------------------------------
+
+class _Answer:
+    def __init__(self, text):
+        import json as _json
+        self._body = _json.dumps({"candidates": [{"content": {"parts": [{"text": text}]}}]}).encode()
+
+    def read(self, *_):
+        return self._body
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_):
+        return False
+
+
+def _too_many(url):
+    import io
+    import urllib.error
+    return urllib.error.HTTPError(url, 429, "Too Many Requests", {},
+                                  io.BytesIO(b'{"error":{"details":[{"retryDelay":"20s"}]}}'))
+
+
+def _gemini_env(monkeypatch, fallback):
+    monkeypatch.setenv("GEMINI_API_KEY", "k")
+    monkeypatch.setenv("HARIS_AI_PROVIDER", "gemini")
+    monkeypatch.setenv("GEMINI_MODEL", "main-model")
+    if fallback:
+        monkeypatch.setenv("GEMINI_FALLBACK_MODEL", "spare-model")
+    else:
+        monkeypatch.delenv("GEMINI_FALLBACK_MODEL", raising=False)
+    monkeypatch.setattr(llm, "_cooldown_until", 0.0)
+    monkeypatch.setattr(llm, "_fallback_until", 0.0)
+    llm._CACHE.clear()
+
+
+def test_the_fallback_model_answers_while_the_main_one_is_paused(monkeypatch):
+    _gemini_env(monkeypatch, fallback=True)
+    asked = []
+
+    def urlopen(req, timeout=None):
+        asked.append(req.full_url)
+        if "main-model" in req.full_url:
+            raise _too_many(req.full_url)
+        return _Answer("from the spare")
+
+    monkeypatch.setattr(llm.urllib.request, "urlopen", urlopen)
+    assert llm._call("sys", "first", 50, 5) == "from the spare"
+    assert llm._cooldown_until > llm.time.monotonic()        # the main model is paused
+    assert not llm._cooling_down()                            # but Haris can still use the AI
+    assert llm._call("sys", "second", 50, 5) == "from the spare"
+    assert sum("main-model" in u for u in asked) == 1         # the paused model is not asked again
+
+
+def test_without_a_fallback_nothing_changes(monkeypatch):
+    _gemini_env(monkeypatch, fallback=False)
+    monkeypatch.setattr(llm.urllib.request, "urlopen", lambda req, timeout=None: (_ for _ in ()).throw(_too_many(req.full_url)))
+    assert llm._call("sys", "x", 50, 5) is None
+    assert llm._cooling_down()                                # rules only, as before
+
+
+def test_both_models_paused_means_rules_only(monkeypatch):
+    _gemini_env(monkeypatch, fallback=True)
+    monkeypatch.setattr(llm.urllib.request, "urlopen", lambda req, timeout=None: (_ for _ in ()).throw(_too_many(req.full_url)))
+    assert llm._call("sys", "x", 50, 5) is None
+    assert llm._cooling_down()
