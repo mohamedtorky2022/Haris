@@ -228,7 +228,7 @@ Measured on 20 November 2026 with `gemini-3.5-flash-lite` on the free tier. The 
 | `POST` | `/api/authority/campaigns/{id}/preview` | `{"text": "..."}` (optional): the warning in all five languages, the authority's own text translated (authority only) |
 | `GET` | `/api/authority/alerts` | WhatsApp alert subscribers by language, the delivery mode, and the last deliveries (authority only) |
 | `POST` | `/api/report` | build a police report (HTML + Markdown), nothing stored |
-| `GET` | `/api/health` | status, and whether the AI second opinion, the live website check and WhatsApp are on |
+| `GET` | `/api/health` | status, version and deployed commit, and whether the AI second opinion, the live website check and WhatsApp are on |
 | `GET` | `/webhook/whatsapp` | Meta's one-time check of the verify token |
 | `POST` | `/webhook/whatsapp` | incoming WhatsApp messages (refused unless signed with the app secret) |
 
