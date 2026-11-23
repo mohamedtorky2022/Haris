@@ -447,3 +447,23 @@ def test_the_phishing_database_sample_is_one_per_domain_and_repeatable():
     hosts = [h.split("/")[2] for h in first]
     assert len(hosts) == len(set(hosts)) == 3            # one per domain, ftp and comments dropped
     assert len(mod.sample(lines, 2, "x")) == 2
+
+
+def test_the_phishstats_list_keeps_only_fresh_sites_one_per_domain():
+    import importlib.util
+    from datetime import datetime, timedelta, timezone
+    spec = importlib.util.spec_from_file_location(
+        "fetch_phishstats", Path(__file__).resolve().parents[1] / "scripts" / "fetch_phishstats.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    now = datetime.now(timezone.utc)
+    iso = lambda d: d.strftime("%Y-%m-%dT%H:%M:%S.000Z")  # noqa: E731
+    entries = [
+        {"url": "https://a.top/1", "date": iso(now - timedelta(hours=2))},
+        {"url": "https://a.top/2", "date": iso(now - timedelta(hours=1))},
+        {"url": "https://b.xyz/", "date": iso(now - timedelta(days=1))},
+        {"url": "https://old.cc/", "date": iso(now - timedelta(days=300))},
+        {"url": "", "date": iso(now)},
+    ]
+    picked = mod.fresh(entries, now - timedelta(days=3), 10, set())
+    assert picked == ["https://a.top/2", "https://b.xyz/"]

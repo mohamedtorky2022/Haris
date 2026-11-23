@@ -65,6 +65,10 @@ def main() -> int:
 
     lines = text.splitlines()
     picked = sample(lines, args.limit, seed=date.today().isoformat())
+    if not picked:
+        print(f"The Phishing.Database active list is empty right now ({len(lines)} line). The project seems to "
+              "have stopped updating; try scripts/fetch_phishstats.py, or a same-day list from the organisers.")
+        return 1
     out = Path(args.out)
     out.write_text("# Phishing links from Phishing.Database (MIT licence), sampled "
                    f"{date.today().isoformat()}. Do not open them.\n" + "\n".join(picked) + "\n", encoding="utf-8")
