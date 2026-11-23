@@ -333,3 +333,25 @@ def test_an_invalid_certificate_is_flagged_over_https(tmp_path, monkeypatch):
         assert "card_form" in r["flags"]         # and the page was still read
     finally:
         server.shutdown()
+
+
+# --- Not crying wolf on genuine sites -------------------------------------------------
+
+NEWS = """<html><head><title>Gulf Business Daily</title></head><body>
+<p>Emirates NBD and ADCB reported higher profits. Amazon expands in the UAE.</p>
+<form action="/login"><input type="password" name="password"></form></body></html>"""
+
+
+def test_a_news_page_naming_banks_is_not_impersonation(monkeypatch, site):
+    """Brands named in the text of a genuine page, even one with a login, must not raise an alarm."""
+    page = sitecheck._Page()
+    page.feed(NEWS)
+    monkeypatch.setattr(sitecheck, "_get", lambda url: {"status": 200, "location": None, "type": "text/html",
+                                                        "body": NEWS.encode(), "cert": {}})
+    r = inspect("http://gulf-business-daily.com/")
+    assert "brand_on_page" not in r["flags"]
+    assert r["score"] < 25, r["flags"]  # a login form alone is not a warning
+
+
+def test_a_recent_certificate_alone_is_not_a_warning():
+    assert sitecheck.FLAG_WEIGHTS["new_certificate"] < 25

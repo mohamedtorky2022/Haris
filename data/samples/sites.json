@@ -1,12 +1,157 @@
 [
-  {"url": "https://u.ae/", "label": "legitimate", "note": "the UAE government portal"},
-  {"url": "https://www.adpolice.gov.ae/", "label": "legitimate", "note": "Abu Dhabi Police"},
-  {"url": "https://www.emiratespost.ae/", "label": "legitimate", "note": "Emirates Post"},
-  {"url": "https://www.adcb.com/", "label": "legitimate", "note": "ADCB"},
-  {"url": "https://www.mashreq.com/", "label": "legitimate", "note": "Mashreq"},
-  {"url": "https://www.etisalat.ae/", "label": "legitimate", "note": "e& (Etisalat)"},
-  {"url": "https://www.noon.com/uae-en/", "label": "legitimate", "note": "Noon"},
-  {"url": "https://www.rta.ae/", "label": "legitimate", "note": "RTA"},
-  {"url": "https://www.dewa.gov.ae/", "label": "legitimate", "note": "DEWA"},
-  {"url": "https://uaepass.ae/", "label": "legitimate", "note": "UAE PASS"}
+ {
+  "url": "https://u.ae/",
+  "label": "legitimate",
+  "note": "UAE government portal"
+ },
+ {
+  "url": "https://www.adpolice.gov.ae/",
+  "label": "legitimate",
+  "note": "Abu Dhabi Police"
+ },
+ {
+  "url": "https://www.dubaipolice.gov.ae/",
+  "label": "legitimate",
+  "note": "Dubai Police"
+ },
+ {
+  "url": "https://www.moi.gov.ae/",
+  "label": "legitimate",
+  "note": "Ministry of Interior"
+ },
+ {
+  "url": "https://icp.gov.ae/",
+  "label": "legitimate",
+  "note": "ICP"
+ },
+ {
+  "url": "https://www.dewa.gov.ae/",
+  "label": "legitimate",
+  "note": "DEWA"
+ },
+ {
+  "url": "https://www.tamm.abudhabi/",
+  "label": "legitimate",
+  "note": "TAMM, Abu Dhabi services (not on the official list: a real test)"
+ },
+ {
+  "url": "https://www.emiratespost.ae/",
+  "label": "legitimate",
+  "note": "Emirates Post"
+ },
+ {
+  "url": "https://www.aramex.com/",
+  "label": "legitimate",
+  "note": "Aramex"
+ },
+ {
+  "url": "https://www.adcb.com/",
+  "label": "legitimate",
+  "note": "ADCB"
+ },
+ {
+  "url": "https://www.bankfab.com/",
+  "label": "legitimate",
+  "note": "First Abu Dhabi Bank"
+ },
+ {
+  "url": "https://www.emiratesnbd.com/",
+  "label": "legitimate",
+  "note": "Emirates NBD"
+ },
+ {
+  "url": "https://www.mashreq.com/",
+  "label": "legitimate",
+  "note": "Mashreq"
+ },
+ {
+  "url": "https://www.etisalat.ae/",
+  "label": "legitimate",
+  "note": "e&"
+ },
+ {
+  "url": "https://www.salik.ae/",
+  "label": "legitimate",
+  "note": "Salik"
+ },
+ {
+  "url": "https://www.rta.ae/",
+  "label": "legitimate",
+  "note": "RTA"
+ },
+ {
+  "url": "https://uaepass.ae/",
+  "label": "legitimate",
+  "note": "UAE PASS"
+ },
+ {
+  "url": "https://www.noon.com/uae-en/",
+  "label": "legitimate",
+  "note": "Noon"
+ },
+ {
+  "url": "https://www.amazon.ae/",
+  "label": "legitimate",
+  "note": "Amazon UAE"
+ },
+ {
+  "url": "https://www.du.ae/",
+  "label": "legitimate",
+  "note": "du telecom (not on the list)"
+ },
+ {
+  "url": "https://www.emirates.com/ae/english/",
+  "label": "legitimate",
+  "note": "Emirates airline (not on the list)"
+ },
+ {
+  "url": "https://www.carrefouruae.com/",
+  "label": "legitimate",
+  "note": "Carrefour UAE (not on the list)"
+ },
+ {
+  "url": "https://www.talabat.com/uae",
+  "label": "legitimate",
+  "note": "Talabat (not on the list)"
+ },
+ {
+  "url": "https://www.dubizzle.com/",
+  "label": "legitimate",
+  "note": "dubizzle classifieds (not on the list)"
+ },
+ {
+  "url": "https://accounts.google.com/",
+  "label": "legitimate",
+  "note": "Google sign-in page: a password form on a big brand"
+ },
+ {
+  "url": "https://login.microsoftonline.com/",
+  "label": "legitimate",
+  "note": "Microsoft sign-in page"
+ },
+ {
+  "url": "https://github.com/login",
+  "label": "legitimate",
+  "note": "GitHub sign-in page"
+ },
+ {
+  "url": "https://www.khaleejtimes.com/",
+  "label": "legitimate",
+  "note": "Khaleej Times"
+ },
+ {
+  "url": "https://www.thenationalnews.com/",
+  "label": "legitimate",
+  "note": "The National"
+ },
+ {
+  "url": "https://www.albayan.ae/",
+  "label": "legitimate",
+  "note": "Al Bayan"
+ },
+ {
+  "url": "https://gulfnews.com/",
+  "label": "legitimate",
+  "note": "Gulf News"
+ }
 ]
