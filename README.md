@@ -198,7 +198,8 @@ pytest                                 # from the repo root
 python scripts/evaluate.py             # accuracy on the labelled sample messages
 python scripts/evaluate.py --ai --hard # rules + AI on wording the rules were not written for
 python3 scripts/evaluate_sites.py data/samples/sites.json --server https://haris-uae.onrender.com  # live website check, genuine sites
-python3 scripts/fetch_phishing_database.py  # a daily sample of live phishing links from Phishing.Database (MIT, no account)
+python3 scripts/fetch_phishstats.py    # phishing sites reported to PhishStats in the last 3 days (no account; refuses an old list)
+python3 scripts/fetch_phishing_database.py  # or Phishing.Database (MIT, no account; its active list was empty on 23 November 2026)
 python3 scripts/fetch_phishtank.py     # or PhishTank's verified list (free key in .env; its sign-up is sometimes closed)
 python3 scripts/evaluate_sites.py phishing-today.txt --label phishing --server https://haris-uae.onrender.com
 ```
