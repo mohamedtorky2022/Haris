@@ -197,12 +197,15 @@ pip install -r requirements-dev.txt
 pytest                                 # from the repo root
 python scripts/evaluate.py             # accuracy on the labelled sample messages
 python scripts/evaluate.py --ai --hard # rules + AI on wording the rules were not written for
+python3 scripts/evaluate_sites.py data/samples/sites.json --server https://haris-uae.onrender.com  # live website check
 ```
 
 | Set | Rules only | Rules + Gemini |
 |---|---|---|
 | `messages.json`: 37 scams, 22 genuine, 4 languages | 37/37 caught, 0/22 false alarms | 37/37 caught, 0/22 false alarms (AI answered 59/59) |
 | `hard.json`: 12 scams in new wording, 8 genuine messages that look suspicious | **2/12** caught, 0/8 false alarms | **12/12** caught, 0/8 false alarms (AI answered 20/20) |
+
+Live website check, run on the deployed server on 23 November 2026 against `data/samples/sites.json` (31 genuine sites, including sign-in pages of big brands not on the official list, and news sites that name banks): **0 false alarms on the 23 that answered.** The first run had 1 false alarm, e&'s own site, because `etisalat.ae` now redirects to `eand.ae`, which was missing from the official list; that was fixed and the run repeated. 8 sites did not answer, because they refuse visits from cloud servers. The other half, how many live phishing sites are caught, needs a same-day list of phishing addresses and has not been measured yet.
 
 Measured on 20 November 2026 with `gemini-3.5-flash-lite` on the free tier. The first set was written while building the rules, so it shows they behave as designed; the hard set was written afterwards, is never shown to the model as an example, and shows what the AI adds: "my phone broke, this is my new number", a fake CEO asking for gift cards, a fake landlord abroad, a "wrong number" that turns to crypto. Both sets are small and written by us; a real accuracy figure needs genuine, anonymised messages from the partner authority.
 
