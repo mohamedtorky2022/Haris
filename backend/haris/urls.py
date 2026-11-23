@@ -52,6 +52,9 @@ OFFICIAL_BRANDS: dict[str, tuple[str, ...]] = {
     "mashreq": ("mashreq.com", "mashreqbank.com"),
     "amazon": ("amazon.ae", "amazon.com"),
     "noon": ("noon.com",),
+    # A fictional bank, used only by the training page /demo/falcon-bank.html. Its "official"
+    # domain uses the reserved .example ending, so no real site can ever match it.
+    "falconbank": ("falconbank.example",),
 }
 
 OFFICIAL_SUFFIXES = (".gov.ae",)

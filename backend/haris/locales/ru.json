@@ -74,7 +74,7 @@
   "no_https": "без шифрования (нет https)"
  },
  "site_flags": {
-  "threat_list": "В мировых списках опасных сайтов",
+  "threat_list": "Возможно, обманный или вредоносный сайт, по данным Google Safe Browsing. Advisory provided by Google: https://developers.google.com/safe-browsing/v4/advisory",
   "brand_on_page": "Страница выдаёт себя за известную организацию на чужом домене",
   "brand_with_form": "Выдаёт себя за известную организацию и просит ваши данные",
   "new_domain": "Сайт зарегистрирован совсем недавно (меньше месяца)",

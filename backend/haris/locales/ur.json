@@ -74,7 +74,7 @@
   "no_https": "غیر محفوظ کنکشن"
  },
  "site_flags": {
-  "threat_list": "عالمی خطرناک ویب سائٹوں کی فہرست میں شامل",
+  "threat_list": "Google Safe Browsing کے مطابق ممکنہ طور پر دھوکے باز یا نقصان دہ سائٹ۔ Advisory provided by Google: https://developers.google.com/safe-browsing/v4/advisory",
   "brand_on_page": "صفحہ کسی معروف ادارے کا نام استعمال کرتا ہے جبکہ ڈومین اس کا نہیں",
   "brand_with_form": "معروف ادارے کا روپ دھار کر آپ کی تفصیلات مانگتا ہے",
   "new_domain": "سائٹ بہت حال ہی میں رجسٹر ہوئی (ایک ماہ سے کم)",

@@ -197,8 +197,14 @@ pip install -r requirements-dev.txt
 pytest                                 # from the repo root
 python scripts/evaluate.py             # accuracy on the labelled sample messages
 python scripts/evaluate.py --ai --hard # rules + AI on wording the rules were not written for
-python3 scripts/evaluate_sites.py data/samples/sites.json --server https://haris-uae.onrender.com  # live website check
+python3 scripts/evaluate_sites.py data/samples/sites.json --server https://haris-uae.onrender.com  # live website check, genuine sites
+python3 scripts/fetch_phishtank.py     # today's verified phishing sites from PhishTank (free key in .env)
+python3 scripts/evaluate_sites.py phishing-today.txt --label phishing --server https://haris-uae.onrender.com
 ```
+
+Optional keys in `.env` (and in Render for `GOOGLE_SAFE_BROWSING_KEY`): `GOOGLE_SAFE_BROWSING_KEY` turns on the threat-list check (free for non-commercial use; a production launch would move to Google Web Risk), `PHISHTANK_APP_KEY` and `PHISHTANK_USER` let `fetch_phishtank.py` download PhishTank's list (free account at phishtank.org).
+
+**Training page for demos:** `https://haris-uae.onrender.com/demo/go` redirects to `/demo/falcon-bank.html`, a page of a **fictional** bank asking for a card, a password and a one-time code, with a visible "training page" banner, no form action and a disabled button, so it can never collect anything. The link looks clean, and the message "مرحباً، هذا الرابط الذي طلبته: https://haris-uae.onrender.com/demo/go" is rated low without the visit and high with it.
 
 | Set | Rules only | Rules + Gemini |
 |---|---|---|

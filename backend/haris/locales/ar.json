@@ -74,7 +74,7 @@
   "no_https": "اتصال غير مشفّر"
  },
  "site_flags": {
-  "threat_list": "مُدرج في قوائم المواقع الخطرة العالمية",
+  "threat_list": "قد يكون موقعاً خادعاً أو ضاراً، بحسب Google Safe Browsing. تحذير مقدَّم من Google: https://developers.google.com/safe-browsing/v4/advisory",
   "brand_on_page": "الصفحة تنتحل اسم جهة معروفة على نطاق ليس نطاقها",
   "brand_with_form": "تنتحل جهة معروفة وتطلب بياناتك في الوقت نفسه",
   "new_domain": "الموقع مُسجَّل حديثاً جداً (أقل من شهر)",
