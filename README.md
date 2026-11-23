@@ -32,6 +32,7 @@ Haris covers the three moments of a cybercrime:
 | Moment | What Haris does |
 | --- | --- |
 | **Before** — a suspicious message arrives | Paste any message, link or offer. Haris rates the risk (low / medium / high), names the scam type, explains **why** in plain words, and says what to do. |
+| **The link itself** — is this website real? | Haris **opens the website for you, safely**, and reports what it finds: where the link really ends after its redirects, how old the domain is, whether its certificate is days old, whether the page poses as a bank, a courier or a government body, and whether it is asking for a card number, a password or the code sent to your phone. The page text is then read by the AI, which says whether this is a fraud site and who it is pretending to be. Nothing on the page is run, your own identifier is stripped from the link before the visit, and the answer comes back in your language. |
 | **After** — "I've been scammed" | A step-by-step emergency plan for ten situations: money sent, account hacked, extortion, online bullying/harassment/defamation, a fake account in your name, being filmed or having photos or personal details posted without permission, a hacked device or ransomware (including SIM swap), ID shared, a business that paid a fake invoice or a fake "boss" request, and a suspicious message only. Each comes with the official reporting channels. |
 | **Reporting** | The victim tells the story their own way: typed, spoken or as screenshots of the chat or the debit alert. For speech, the user picks their dialect once (Emirati/Gulf, Saudi, Egyptian, Levantine, Iraqi, Maghrebi; English and Urdu accents too), and after each dictation Haris suggests fixes for misheard words such as «ارا ماكس» → «أرامكس». The user approves the fix, and numbers are never changed. Haris pulls out the amount, time, payment method, steps already taken and the scammer's numbers, links and IBANs, asks only about what is still missing with ready-made answers, then shows a summary card where any line can be edited. The report opens in a new tab, downloads as a web page with the screenshots inside, or prints and saves as PDF. |
 | **Sending it** — to the authority (demo) | "Send it to the authority": the victim picks their emirate, reads exactly what will be sent and for how long it is kept, confirms their identity (UAE PASS, simulated in the demo), and the report reaches the **reports dashboard** with the same reference number as their file. Haris sorts it: **critical** (a threat to life, or a child involved), **financial** (money lost in the last 24 hours, when the bank can still freeze it), **medium**, or **indicator**. The officer receives it, asks for more information, or closes it with a note, and the victim follows every step in "My reports" and answers in the chat. A report written in **Hindi, Urdu, English or Russian reaches the officer in Arabic**, with the victim's own words beside it and their language flagged so the case can go to an officer who speaks it; the officer writes in Arabic and the victim reads the note in their own language. |
@@ -43,6 +44,7 @@ Haris covers the three moments of a cybercrime:
 
 Haris starts with **fraud**, the most common and costly cybercrime, and is built so a new crime type is one playbook or one signal away.
 
+- **Checks the websites behind the links**, not only the wording of the link: redirects, domain age, certificate, what the page asks for, impersonated brand, threat lists, and the AI's reading of the page.
 - **Detects 15 scam types:** one-time code theft, bank and government impersonation, fake delivery, fake jobs, fake investments, fake prizes, extortion, fake tech support, phishing links, romance scams, fake "money recovery" offers aimed at people already scammed, fake shops, listings and rentals, fake charities, and fake visas or residency.
 - **Guides and reports 10 situations** (listed above).
 - **Next:** protecting children from grooming (with specialists reviewing the wording), voice calls and AI-cloned voices, QR codes and screenshot checks, attacks on businesses (data leaks, outages), and rumours and fake news.
@@ -79,6 +81,8 @@ The same engine serves every group; the scam patterns and advice cover parcel an
    ├─ redact.py     remove card numbers (Luhn-checked), Emirates ID, IBAN, phones, e-mails
    ├─ rules.py      30 weighted scam signals in 5 languages, with "unless" exceptions
    ├─ urls.py       offline link analysis: look-alike brands, risky TLDs, shorteners, raw IPs
+   ├─ sitecheck.py  live website inspection: follows the redirects, reads the page, checks the
+   │                domain's age and certificate and the threat lists, and the AI reads the page
    ├─ detector.py   combines the above into a score, risk level and category
    ├─ llm.py        the AI layer (Claude or Gemini) on the REDACTED text
    ├─ examples.py   teaching by example: similar labelled messages shown to the model
@@ -206,7 +210,8 @@ Measured on 20 November 2026 with `gemini-3.5-flash-lite` on the free tier. The 
 
 | Method | Path | Purpose |
 | --- | --- | --- |
-| `POST` | `/api/check` | `{"text": "...", "lang": "ar|en|ur"}` → risk, category, reasons, advice, link analysis |
+| `POST` | `/api/check` | `{"text": "...", "lang": "ar|en|ur"}` → risk, category, reasons, advice, link analysis, and what visiting each site found |
+| `POST` | `/api/site` | `{"url": "...", "lang": "ar"}` → the live inspection of one website on its own: final address after redirects, domain age, certificate, what the page asks for, the AI's reading |
 | `GET` | `/api/playbooks?lang=` | list of emergency situations |
 | `GET` | `/api/playbooks/{id}?lang=` | steps + official contacts for one situation |
 | `POST` | `/api/extract` | `{"text": "...", "images": ["data:image/jpeg;base64,..."], "lang": "ar"}` → report fields found, and the fields still missing |
@@ -223,7 +228,7 @@ Measured on 20 November 2026 with `gemini-3.5-flash-lite` on the free tier. The 
 | `POST` | `/api/authority/campaigns/{id}/preview` | `{"text": "..."}` (optional): the warning in all five languages, the authority's own text translated (authority only) |
 | `GET` | `/api/authority/alerts` | WhatsApp alert subscribers by language, the delivery mode, and the last deliveries (authority only) |
 | `POST` | `/api/report` | build a police report (HTML + Markdown), nothing stored |
-| `GET` | `/api/health` | status, and whether the AI second opinion and WhatsApp are on |
+| `GET` | `/api/health` | status, and whether the AI second opinion, the live website check and WhatsApp are on |
 | `GET` | `/webhook/whatsapp` | Meta's one-time check of the verify token |
 | `POST` | `/webhook/whatsapp` | incoming WhatsApp messages (refused unless signed with the app secret) |
 
@@ -280,7 +285,7 @@ Measured on 20 November 2026 with `gemini-3.5-flash-lite` on the free tier. The 
 
 - **Reading screenshots without the AI.** With no API key, screenshots are attached to the report as evidence but not read. On-device text recognition would let the rules read them too.
 - **The radar in production.** The demo radar runs on SQLite on the same server, counts one device as one person, and simulates the telecom block request. Production needs the partner's systems, verified reporters and a real block channel with the telecom providers.
-- **Live link reputation.** Links are judged offline from their structure. Google Safe Browsing or a police blocklist would add a live check.
+- **A police blocklist.** The live check reads Google Safe Browsing when a key is set. The authority's own list of blocked and reported domains would be the stronger source, and needs the partner's feed.
 - **Training our own speech model.** Dictation accuracy depends on the browser's service. A trainable model (Azure Custom Speech or an open-source model hosted in the UAE) needs recordings with transcripts from the partner, so it is planned for the pilot.
 - **Voice line for older people,** the family app for children and teenagers, and more languages (Malayalam, Tagalog, Bengali).
 - **Real submission to the police.** The reports dashboard shows how sending, triage and follow-up would work, but it is a demo: the reports go to our own inbox, not to the police, and UAE PASS is simulated. Real submission needs an integration agreement and the partner's case system.

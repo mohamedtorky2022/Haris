@@ -18,8 +18,9 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from haris import __version__, alerts, inbox, llm, persist, radar, whatsapp
+from haris import __version__, alerts, inbox, llm, persist, radar, sitecheck, whatsapp
 from haris.detector import analyze
+from haris.i18n import SITE_FLAGS, t
 from haris.intake import MAX_IMAGES, extract
 from haris.playbooks import get_playbook, list_playbooks
 from haris.polish import polish
@@ -48,6 +49,11 @@ app = FastAPI(
 class CheckRequest(BaseModel):
     text: str = Field(..., min_length=1, max_length=MAX_TEXT, description="The message, link or offer to check")
     lang: Optional[Lang] = Field(None, description="Reply language; detected from the text when omitted")
+
+
+class SiteRequest(BaseModel):
+    url: str = Field(..., min_length=4, max_length=2000, description="The link or website to inspect live")
+    lang: Optional[Lang] = Field(None, description="Reply language")
 
 
 class ExtractRequest(BaseModel):
@@ -168,13 +174,27 @@ async def protect(request: Request, call_next):
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "version": __version__, "ai_enabled": llm.enabled(), "ai_provider": llm.provider(), "ai_model": llm.model_name(), "whatsapp_enabled": whatsapp.enabled(), "inbox_retention_days": inbox.retention_days()}
+    return {"status": "ok", "version": __version__, "ai_enabled": llm.enabled(), "ai_provider": llm.provider(), "ai_model": llm.model_name(), "site_check_enabled": sitecheck.enabled(), "threat_list_enabled": bool(os.getenv("GOOGLE_SAFE_BROWSING_KEY")), "whatsapp_enabled": whatsapp.enabled(), "inbox_retention_days": inbox.retention_days()}
 
 
 @app.post("/api/check")
 def check(body: CheckRequest):
     result = analyze(body.text, body.lang)
     return radar.annotate(result, body.text, result["language"])
+
+
+@app.post("/api/site")
+def site(body: SiteRequest):
+    """Open the website in a safe way and judge the page itself: redirects, age, what it asks for, AI verdict."""
+    if not sitecheck.enabled():
+        raise HTTPException(status_code=503, detail="Live website inspection is switched off")
+    lang = pick_language(body.lang, body.url)
+    report = sitecheck.inspect(body.url, lang)
+    if (report.get("error") or "").startswith("refused"):
+        raise HTTPException(status_code=400, detail="That address cannot be inspected")
+    report["flag_labels"] = [t(SITE_FLAGS, f, lang) for f in report["flags"]]
+    report["language"] = lang
+    return report
 
 
 # --- Campaign radar ---------------------------------------------------------

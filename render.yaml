@@ -37,6 +37,10 @@ services:
         value: gemini
       - key: GEMINI_API_KEY
         sync: false
+      - key: HARIS_SITE_CHECK          # open suspicious links in a safe sandbox and judge the page
+        value: "1"
+      - key: GOOGLE_SAFE_BROWSING_KEY  # optional free threat-list check; left unset is fine
+        sync: false
       - key: HARIS_AUTHORITY_TOKEN    # the dashboard's access code
         sync: false
       - key: WHATSAPP_TOKEN

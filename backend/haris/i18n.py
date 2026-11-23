@@ -13,6 +13,7 @@ RISK_SUMMARY = table("risk_summary")
 CATEGORY_LABELS = table("categories")
 REASONS = table("reasons")
 URL_FLAGS = table("url_flags")
+SITE_FLAGS = table("site_flags")
 ADVICE = table("advice")
 
 

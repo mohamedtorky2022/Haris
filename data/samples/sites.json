@@ -1,0 +1,12 @@
+[
+  {"url": "https://u.ae/", "label": "legitimate", "note": "the UAE government portal"},
+  {"url": "https://www.adpolice.gov.ae/", "label": "legitimate", "note": "Abu Dhabi Police"},
+  {"url": "https://www.emiratespost.ae/", "label": "legitimate", "note": "Emirates Post"},
+  {"url": "https://www.adcb.com/", "label": "legitimate", "note": "ADCB"},
+  {"url": "https://www.mashreq.com/", "label": "legitimate", "note": "Mashreq"},
+  {"url": "https://www.etisalat.ae/", "label": "legitimate", "note": "e& (Etisalat)"},
+  {"url": "https://www.noon.com/uae-en/", "label": "legitimate", "note": "Noon"},
+  {"url": "https://www.rta.ae/", "label": "legitimate", "note": "RTA"},
+  {"url": "https://www.dewa.gov.ae/", "label": "legitimate", "note": "DEWA"},
+  {"url": "https://uaepass.ae/", "label": "legitimate", "note": "UAE PASS"}
+]
