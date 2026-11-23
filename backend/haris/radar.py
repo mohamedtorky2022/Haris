@@ -171,6 +171,16 @@ def _load(con: sqlite3.Connection, since: float):
     return reports, links, decisions
 
 
+# A fake ad reported from the chat starts with a tag: "[إعلان وهمي · Instagram]" (in the reporter's language).
+_AD_TAG = re.compile(r"^\[[^\]\n·]+ · ([^\]\n]{1,40})\]\s*")
+
+
+def _ad_parts(text: str) -> tuple[str | None, str]:
+    """(platform, text without the tag) for a fake-ad report; (None, text) for anything else."""
+    m = _AD_TAG.match(text or "")
+    return (m.group(1).strip(), text[m.end():]) if m else (None, text)
+
+
 def campaigns(lang: str = "ar") -> list[dict]:
     """Group recent reports into campaigns: reports sharing any key end up together."""
     cfg = _settings()
@@ -214,6 +224,7 @@ def campaigns(lang: str = "ar") -> list[dict]:
         categories = [m["category"] for m in members if m["category"] != "unknown"]
         category = max(set(categories), key=categories.count) if categories else "unknown"
         latest = max(members, key=lambda m: m["created_at"])
+        platforms = sorted({p for p in (_ad_parts(m["text"])[0] for m in members) if p})
         out.append({
             "id": hashlib.sha256(json.dumps(keys[0]).encode()).hexdigest()[:12],
             "status": status,
@@ -226,7 +237,9 @@ def campaigns(lang: str = "ar") -> list[dict]:
             "lookalike_link": lookalike,
             "identifiers": [{"kind": k, "value": v} for k, v in keys if k != "template"],
             "keys": [{"kind": k, "value": v} for k, v in keys],
-            "sample": latest["text"],
+            "sample": _ad_parts(latest["text"])[1],
+            "ad": bool(platforms) or category == "fake_ad",
+            "platforms": platforms,
         })
     order = {"escalated": 0, "warning": 1, "confirmed": 2, "collecting": 3, "dismissed": 4}
     return sorted(out, key=lambda c: (order[c["status"]], -c["people"], -c["last_seen"]))

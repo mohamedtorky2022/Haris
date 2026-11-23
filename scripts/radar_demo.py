@@ -3,6 +3,7 @@
     python scripts/radar_demo.py                 # 10 reports to http://127.0.0.1:8000
     python scripts/radar_demo.py --people 3      # just enough for "reported by 3 people"
     python scripts/radar_demo.py --message 1     # a different sample campaign
+    python scripts/radar_demo.py --message 3 --people 4   # a fake car ad seen on four platforms
 
 Then open http://127.0.0.1:8000/authority.html to see the campaign and approve the warning.
 Uses only the standard library. Each "person" is a random device id, like a real browser.
@@ -24,7 +25,11 @@ MESSAGES = [
      ["0567778899"]),
     # 2: guaranteed visa, in Urdu
     ("ur", "دبئی کا ورک ویزا گارنٹی کے ساتھ، بغیر شرط۔ ویزا فیس 4000 درہم بھیجیں، رابطہ {phone}", ["+971585556677"]),
+    # 3: a fake car ad, reported with "Report a fake ad" from several platforms (fictional number)
+    ("ar", "[إعلان وهمي · {platform}]\nبورش كايين موديل 2024 للبيع بسعر 200 ألف درهم، أقل من سعر السوق بداعي السفر. "
+           "لحجز السيارة حوّل عربون 1000 درهم وتعال شوفها. واتساب {phone}", ["0500000123"]),
 ]
+PLATFORMS = ["Instagram", "Facebook", "TikTok", "Dubizzle"]
 
 
 def main() -> None:
@@ -36,7 +41,8 @@ def main() -> None:
 
     lang, template, phones = MESSAGES[args.message]
     for i in range(args.people):
-        body = {"text": template.format(phone=phones[i % len(phones)]), "lang": lang, "reporter_id": str(uuid.uuid4())}
+        text = template.format(phone=phones[i % len(phones)], platform=PLATFORMS[i % len(PLATFORMS)])
+        body = {"text": text, "lang": lang, "reporter_id": str(uuid.uuid4())}
         request = urllib.request.Request(f"{args.url}/api/radar/report", data=json.dumps(body).encode(),
                                          headers={"Content-Type": "application/json"}, method="POST")
         with urllib.request.urlopen(request, timeout=10) as resp:

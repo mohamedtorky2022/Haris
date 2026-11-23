@@ -12,6 +12,8 @@
   const KIND = { phone: "رقم", domain: "رابط", email: "بريد", iban: "حساب بنكي" };
 
   const list = document.getElementById("list");
+  const adsOnly = document.getElementById("ads-only");
+  adsOnly.addEventListener("change", () => refresh());
   const login = document.getElementById("login");
   const tokenInput = document.getElementById("token");
   let token = "";
@@ -63,13 +65,23 @@
       el("span", { class: `st ${c.status}`, text: STATUS[c.status] }),
       el("h2", { text: c.category_label }),
       c.lookalike_link ? el("span", { class: "flag", text: "رابط يقلّد جهة رسمية" }) : null,
+      c.ad ? el("span", { class: "flag ad", text: "📢 إعلان وهمي" }) : null,
     ]));
     node.append(el("p", { class: "meta", text: `المُبلِّغون: ${c.people} · البلاغات: ${c.reports} · أول بلاغ ${ago(c.first_seen)} · آخر بلاغ ${ago(c.last_seen)}` }));
+    if (c.ad && c.platforms && c.platforms.length) {
+      node.append(el("p", { class: "platforms", text: `رآه المُبلِّغون على: ${c.platforms.join("، ")}` }));
+    }
     if (c.identifiers.length) {
       node.append(el("div", { class: "ids" }, c.identifiers.map((i) =>
-        el("span", { class: "id" }, [el("small", { text: KIND[i.kind] || i.kind }), el("bdi", { dir: "ltr", text: shown(i) })]))));
+        el("span", { class: "id" }, [el("small", { text: KIND[i.kind] || i.kind }), el("bdi", { dir: "ltr", text: shown(i) }),
+          // A website in the campaign: open its takedown evidence (registrar, host, abuse contacts, drafts).
+          i.kind === "domain" ? el("a", { class: "ev-link", href: `evidence.html?url=${encodeURIComponent(`https://${i.value}`)}`,
+                                          target: "_blank", rel: "noopener", text: " · ملف أدلة الإزالة ↗" }) : null]))));
     }
     node.append(el("blockquote", { text: c.sample }));
+    if (c.ad) {
+      node.append(el("p", { class: "ad-hint", text: "للإزالة: أبلغ المنصة عن الإعلان وحساب المعلن عبر نموذج الإبلاغ عن الاحتيال لديها، واعتمد التعميم أدناه ليصل التحذير للجميع ويُطلب حظر رقم المعلن. وإن كان في الحملة رابط موقع، فافتح ملف أدلة الإزالة بجانبه." }));
+    }
 
     if (results[c.id]) {
       const r = results[c.id];
@@ -186,7 +198,10 @@
     // A card with a warning being prepared is kept as it is, so a refresh never wipes what the officer is typing.
     const typing = document.activeElement && document.activeElement.closest && document.activeElement.closest(".campaign");
     if (typing && list.contains(typing)) { showAlerts(); return; }
-    list.replaceChildren(...(items.length ? items.map(card) : [el("p", { class: "empty", text: "لا توجد بلاغات خلال آخر 24 ساعة." })]));
+    document.getElementById("n-ads").textContent = items.filter((c) => c.ad).length;
+    const shownItems = adsOnly.checked ? items.filter((c) => c.ad) : items;
+    list.replaceChildren(...(shownItems.length ? shownItems.map(card)
+      : [el("p", { class: "empty", text: adsOnly.checked ? "لا توجد بلاغات عن إعلانات وهمية خلال آخر 24 ساعة." : "لا توجد بلاغات خلال آخر 24 ساعة." })]));
     showAlerts();
     document.getElementById("updated").textContent = `آخر تحديث: ${new Date().toLocaleTimeString("ar-AE")} · يتحدّث تلقائياً كل 5 ثوانٍ`;
   }
