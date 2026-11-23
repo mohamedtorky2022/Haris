@@ -313,6 +313,10 @@ The report file is enough for a victim who files it themselves. Sending it from 
 
 **Storage.** `data/inbox.db` (SQLite, file mode 600), one row per case with the fields as JSON and the event log. Every access first deletes cases older than `HARIS_INBOX_RETENTION_DAYS` (default 7), whatever their status. The officer pages (`/reports.html`, `/authority.html`) use the same `require_authority` check as the radar: the computer running Haris only, or `X-Authority-Token`, which is always required behind a tunnel.
 
+### Install on the phone (PWA)
+
+The chat installs as an app from the browser, with no store and no WhatsApp: `manifest.json` (name, icons, standalone display, RTL), icons in `frontend/icons/` (any and maskable), and the iPhone tags for Add to Home Screen. `pwa.js` shows a dismissible bar in the user's language: an «Install» button where the browser offers one (Android, desktop Chrome and Edge), or the Share → Add to Home Screen hint on iPhone Safari; it is hidden once installed. `sw.js` is network-first, so a new deploy shows at once, and keeps only the app shell for opening without a connection. It never caches `/api/`, `/webhook/`, the authority pages, the evidence page or the training demo, so no message, check or report is stored on the phone. Push alerts to the installed app are the next step; they need web-push keys and a subscription endpoint.
+
 ### WhatsApp channel: `/webhook/whatsapp`
 
 `whatsapp.py` puts the same engine behind WhatsApp's Cloud API, with no new dependency.

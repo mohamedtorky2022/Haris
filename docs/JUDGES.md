@@ -6,7 +6,7 @@
 <p align="center"><img src="poster/haris-qr-whatsapp-official.png" alt="WhatsApp QR for Haris" width="220"></p>
 
 **واتساب:** امسح الرمز بكاميرا الهاتف أو من داخل واتساب، أو افتح https://wa.me/message/ZQRY2FJGR3KFN1 ، أو راسل **+971 50 312 3535**.
-**الموقع:** https://haris-uae.onrender.com
+**الموقع:** https://haris-uae.onrender.com (يُثبَّت على الهاتف كتطبيق دون واتساب: «تثبيت» على أندرويد، أو «مشاركة» ثم «إضافة إلى الشاشة الرئيسية» على الآيفون)
 **لوحة الجهة المختصة:** https://haris-uae.onrender.com/reports.html (رمز الدخول مرفق مع ملف التسليم، ولا يُنشر هنا)
 
 ---
@@ -71,6 +71,7 @@
 1. **Check a message:** send "Hi Haris", then forward any suspicious message or paste one from the table above. Haris answers in the sender's language with a risk level and what to do.
 2. **File a report:** send **report**, tell what happened in one message (text or a voice note), add up to 5 screenshots, pick the emirate, then tap **Send report**. You get a reference number.
 3. **Follow it on the dashboard:** open https://haris-uae.onrender.com/reports.html with the access code sent with the submission. Haris suggests the team and why. Accept or move it, or ask the reporter a question. Every step reaches the reporter on WhatsApp.
-4. **Alerts:** send **alerts** to subscribe and **STOP** to leave. In this demo, alerts reach only people who wrote to Haris in the last 24 hours, because of the trial WhatsApp Business account.
+4. **Without WhatsApp:** open https://haris-uae.onrender.com on the phone and install it (Android: Install; iPhone: Share, then Add to Home Screen). It opens from its own icon, full screen.
+5. **Alerts:** send **alerts** to subscribe and **STOP** to leave. In this demo, alerts reach only people who wrote to Haris in the last 24 hours, because of the trial WhatsApp Business account.
 
 **Good to know:** Haris runs on free plans until 1 December 2026. If many messages arrive in the same minute, the AI pauses for a few seconds and Haris answers from its built-in rules, so it never stops replying.
