@@ -467,3 +467,44 @@ def test_the_phishstats_list_keeps_only_fresh_sites_one_per_domain():
     ]
     picked = mod.fresh(entries, now - timedelta(days=3), 10, set())
     assert picked == ["https://a.top/2", "https://b.xyz/"]
+
+
+# --- Round 2, from the first measurement on live phishing sites (23 November 2026) -------------
+
+def _page(html):
+    return lambda url: {"status": 200, "location": None, "type": "text/html", "body": html.encode(), "cert": {"valid": True}}
+
+
+def test_a_login_page_on_a_free_website_builder_is_suspicious(monkeypatch):
+    html = "<html><head><title>Mail account</title></head><body><form><input type=password name=pw></form></body></html>"
+    monkeypatch.setattr(sitecheck, "_get", _page(html))
+    r = inspect("https://my-business-108505.square.site/")
+    assert {"free_host", "password_form"} <= set(r["flags"]) and r["score"] >= 25
+
+
+def test_a_plain_shop_on_a_free_website_builder_is_not_an_alarm(monkeypatch):
+    html = "<html><head><title>Karak Corner</title></head><body><p>Tea and snacks in Sharjah.</p></body></html>"
+    monkeypatch.setattr(sitecheck, "_get", _page(html))
+    r = inspect("https://karak-corner.square.site/")
+    assert r["flags"] == ["free_host"] and r["score"] < 25
+
+
+def test_a_microsoft_lookalike_is_caught_and_the_real_one_is_not(monkeypatch):
+    html = ("<html><head><title>Sign in to your Microsoft account</title></head>"
+            "<body><form><input type=email name=login><input type=password name=passwd></form></body></html>")
+    monkeypatch.setattr(sitecheck, "_get", _page(html))
+    fake = inspect("https://portal-ndex-com-auth.typedream.app/")
+    assert {"brand_on_page", "brand_with_form", "free_host"} <= set(fake["flags"]) and fake["score"] >= 55
+    sitecheck._CACHE.clear()
+    real = inspect("https://login.microsoftonline.com/")
+    assert real["flags"] == [] and real["score"] == 0
+
+
+def test_a_weather_outlook_is_not_microsoft(monkeypatch):
+    html = "<html><head><title>UAE weather outlook for the week</title></head><body><p>Sunny.</p></body></html>"
+    monkeypatch.setattr(sitecheck, "_get", _page(html))
+    assert "brand_on_page" not in inspect("https://uae-weather.example.com/")["flags"]
+
+
+def test_the_ai_finding_a_page_suspicious_is_enough_for_medium():
+    assert sitecheck.FLAG_WEIGHTS["ai_medium"] >= 25

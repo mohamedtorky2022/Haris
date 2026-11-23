@@ -88,7 +88,8 @@
   "cross_domain_redirect": "Sends you to a different site than the link shows",
   "ai_high": "AI inspection of the page: a fraudulent site",
   "ai_medium": "AI inspection of the page: worrying signs",
-  "unreachable": "The site is not responding now; it may be blocked or removed"
+  "unreachable": "The site is not responding now; it may be blocked or removed",
+  "free_host": "Hosted on a free website builder, often abused for fraud"
  },
  "advice": {
   "general": [
