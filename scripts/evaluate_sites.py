@@ -161,6 +161,9 @@ def main() -> int:
         f"| … false alarms | {counts['false alarm']} | **{pct(counts['false alarm'], live_legit)}** |",
         f"| Did not answer (excluded) | {counts['unreachable']} | |",
         "",
+        f"The AI read {sum(1 for r in rows if r['ai'])} of the {sum(1 for r in rows if r['verdict'] != 'unreachable')} "
+        "pages that answered (the free tier pauses when it gets too many requests a minute; the rules answer meanwhile).",
+        "",
         "Signals behind the catches: " + (", ".join(f"`{k}` {v}" for k, v in top) or "none"),
         "",
         "Missed and false alarms:",
