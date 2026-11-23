@@ -13,3 +13,7 @@ data/inbox.db-*
 tools/
 data/alerts.db
 data/alerts.db-*
+
+# Benchmark output (may hold live phishing addresses)
+*-results.md
+*-results.json

@@ -355,3 +355,9 @@ def test_a_news_page_naming_banks_is_not_impersonation(monkeypatch, site):
 
 def test_a_recent_certificate_alone_is_not_a_warning():
     assert sitecheck.FLAG_WEIGHTS["new_certificate"] < 25
+
+
+def test_eand_is_official():
+    """Found by the first live run: etisalat.ae now redirects to eand.ae, e&'s own domain."""
+    from haris.urls import _is_official
+    assert _is_official("www.eand.ae") and _is_official("eand.ae")
