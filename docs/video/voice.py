@@ -160,10 +160,13 @@ if __name__ == "__main__":
         folder(lang).mkdir(parents=True, exist_ok=True)
         lns = lines(lang)
         (folder(lang) / "lines.json").write_text(json.dumps(lns, ensure_ascii=False, indent=1))
-        # three recordings of about 700 letters each (FreeTTS takes up to 2,000 per request)
-        total, chunks, acc = sum(len(l["say"]) for l in lns), [[], [], []], 0
+        # short recordings of about 450 letters each (FreeTTS takes up to 2,000 per request);
+        # fewer lines per recording make the cuts between lines more reliable
+        total = sum(len(l["say"]) for l in lns)
+        n = max(3, round(total / 450))
+        chunks, acc = [[] for _ in range(n)], 0
         for l in lns:
-            k = min(2, int(acc * 3 / total))
+            k = min(n - 1, int(acc * n / total))
             chunks[k].append(l)
             acc += len(l["say"])
         (folder(lang) / "chunks.json").write_text(json.dumps([[l["id"] for l in c] for c in chunks]))

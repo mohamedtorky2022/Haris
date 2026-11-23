@@ -96,6 +96,11 @@
    "dur": 13
   },
   {
+   "k": "assistant",
+   "mode": "wide",
+   "dur": 22
+  },
+  {
    "k": "future",
    "mode": "wide",
    "dur": 18
@@ -394,6 +399,28 @@
     [
      7.0,
      "وقسناه على مواقع احتيال حيّة، لا على بيانات جاهزة."
+    ]
+   ],
+   "assistant": [
+    [
+     0.3,
+     "والتحديث التالي: «حارس» مساعد ذكي في كل هاتف، مثل سيري."
+    ],
+    [
+     4.5,
+     "على أي تطبيق تسأله: هل هذا حقيقي؟ فيقرأ الشاشة ويقارن السعر."
+    ],
+    [
+     9.5,
+     "ويفحص رابط الرسالة قبل أن تضغطه."
+    ],
+    [
+     13.0,
+     "وينبّهك على شاشة المكالمة إن كان الرقم مُبلَّغاً عنه."
+    ],
+    [
+     17.0,
+     "وإن وقعت في الفخ، تكلّمه بصوتك فيرشدك خطوة بخطوة."
     ]
    ]
   },
@@ -731,14 +758,14 @@
    "problem": [
     [
      0.6,
-     "تصل إلى الناس كل يوم رسائل احتيال."
+     "تصل إلى الناس كل يوم رسائل وروابط وإعلانات وهمية."
     ],
     [
      4.2,
-     "ومن يقع ضحية لا يعرف ماذا يفعل في الساعة الأولى."
+     "وأغلب الفحص يحكم على شكل الرابط فقط، والضحية لا تعرف ماذا تفعل، والموقع الوهمي يبقى يعمل."
     ],
     [
-     8.0,
+     10.0,
      "وهنا يأتي دور «حارس»."
     ]
    ],
@@ -830,6 +857,27 @@
     ]
    ],
    "stats": "📊 مُقاس على مواقع حيّة: 0 إنذارات خاطئة على 23 موقعاً حقيقياً · 52% كشف على مواقع احتيال لم يرها من قبل"
+  },
+  "assistant": {
+   "title": "التحديث التالي: «حارس» في كل هاتف، مثل سيري",
+   "items": [
+    [
+     "على أي تطبيق",
+     "«يا حارس، هل هذا حقيقي؟»: يقرأ الشاشة ويقارن السعر"
+    ],
+    [
+     "رسالة نصية",
+     "يفحص الرابط قبل أن تضغطه، وينقل الاحتيال جانباً"
+    ],
+    [
+     "مكالمة واردة",
+     "ينبّهك على شاشة المكالمة إن كان الرقم مُبلَّغاً عنه"
+    ],
+    [
+     "«وقعت في الفخ»",
+     "بصوتك: يتصل بالبنك أولاً، ثم يوصّل البلاغ"
+    ]
+   ]
   }
  },
  "en": {
@@ -1059,6 +1107,28 @@
     [
      7.0,
      "Measured on live phishing sites, not on a ready-made dataset."
+    ]
+   ],
+   "assistant": [
+    [
+     0.3,
+     "The next update: Haris as a smart assistant on every phone, like Siri."
+    ],
+    [
+     4.5,
+     "On any app, ask: is this real? It reads the screen and checks the price."
+    ],
+    [
+     9.5,
+     "It checks a text message's link before you tap it."
+    ],
+    [
+     13.0,
+     "And warns you on the call screen when the number has been reported."
+    ],
+    [
+     17.0,
+     "If you've been scammed, just talk to it, and it guides you step by step."
     ]
    ]
   },
@@ -1452,6 +1522,67 @@
     ]
    ],
    "stats": "📊 Measured on live sites: 0 false alarms on 23 real websites · 52% caught on phishing sites it had never seen"
+  },
+  "assistant": {
+   "title": "Next update: Haris on every phone, like Siri",
+   "items": [
+    [
+     "On any app",
+     "“Haris, is this real?” It reads the screen and checks the price"
+    ],
+    [
+     "A text message",
+     "Checks the link before you tap and moves the scam aside"
+    ],
+    [
+     "An incoming call",
+     "Warns on the call screen when the number has been reported"
+    ],
+    [
+     "“I've been scammed”",
+     "By voice: call the bank first, then the report goes in"
+    ]
+   ]
+  },
+  "narration_extra": {
+   "poster": [
+    [
+     0.4,
+     "Haris, your smart shield. Scan the code with your phone's camera."
+    ]
+   ],
+   "problem": [
+    [
+     0.6,
+     "Every day, people receive fake messages, links and ads."
+    ],
+    [
+     4.2,
+     "Most checks judge only what a link looks like, victims don't know what to do, and the fake site stays online."
+    ],
+    [
+     10.0,
+     "That is where Haris comes in."
+    ]
+   ],
+   "privacy": [
+    [
+     0.3,
+     "Your privacy comes first. Nothing reaches the authority without your consent, Haris does not keep your messages, a report is deleted after seven days, and you can stop alerts at any time."
+    ]
+   ],
+   "outro": [
+    [
+     0.4,
+     "Haris, your smart shield. It warns you, guides you, and delivers your report. Try it now."
+    ]
+   ]
+  },
+  "say": {
+   "…": ".",
+   "UAE PASS": "U A E Pass",
+   "116111": "one one six, one one one",
+   "(into Arabic for the officer),": "into Arabic for the officer,"
   }
  }
 }

@@ -167,6 +167,12 @@ blockquote { border-inline-start: 5px solid var(--brand); background: #F4F7F6; b
 .tli .ic { width: 96px; height: 96px; font-size: 44px; }
 .tli b { display: block; font-size: 40px; color: var(--brand); }
 .tli div > span { display: block; font-size: 29px; color: #33424D; line-height: 1.5; margin-top: 2px; }
+.phones4 { display: flex; justify-content: space-between; gap: 22px; min-height: 600px; }
+.ph4 { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+.ph4 img { width: 232px; height: auto; filter: drop-shadow(0 14px 22px rgba(10,46,42,.22)); }
+.ph4 b { font-size: 30px; color: var(--brand); line-height: 1.25; }
+.ph4 span { font-size: 22px; color: #33424D; line-height: 1.45; }
+.panel h2.tight { margin-bottom: 26px; font-size: 48px; }
 .minis { display: flex; justify-content: space-between; gap: 18px; }
 .mini { flex: 1; height: 720px; border-radius: 40px; background: #10181A; padding: 10px; box-shadow: 0 18px 40px rgba(10,46,42,.25); }
 .mini .scr { width: 100%; height: 100%; border-radius: 31px; background: linear-gradient(170deg, #2C5E57, #12302C); padding: 26px 10px 10px; display: flex; flex-direction: column; gap: 12px; }
@@ -437,6 +443,8 @@ function build() {
       <div class="tech" data-at="7.0">${u.how.tech.map((t) => `<span>${esc(t)}</span>`).join("")}</div></div>`,
     role: `<div class="panel"><h2 data-at="0.2">${esc(u.role.title)}</h2><div class="roles">
       ${u.role.items.map(([ic, t], i) => `<div class="pcard" data-at="${0.8 + i * 1.2}"><span class="ic">${ic}</span><span>${esc(t)}</span></div>`).join("")}</div></div>`,
+    assistant: `<div class="panel"><h2 class="tight" data-at="0.2">📱 ${esc(u.assistant.title)}</h2><div class="phones4">
+      ${u.assistant.items.map(([b, t], i) => `<div class="ph4" data-at="${(u.captions.assistant[i + 1] || [1 + i * 3])[0] - 0.2}"><img src="img/phone-${D.lang}-p${i + 1}.png" alt=""><b>${esc(b)}</b><span>${esc(t)}</span></div>`).join("")}</div></div>`,
     future: `<div class="panel"><h2 data-at="0.2">🚀 ${esc(u.future.title)}</h2><div class="tl">
       ${u.future.items.map(([ic, b, s], i) => `<div class="tli" data-at="${0.9 + i * 1.6}"><span class="ic">${ic}</span><div><b>${esc(b)}</b><span>${esc(s)}</span></div></div>`).join("")}</div></div>`,
     outro: `<div class="hero"><img class="mapbg" src="../poster/uae-map-light.svg" alt="" style="inset-inline-start:40px;top:160px">
