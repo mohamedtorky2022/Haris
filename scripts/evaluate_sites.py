@@ -166,7 +166,9 @@ def main() -> int:
             verdict = "false alarm" if r["score"] >= THRESHOLD else "clean"
         counts[verdict] += 1
         link = _link(case["url"])
-        hit = (bool(r.get("reachable")) and r["score"] >= THRESHOLD) or (not link.official and link.score >= _MEDIUM)
+        # As detector.py does: what the visit found counts even when the page is down (a domain registered
+        # three days ago, a certificate issued yesterday), and the link's own points always count.
+        hit = r.get("score", 0) >= THRESHOLD or (not link.official and link.score >= _MEDIUM)
         whole[(0 if hit else 2) if phishing else (1 if hit else 3)] += 1
         rows.append({"url": case["url"], "label": case["label"], "verdict": verdict, "score": r.get("score", 0),
                      "final_domain": r.get("final_domain", ""), "flags": r.get("flags", []),
@@ -205,8 +207,8 @@ def main() -> int:
     ] + metrics.table(metrics.scores(counts["caught"], counts["false alarm"], counts["missed"], counts["clean"]),
                       positive="phishing") + ([] if args.offline else [
         "",
-        "**Every link, dead ones included** (as inside a message: the visit when the page answers, and the link "
-        "itself always):",
+        "**Every link, dead ones included**, as Haris judges a link inside a message: what the visit found (domain "
+        "age and certificate count even when the page is down) and the link itself:",
         "",
     ] + metrics.table(metrics.scores(*whole), positive="phishing")) + [
         "",

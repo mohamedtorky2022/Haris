@@ -33,7 +33,7 @@
 ### الأرقام (مُقاسة على الخادم الحيّ في 23 نوفمبر 2026)
 
 - **0 إنذارات خاطئة** على 23 موقعاً حقيقياً: بنوك، وشرطة، وصفحات دخول، ومواقع أخبار تذكر البنوك.
-- **52% من مواقع الاحتيال الحيّة كُشفت** (17 من 33) على قائمة مستقلة لم يُضبط النظام عليها، بعد 43% في الجولة الأولى. أغلب ما فات صفحات تُبنى بالجافاسكريبت على منصات مجانية، وقراءتها تحتاج متصفحاً حقيقياً، وهي أول خطوة في التجربة الميدانية.
+- **83% من صفحات الاحتيال الحيّة كُشفت** (15 من 18) في قياس 24 نوفمبر على قائمة جديدة لم يُضبط النظام عليها، بعد 43% ثم 52% في الجولتين السابقتين. ومن كل الروابط، الميتة منها أيضاً، **40 من 60 (67%)**، و**صفر إنذارات خاطئة على أكثر 3000 موقع زيارةً في العالم**. أغلب ما فات صفحات تُبنى بالجافاسكريبت على منصات مجانية، وقراءتها تحتاج متصفحاً حقيقياً، وهي أول خطوة في التجربة الميدانية.
 - **12 من 12** رسالة احتيال بصياغات جديدة كشفها الذكاء الاصطناعي، والقواعد وحدها 2 من 12.
 - **دقة 100% واستدعاء 100%** على 75 رسالة عيّنة (47 احتيالاً و28 حقيقية)، وأمر واحد يقيس مجموعة اللجنة السرية من ملف CSV ويطبع الدقة والاستدعاء وF1 (`python scripts/evaluate.py --file set.csv`).
 - **333 اختباراً آلياً.**
@@ -71,7 +71,7 @@ Scam links reach everyone, by SMS and WhatsApp, in at least five languages in th
 ### The numbers (measured on the live server, 23 November 2026)
 
 - **0 false alarms** on 23 real websites: banks, police, sign-in pages, news sites that name banks.
-- **52% of live phishing sites caught** (17 of 33) on a held-out list the system was not tuned on, up from 43% in the first round. Most misses are pages built by JavaScript on free website builders; reading them needs a headless browser, the first step of a pilot.
+- **83% of live phishing pages caught** (15 of 18) on 24 November, on a new list the system was not tuned on, up from 43% and then 52% in the earlier rounds. Of all links, dead ones included, **40 of 60 (67%)**, and **0 false alarms on the 3,000 most visited sites** in the world. Most misses are pages built by JavaScript on free website builders; reading them needs a headless browser, the first step of a pilot.
 - **12 of 12** scams in new wording caught with the AI; rules alone 2 of 12.
 - **100% precision and 100% recall** on 75 sample messages (47 scams, 28 genuine), and one command measures the committee's hidden set from a CSV file, printing precision, recall and F1 (`python scripts/evaluate.py --file set.csv`).
 - **333 automated tests.**
@@ -98,5 +98,5 @@ Python and FastAPI, a plain-JavaScript front end, Google Gemini with transparent
 | 1:05 – 1:35 | «أبلغ عن إعلان وهمي» ← الصق إعلان البورش من دليل اللجنة ← Instagram ← «لا، لم أدفع» | «حذّرت شرطة أبوظبي قبل أيام من الإعلانات الوهمية. بورش بـ200 ألف درهم وعربون قبل المعاينة: «حارس» يكشفها، ويسأل أين رأيتها، ويرسلها إلى رادار الحملات لتحمي غيرك.» |
 | 1:35 – 2:05 | لوحة الجهة المختصة ← رادار الحملات ← «الإعلانات الوهمية فقط» ← ثم «أدلة الإزالة» والصق رابط التدريب | «للضابط: الإعلانات الوهمية مجمّعة برقم المعلن ومنصاتها. ولكل موقع وهمي ملف أدلة: مَن سجّل النطاق ومَن يستضيفه وبريد الإبلاغ من السجلات الرسمية، وثلاث مسودات للإزالة والحجب.» |
 | 2:05 – 2:30 | واتساب على الهاتف: أرسل كلمة «بلاغ» وابدأ بلاغاً صوتياً | «والضحية تبلّغ بصوتها أو بلقطة شاشة، فيصل البلاغ إلى الفريق المختص في اللوحة.» |
-| 2:30 – 2:50 | شريحة «النسخة الأولية تعمل» | «قسنا على مواقع حيّة: صفر إنذارات خاطئة على 23 موقعاً حقيقياً، و52% كشف على مواقع احتيال لم يرها النظام من قبل. ونعرف الخطوة التالية: متصفح حقيقي للصفحات المبنية بالجافاسكريبت.» |
+| 2:30 – 2:50 | شريحة «النسخة الأولية تعمل» | «قسنا على مواقع حيّة: صفر إنذارات خاطئة على 23 موقعاً حقيقياً، و83% كشف على صفحات احتيال حيّة لم يرها النظام من قبل. ونعرف الخطوة التالية: متصفح حقيقي للصفحات المبنية بالجافاسكريبت.» |
 | 2:50 – 3:00 | الشعار وروابط الموقع وواتساب | «حارس: درعك الذكي. يحذّرك، يرشدك، يوصّل بلاغك.» |

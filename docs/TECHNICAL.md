@@ -148,10 +148,12 @@ Round 2 changed four things, each tested for false alarms as well: `ai_medium` f
 
 The AI read 20 of the 33 pages. The rest gave it nothing to read: most misses were on Square (`square.site`) and Weebly (`weeblysite.com`), whose pages are built by JavaScript in the browser, so the HTML Haris fetches is an almost empty shell with no text and no form. That is a limit of the visit, not of the verdict. The fix is to render the page in a headless browser before reading it, which is heavier than Render's free plan allows; it is the first item for a pilot. After this run `weeblysite.com` (Weebly's newer address, 6 of the misses) was added to `FREE_HOSTS`; that change has not been measured yet.
 
+**Third measurement, 24 November 2026, after the wider link check.** A new PhishStats list of the previous three days, with every domain of the earlier lists removed (60 sites), on the deployed server. 18 pages answered: **15 caught (83%)**. Counting every link the way a message is judged, where what the visit found counts even when the page is down (a domain registered three days ago, a certificate issued yesterday) and the link's own points always count: **40 of 60 caught (67%)**. The 31 genuine sites in `sites.json`: **0 false alarms**, 22 answered. Small samples: 18 live pages is enough to see the direction, not to fix a rate.
+
 | | Genuine sites | Live phishing sites |
 | --- | --- | --- |
-| Sites that answered | 23 | 42 (first list), 33 (held-out list) |
-| Result | **0 false alarms** | 43% caught, then **52% on the held-out list** after round 2 |
+| Sites that answered | 23, then 22 | 42 (first list), 33 (held-out), 18 (third list) |
+| Result | **0 false alarms** | 43%, then 52%, then **83%** of the pages that answered; **67% of all 60 links** in the third round |
 | Main limit | 8 of 31 refuse visits from cloud servers | pages built by JavaScript on free website builders |
 
 **The demo page.** `/demo/go` answers with a redirect to `/demo/falcon-bank.html`, a page of the fictional "Falcon National Bank" (بنك الصقر الوطني), registered in `urls.py` and `sitecheck.py` with the reserved `.example` domain as its official one. It asks for a card number, expiry, CVV, password and one-time code, carries a red "training page" banner in Arabic and English, has no form action and a disabled button, and is marked `noindex`. Its link scores 0 offline, and a neutral message carrying it is rated low without the visit and high with it (`tests/test_sitecheck.py`).
