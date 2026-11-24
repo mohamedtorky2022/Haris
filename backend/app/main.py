@@ -18,7 +18,7 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from haris import __version__, alerts, evidence, inbox, llm, persist, radar, sitecheck, whatsapp
+from haris import __version__, alerts, evidence, inbox, llm, persist, radar, sitecheck, watch, whatsapp
 from haris.detector import analyze
 from haris.i18n import SITE_FLAGS, t
 from haris.intake import MAX_IMAGES, extract
@@ -132,6 +132,8 @@ def _keep_awake() -> None:
 
 
 persist.start()  # on a host with DATABASE_URL: bring back the saved reports, subscribers and radar
+if os.getenv("RENDER_EXTERNAL_URL"):
+    watch.start_background()  # early warning on the hosted server; locally, start it from the dashboard
 _keep_awake()  # at import: newer FastAPI versions dropped add_event_handler, and uvicorn runs one worker
 
 
@@ -180,7 +182,7 @@ def health():
 @app.post("/api/check")
 def check(body: CheckRequest):
     result = analyze(body.text, body.lang)
-    return radar.annotate(result, body.text, result["language"])
+    return watch.annotate(radar.annotate(result, body.text, result["language"]), body.text, result["language"])
 
 
 @app.get("/demo/go", include_in_schema=False)
@@ -255,6 +257,20 @@ def require_authority(request: Request) -> None:
     # but the visitor is elsewhere: it adds these headers, so the token is required then too.
     elif any(h in request.headers for h in ("x-forwarded-for", "cf-connecting-ip", "forwarded", "x-real-ip")):
         raise HTTPException(status_code=403, detail="Set HARIS_AUTHORITY_TOKEN to open the dashboard through a tunnel")
+
+
+@app.get("/api/authority/watch")
+def authority_watch(request: Request):
+    """Early warning: new look-alike domains from the Certificate Transparency logs (authority only)."""
+    require_authority(request)
+    return watch.listing()
+
+
+@app.post("/api/authority/watch/run")
+def authority_watch_run(request: Request):
+    """Start a pass over the logs now, in the background."""
+    require_authority(request)
+    return {"started": watch.run_soon()}
 
 
 @app.get("/api/authority/campaigns")

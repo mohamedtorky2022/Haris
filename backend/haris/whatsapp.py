@@ -24,7 +24,7 @@ import urllib.error
 import urllib.request
 from collections import OrderedDict, defaultdict, deque
 
-from . import alerts, inbox, intake, llm, radar
+from . import alerts, inbox, intake, llm, radar, watch
 from .detector import analyze
 from .playbooks import contacts, get_playbook, list_playbooks
 from .text import SUPPORTED_LANGS, detect_language, normalize
@@ -268,7 +268,7 @@ def format_result(result: dict, lang: str, max_items: int = 3) -> str:
 
 
 def check(text: str, lang: str) -> list[dict]:
-    result = radar.annotate(analyze(text, lang), text, lang)
+    result = watch.annotate(radar.annotate(analyze(text, lang), text, lang), text, lang)
     body = format_result(result, lang)
     for n in (2, 1):  # keep the reply in one message with buttons when we can
         if len(body) <= BODY_LIMIT:

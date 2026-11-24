@@ -121,3 +121,12 @@ def test_transcribe_refuses_what_is_not_audio(monkeypatch):
     assert client.post("/api/transcribe", json={"audio": "data:image/png;base64," + "A" * 2000}).status_code == 422
     assert client.post("/api/transcribe", json={"audio": "data:audio/wav;base64,@@@" + "A" * 2000}).status_code == 422
     assert client.post("/api/transcribe", json={"audio": "data:audio/wav;base64," + "AAAA" * 20}).status_code == 422
+
+
+def test_authority_watch_lists_and_starts(monkeypatch, tmp_path):
+    monkeypatch.setenv("HARIS_RADAR_DB", str(tmp_path / "radar.db"))
+    from haris import watch
+    monkeypatch.setattr(watch, "run_soon", lambda: True)
+    r = client.get("/api/authority/watch")
+    assert r.status_code == 200 and r.json()["items"] == [] and "UAE PASS" in r.json()["terms"]
+    assert client.post("/api/authority/watch/run").json() == {"started": True}

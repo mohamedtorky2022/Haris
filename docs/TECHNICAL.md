@@ -12,12 +12,14 @@ flowchart LR
     D --> R[rules.py<br/>weighted signals]
     D --> L[urls.py<br/>offline link analysis]
     D --> X[redact.py<br/>remove personal data]
+    D --> PH[phones.py<br/>fake helplines]
     X -->|redacted text only| C[(Claude API<br/>optional)]
     API --> I[intake.py<br/>story + screenshots → report fields]
     I -->|redacted story + screenshots| C
     API --> PO[polish.py<br/>fix misheard dictation]
     API --> RA[radar.py<br/>campaign radar, SQLite]
     RA -->|confirmed campaigns| AUTH[Authority dashboard]
+    W[watch.py<br/>certificate logs + DNS sweep] -->|look-alike domains| AUTH
     API --> IN[inbox.py<br/>reports sent to the authority, SQLite]
     IN -->|queue by priority| REP[Reports dashboard]
     PO -->|numbers replaced by tokens| C
@@ -73,7 +75,7 @@ Each link is judged from its structure alone, with no network request:
 
 | Flag | Points | Meaning |
 | --- | ---: | --- |
-| `brand_lookalike` | 40 | A known brand name (Emirates Post, Aramex, Dubai Police, Salik, banks…) appears in a domain that is not the brand's official one. Hyphens are removed and look-alike digits are mapped (`ar4mex` → `aramex`) before matching. |
+| `brand_lookalike` | 40 | A known brand name (Emirates Post, Aramex, Dubai Police, Salik, banks…) appears in a domain that is not the brand's official one. Hyphens are removed and look-alike digits are mapped (`ar4mex` → `aramex`) before matching. Brands of five letters or more match anywhere in the name; shorter ones (RTA, ICP, TAMM, ADCB, DEWA) match only as a whole part of the name, or joined to a bait word (`rtafines`, `payicp`, `tamm-abudhabi-fines`), so `moist.com`, `portal.office.com` and `tammy.com` stay clean. |
 | `ip_host` | 30 | A raw IP address instead of a domain name |
 | `at_symbol`, `punycode` | 25 | `user@host` tricks and look-alike Unicode domains |
 | `risky_tld` | 20 | Domain endings common in scams (`.top`, `.xyz`, `.click`…) |
@@ -165,6 +167,12 @@ Alone each is weak, because genuine listings and bookings use the same words. To
 
 **Reporting a fake ad.** In the chat, "Report a fake ad" takes the ad as text, a link or a screenshot (read by the AI), checks it, asks where it was seen and whether the person paid. Nothing paid: it goes to the campaign radar as `[Fake ad · <platform>]` and the ad text, so reports of the same advertiser's number or link become one campaign. Paid: the report flow starts with the incident "money sent" and the ad in the story. On WhatsApp, «إعلان» / "ad" asks for the ad; a suspicious one gets the usual buttons to report it to the radar or, after paying, to file a report. On the radar dashboard (`radar.campaigns`), a campaign is marked `ad` when its category is `fake_ad` or its reports carry the tag; `platforms` lists where the reporters saw it, the tag is taken out of the sample text, the officer can show fake-ad campaigns only, each website identifier links to `evidence.html`, and a short note says how to have the ad removed (report it to the platform; approving the warning also requests a block on the advertiser's number). `scripts/radar_demo.py --message 3 --people 4` adds a fictional car-ad campaign seen on four platforms.
 
+### Fake helplines (`phones.py`)
+
+Some scams need no link: "DEWA: your supply will be cut today, call 055…", a "fraud team" on WhatsApp abroad, or a fake customer-service number found through a search engine. `phones.OFFICIAL` keeps the numbers 14 entities publish on their own websites (DEWA, TAMM, UAE PASS, ICP, ADCB, Emirates NBD, FAB, Mashreq, Salik, RTA, Emirates Post, e&, Dubai Police, Abu Dhabi Police), each read on 24 November 2026 with its source page beside it. An entity without a verified list (Aramex, for one) is never judged on its number.
+
+A number is read only when it sits next to a word such as "call", "contact", "WhatsApp", «اتصل» or «رقم» (in the five languages) and is shaped like a phone number: a UAE mobile, a landline written with its 0 or +971, a 600 or 800 number, or a number abroad. One-time codes, amounts and dates are not read as numbers. Numbers are compared as dialled inside the UAE, so `04 601 9999`, `+971 4 601 9999` and `0097146019999` are the same. A number that is not the named entity's adds the signal `unofficial_number`: 30 points for a mobile or a number abroad (these entities answer on landline, 600 or 800 numbers), 20 for another landline. The reason, first in the list, names the entity, the number given and the official one.
+
 ### Takedown evidence (`evidence.py`, `POST /api/authority/evidence`)
 
 Detection alone does not stop a fake site; someone has to have it taken down. For one address, the authority gets a file it can act on:
@@ -203,7 +211,9 @@ The category is the category of the heaviest signal that fired (`phishing_link` 
 
 ### Evaluation
 
-`scripts/evaluate.py` runs the rules engine on `data/samples/messages.json`: 45 scam messages and 26 legitimate ones (OTP notices that say "never share", delivery confirmations, "pay cash on delivery", salary deposits, paid fines, donation receipts, visa approvals, genuine rental viewings, mall sales, family and spouse messages with words like "darling") across Arabic, English, Urdu and Hindi. Current result: **45/45 scams flagged as medium or high, 0/26 false alarms.** The last 12 (7 scams, 5 genuine) are fake ads and their genuine look-alikes, added on 23 November 2026: a car with a 1,000-dirham deposit "to come and see it", a Porsche at 200,000 dirhams, winter bike, farm and camp rentals in five languages; and genuine ones such as a camp booking paid on arrival and a Camry paid at the transfer of ownership.
+`scripts/evaluate.py` runs the rules engine on `data/samples/messages.json`: 47 scam messages and 28 legitimate ones (OTP notices that say "never share", delivery confirmations, "pay cash on delivery", salary deposits, paid fines, donation receipts, visa approvals, genuine rental viewings, mall sales, family and spouse messages with words like "darling") across Arabic, English, Urdu and Hindi. Current result: **47/47 scams flagged as medium or high, 0/28 false alarms** (precision 100%, recall 100%, F1 100%). The last 12 (7 scams, 5 genuine) are fake ads and their genuine look-alikes, added on 23 November 2026: a car with a 1,000-dirham deposit "to come and see it", a Porsche at 200,000 dirhams, winter bike, farm and camp rentals in five languages; and genuine ones such as a camp booking paid on arrival and a Camry paid at the transfer of ownership. Four more were added on 24 November 2026 for fake helplines: two scams (a DEWA "disconnection" with a mobile number, an Emirates NBD "fraud team" on a number abroad) and two genuine messages giving each entity's own number.
+
+**Precision, recall and a judge's own set.** Both scripts print the confusion matrix with precision, recall, F1, accuracy and the false-alarm rate (`scripts/metrics.py`). `scripts/evaluate.py --file set.csv` runs on any labelled file (.csv with the message then the label, or .json/.jsonl), and `scripts/evaluate_sites.py set.csv --offline` judges links from the link alone, as inside a message, which also works on phishing links that are already dead. Labels are read loosely (scam, phishing, malicious, 1 / legitimate, benign, safe, 0), and the result is saved beside the file as `<name>-results.md`.
 
 This is a regression test, not an accuracy claim: the samples were written alongside the rules.
 
@@ -275,6 +285,19 @@ A message nobody fell for is still evidence. The radar turns many such reports i
 5. **Confirmed.** An official warning is shown to every Haris user when the chat opens, any new message that shares a key with the campaign is rated high risk with the authority's warning first, and a block request for the numbers and links is prepared for the telecom providers (simulated in the demo).
 
 **Safeguards.** Reports alone never block anyone: people can report an innocent number on purpose, and scammers spoof real numbers. The radar's wording counts reports ("reported by 12 people") and never says "this number is a scammer". The authority dashboard (`/authority.html`) opens only on the computer running Haris unless `HARIS_AUTHORITY_TOKEN` is set, and decisions use a two-click confirm with no browser dialogs.
+
+### Early warning: new look-alike domains (`watch.py`)
+
+The radar waits for people to report. The watch looks for the scam site before anyone has received its link.
+
+1. **Certificate logs.** Every certificate a public authority issues is written to the Certificate Transparency logs within minutes, and a phishing page needs one to show the padlock. For each watched brand (UAE PASS, TAMM, ADCB, Emirates NBD, FAB, Mashreq, DEWA, Salik, e&, Emirates Post, Aramex, Dubai Police, Abu Dhabi Police) the watch asks crt.sh for certificates issued in the last 14 days to names containing it. Short or common words (RTA, ICP, DHL, noon) are left out here, as they would match thousands of unrelated names; the link check still catches them in messages.
+2. **DNS sweep.** crt.sh is a free public service and is sometimes slow or down (on 24 November 2026 it returned errors, then empty results, for hours). So the watch also builds the names scammers register most: the brand with a bait word (pay, fines, verify, update, login, secure, online, portal, services, app, uae, ae, gov) before or after it, joined or with a hyphen, on 16 common or cheap endings, about 900 names a brand, and keeps those that resolve. A pass over all brands takes about three minutes.
+3. **Filter.** A name is kept only if the offline link check reads it as a look-alike of a protected brand; the brand's own domains, and the brand's sites in other countries found in the logs, are left out.
+4. **Safe visit.** Up to 30 unvisited names a pass (certificate finds first) are visited once with the website check, **without AI**, so the free quota stays for people. A name that forwards to the brand's own site is dropped from the list.
+5. **Tiers.** *Urgent*: a live page that asks for a card, a code or a password, is on a threat list, or is new (domain under 30 days or certificate under 7) and aimed at the UAE (Arabic, or the UAE, an emirate or dirhams on the page). *Worth a look*: a live page on a domain under 30 days old, or aimed at the UAE with the entity's name on it. The rest are listed lower. Look-alike names alone are weak evidence: "dewa" is an everyday Indonesian word and "tamm" a surname, and the first sweep found many such unrelated sites, which this rule keeps out of the urgent tier.
+6. **Use.** The radar dashboard shows the list with each name's tier, source, age, what the visit found and a link to its takedown evidence file. When a message is checked whose link is on the list, the first reason says Haris had been watching it, and since when. Nothing is blocked on the watch's word.
+
+It runs in a background thread on the hosted server, a minute after start and then every 6 hours (`HARIS_WATCH=0` turns it off; `HARIS_WATCH_HOURS`, `HARIS_WATCH_DAYS`, `HARIS_WATCH_VISITS` adjust it), and the officer can start a pass from the dashboard. Names are kept in the radar database, so they survive restarts, and are dropped 30 days after they were last seen. First pass on 24 November 2026, three brands (TAMM, UAE PASS, ADCB): 33 look-alike names, 22 live, among them a TAMM look-alike registered the day before.
 
 ### Official warnings on WhatsApp (`alerts.py`)
 
@@ -430,4 +453,5 @@ The design follows the data-minimisation and purpose-limitation principles of UA
 - Domain age comes from RDAP, which some registries answer slowly or not at all; threat-list data needs a Google Safe Browsing key (free), and the partner authority's own blocklist would be stronger.
 - The live check adds roughly one to three seconds to an answer, and is limited to the first 2 links in a message.
 - The Urdu, Hindi, Russian and dialect wording has not yet been reviewed by native speakers; the Hindi and Russian were drafted with AI help.
-- Official contact details come from public police announcements and must be confirmed by the partner authority before launch.
+- Official contact details come from public police announcements and must be confirmed by the partner authority before launch. The helpline numbers in `phones.py` were read from each entity's website on 24 November 2026 and need the same confirmation and a regular refresh.
+- The early warning sees only names built from its word list and certificates crt.sh returns; a name outside both patterns, or a page shown only to phones on a UAE network, is missed. The partner's own feeds (registrar alerts for `.ae`, telecom SMS data) would widen it.

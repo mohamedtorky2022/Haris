@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>رادار الحملات | لوحة الجهة المختصة</title>
   <link rel="icon" href="haris.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="authority.css?v=20261123">
+  <link rel="stylesheet" href="authority.css?v=20261124w">
   <link rel="stylesheet" href="reports.css?v=20261121d">
   <link rel="stylesheet" href="splash.css?v=20261124a">
 </head>
@@ -58,12 +58,24 @@
       <ol id="wa-sends" class="wa-sends"></ol>
     </section>
 
+    <section class="watch" aria-live="polite">
+      <div class="watch-head">
+        <div>
+          <h2>🛰️ إنذار مبكر: نطاقات جديدة تشبه جهات إماراتية</h2>
+          <p>كل 6 ساعات يقرأ «حارس» سجلات الشهادات العامة (Certificate Transparency) ويمسح الأسماء الشبيهة الأكثر استخداماً في الاحتيال (مثل dewa-pay أو uaepass-verify)، فيلتقط النطاق الذي يشبه UAE PASS أو «تم» أو البنوك أو الشرطة <b>قبل أن يبلّغ عنه أحد</b>. ثم يزورها بأمان دون ذكاء اصطناعي، فيستبعد ما يحوّل إلى موقع الجهة الرسمي، ويرفع الصفحات الحيّة التي تطلب بيانات إلى الأعلى. القائمة «للمراجعة»: الضابط هو من يقرّر.</p>
+        </div>
+        <button type="button" id="watch-run">افحص الآن</button>
+      </div>
+      <p id="watch-meta" class="watch-meta"></p>
+      <ol id="watch-list" class="watch-list"></ol>
+    </section>
+
     <div class="list-tools">
       <label class="ads-only"><input type="checkbox" id="ads-only"> 📢 الإعلانات الوهمية فقط (<b id="n-ads">0</b>)</label>
       <p id="updated" class="updated"></p>
     </div>
     <section id="list" class="list" aria-live="polite"></section>
   </main>
-  <script src="authority.js?v=20261123"></script>
+  <script src="authority.js?v=20261124w"></script>
 </body>
 </html>

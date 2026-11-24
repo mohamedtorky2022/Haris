@@ -31,7 +31,7 @@ Haris covers the three moments of a cybercrime:
 
 | Moment | What Haris does |
 | --- | --- |
-| **Before** — a suspicious message arrives | Paste any message, link or offer. Haris rates the risk (low / medium / high), names the scam type, explains **why** in plain words, and says what to do. |
+| **Before** — a suspicious message arrives | Paste any message, link or offer. Haris rates the risk (low / medium / high), names the scam type, explains **why** in plain words, and says what to do. When a message names a bank or an authority but gives a number to call that is not one it publishes ("DEWA customer service: 055…", a "fraud team" on a number abroad), Haris says so and gives the official number, read from the entity's own website for 14 entities. |
 | **The link itself** — is this website real? | Haris **opens the website for you, safely**, and reports what it finds: where the link really ends after its redirects, how old the domain is, whether its certificate is days old, whether the page poses as a bank, a courier or a government body, and whether it is asking for a card number, a password or the code sent to your phone. The page text is then read by the AI, which says whether this is a fraud site and who it is pretending to be. Nothing on the page is run, your own identifier is stripped from the link before the visit, and the answer comes back in your language. |
 | **After** — "I've been scammed" | A step-by-step emergency plan for ten situations: money sent, account hacked, extortion, online bullying/harassment/defamation, a fake account in your name, being filmed or having photos or personal details posted without permission, a hacked device or ransomware (including SIM swap), ID shared, a business that paid a fake invoice or a fake "boss" request, and a suspicious message only. Each comes with the official reporting channels. |
 | **Reporting** | The victim tells the story their own way: typed, spoken or as screenshots of the chat or the debit alert. For speech, the user picks their dialect once (Emirati/Gulf, Saudi, Egyptian, Levantine, Iraqi, Maghrebi; English and Urdu accents too), and after each dictation Haris suggests fixes for misheard words such as «ارا ماكس» → «أرامكس». The user approves the fix, and numbers are never changed. Haris pulls out the amount, time, payment method, steps already taken and the scammer's numbers, links and IBANs, asks only about what is still missing with ready-made answers, then shows a summary card where any line can be edited. The report opens in a new tab, downloads as a web page with the screenshots inside, or prints and saves as PDF. |
@@ -41,13 +41,14 @@ Haris covers the three moments of a cybercrime:
 | **Taking the site down** — for the authority | On the dashboard, every website a victim reported gets a **takedown evidence file**: what Haris found on the page (and a SHA-256 of the page as it was seen), who registered the domain and who hosts it, with each one's abuse e-mail and phone taken from the registries' own RDAP records, and three drafts: a suspension request to the registrar, a takedown request to the host, and a request to block the site inside the UAE. Nothing is sent by Haris: the officer checks the drafts, adds the authority's details and sends them. It prints or saves as PDF for the case file. |
 | **Fake ads** — sale or rental | "Report a fake ad" (or «إعلان» on WhatsApp): the person pastes the ad, its link or a screenshot. Haris checks it: a car or bike far below the market price, a deposit before viewing, payment in advance through a link; the AI compares the price with the usual UAE market price for the model. Then it asks where the ad was seen (Instagram, Facebook, TikTok, Snapchat, Dubizzle, X, WhatsApp or Telegram) and whether they paid. Nothing paid: the ad goes to the campaign radar, grouped with other reports of the same number or link. Paid: it becomes a full report to the authority with the ad already in it. On the radar dashboard, fake-ad campaigns carry a «📢 إعلان وهمي» badge and the platforms where reporters saw them, can be shown on their own, and each website in them links to its takedown evidence file. The advice follows the police's: licensed companies only, no deposit before viewing, report to Aman on 8002626 or by SMS to 2828. |
 | **Early warning** — a message nobody fell for | "Report it to protect others" sends the sender's number, link and the redacted text to the **campaign radar** (demo). Reports that share a number, a link or the same text become one campaign. At 3 people Haris tells anyone who checks it "reported by N people"; at 10 people, or 3 with a link imitating an official body, the authority is alerted on its dashboard. Only the authority can approve a public warning, which then reaches every Haris user, goes out as a **WhatsApp alert to everyone who subscribed** (by sending «تنبيهات» / ALERTS) in the language they chose, after the officer has seen it in all five languages (the standard wording, or the authority's own text translated by Haris and editable), and sends a block request to the telecom providers (simulated). |
+| **Look-alike sites** — before the first victim | Every 6 hours Haris reads the public certificate logs (Certificate Transparency, through crt.sh) and sweeps the look-alike names scammers register most (dewa-pay, uaepass-verify, tamm-fines, on cheap endings such as .top or .online) for UAE PASS, TAMM, the banks, DEWA, Salik, the police and the post. It visits what it finds once, safely and without AI, drops names that only forward to the real site, and lists the rest on the radar dashboard: **urgent** when a live page asks for details or is days old and aimed at the UAE, **worth a look** when a live page is weeks old or uses the entity's name in the UAE. Each name links to its takedown evidence file, and when someone later checks a message with one of them, Haris says it was already being watched. Nothing is blocked on the watch's word: an officer decides. On its first run (24 November 2026) it found, among others, a TAMM look-alike registered the day before. |
 
 ### What it covers today, and what is next
 
 Haris starts with **fraud**, the most common and costly cybercrime, and is built so a new crime type is one playbook or one signal away.
 
 - **Checks the websites behind the links**, not only the wording of the link: redirects, domain age, certificate, what the page asks for, impersonated brand, threat lists, and the AI's reading of the page.
-- **Detects 16 scam types:** one-time code theft, bank and government impersonation, fake delivery, fake jobs, fake investments, fake prizes, extortion, fake tech support, phishing links, romance scams, fake "money recovery" offers aimed at people already scammed, fake shops, listings and rentals, fake charities, and fake visas or residency, and **fake ads for sale or rent** (cars sold far below the market price with a deposit "to hold the car", bikes, rest houses, farms and desert camps), the scam Abu Dhabi Police warned about on 22 November 2026.
+- **Detects 16 scam types:** one-time code theft, bank and government impersonation, fake delivery, fake jobs, fake investments, fake prizes, extortion, fake tech support, phishing links, romance scams, fake "money recovery" offers aimed at people already scammed, fake shops, listings and rentals, fake charities, and fake visas or residency, and **fake ads for sale or rent** (cars sold far below the market price with a deposit "to hold the car", bikes, rest houses, farms and desert camps), the scam Abu Dhabi Police warned about on 22 November 2026. Traffic-fine messages in the name of **TAMM** and UAE PASS are covered too, and short brand names (RTA, ICP, TAMM) are matched as whole words, so "moist.com" or "tammy.com" are not mistaken for them.
 - **Guides and reports 10 situations** (listed above).
 - **Next update: Haris on every phone, like Siri.** On Android Haris can be the default assistant; on iPhone it works with Siri ("Hey Siri, ask Haris"), the Action Button and the Share menu. It reads the screen on request and checks the price of an ad, checks a text message's link before it is tapped, warns on the call screen when the number is on the campaign radar, and guides a victim by voice. The engine behind it runs today, and the first step is live: **Haris installs on the phone as an app from the browser** (Android: Install; iPhone: Share → Add to Home Screen), with its own icon, full screen, no store and no WhatsApp needed. Voice notes work in the app too: tap the mic, speak, and Haris writes what you said for you to check. It opens on the UAE map drawing itself, the seven emirates lighting up and a shield closing around them as threats break on it. What is left is the native app for the phone's own features (text-message filtering, the call screen, Siri).
 - **The months ahead:** months 1–2, training on reports confirmed by officers and reading every page with a real browser (target: over 80% of live phishing sites caught); months 3–4, the phone assistant; months 5–6, the official link-up (reports straight into the case system, UAE PASS, the official block list, a short SMS number); then a national shield that checks links in text messages at network level, before they reach the phone.
@@ -93,7 +94,9 @@ The same engine serves every group; the scam patterns and advice cover parcel an
    ├─ examples.py   teaching by example: similar labelled messages shown to the model
    ├─ intake.py     turns a free story and screenshots into report fields
    ├─ polish.py     fixes misheard words in dictated text (glossary + optional AI), never digits
+   ├─ phones.py     fake helplines: a named bank or authority with a number that is not one it publishes
    ├─ radar.py      campaign radar: groups reports, warns, escalates; the authority confirms (SQLite)
+   ├─ watch.py      early warning: new look-alike domains from the certificate logs and a DNS sweep
    ├─ inbox.py      reports sent to the authority (demo): triage, routing by emirate, status, auto-delete (SQLite)
    ├─ translate.py  victim ↔ authority translation; numbers and links never reach the model
    ├─ whatsapp.py   WhatsApp channel: checks Meta's signature, replies with buttons and lists
@@ -213,14 +216,30 @@ python3 scripts/fetch_phishtank.py     # or PhishTank's verified list (free key 
 python3 scripts/evaluate_sites.py phishing-today.txt --label phishing --server https://haris-uae.onrender.com
 ```
 
+#### For judges: run your own hidden set
+
+Bring your own labelled messages or links; nothing is installed beyond the repo (Python 3.11+ and `pip install -r requirements.txt`). Each run prints the confusion matrix with **precision, recall, F1**, accuracy and the false-alarm rate, and saves them next to your file as `<file>-results.md`.
+
+```bash
+# Messages: .csv with two columns, the message then its label (scam / legitimate, or 1 / 0); a header line is fine.
+python scripts/evaluate.py --file my_messages.csv          # rules only: instant, no key needed
+python scripts/evaluate.py --file my_messages.csv --ai     # rules + AI (needs a free Gemini key in .env)
+
+# Links: .csv with the address then its label (phishing / legitimate).
+python3 scripts/evaluate_sites.py my_links.csv --offline   # from the link alone, as inside a message; works on dead links
+python3 scripts/evaluate_sites.py my_links.csv --server https://haris-uae.onrender.com   # visits each live site from our server
+```
+
+`.json` and `.jsonl` files with `{"text" or "url", "label"}` work too. A message or link counts as flagged when Haris rates it medium or high. Phishing links die within a day, so `--offline` is the fair test for an older list; the live visit is the stronger check on a list from the same day.
+
 Optional keys in `.env` (and in Render for `GOOGLE_SAFE_BROWSING_KEY`): `GOOGLE_SAFE_BROWSING_KEY` turns on the threat-list check (free for non-commercial use; a production launch would move to Google Web Risk), `PHISHTANK_APP_KEY` and `PHISHTANK_USER` let `fetch_phishtank.py` download PhishTank's list (free account at phishtank.org).
 
 **Training page for demos:** `https://haris-uae.onrender.com/demo/go` redirects to `/demo/falcon-bank.html`, a page of a **fictional** bank asking for a card, a password and a one-time code, with a visible "training page" banner, no form action and a disabled button, so it can never collect anything. The link looks clean, and the message "مرحباً، هذا الرابط الذي طلبته: https://haris-uae.onrender.com/demo/go" is rated low without the visit and high with it.
 
 | Set | Rules only | Rules + Gemini |
 |---|---|---|
-| `messages.json`: 45 scams, 26 genuine, 5 languages | 45/45 caught, 0/26 false alarms | 37/37 caught, 0/22 false alarms on the first 59 (AI answered 59/59); not yet re-run on the 12 fake-ad samples |
-| `hard.json`: 12 scams in new wording, 8 genuine messages that look suspicious | **2/12** caught, 0/8 false alarms | **12/12** caught, 0/8 false alarms (AI answered 20/20) |
+| `messages.json`: 47 scams, 28 genuine, 5 languages | 47/47 caught, 0/28 false alarms (precision 100%, recall 100%) | 37/37 caught, 0/22 false alarms on the first 59 (AI answered 59/59); not yet re-run on the 12 fake-ad samples |
+| `hard.json`: 12 scams in new wording, 8 genuine messages that look suspicious | **2/12** caught, 0/8 false alarms (precision 100%, recall 17%) | **12/12** caught, 0/8 false alarms (AI answered 20/20; precision 100%, recall 100%) |
 
 Live website check, run on the deployed server on 23 November 2026 against `data/samples/sites.json` (31 genuine sites, including sign-in pages of big brands not on the official list, and news sites that name banks): **0 false alarms on the 23 that answered.** The first run had 1 false alarm, e&'s own site, because `etisalat.ae` now redirects to `eand.ae`, which was missing from the official list; that was fixed and the run repeated. 8 sites did not answer, because they refuse visits from cloud servers. On live phishing sites reported to PhishStats in the previous days: **17 of 33 caught (52%)** on a held-out list, after a first round of 18 of 42 (43%) and fixes made from it. Most misses were pages built by JavaScript on free website builders, which the visit cannot read without a headless browser; see `docs/TECHNICAL.md`.
 
@@ -247,6 +266,8 @@ Measured on 20 November 2026 with `gemini-3.5-flash-lite` on the free tier. The 
 | `POST` | `/api/authority/campaigns/{id}` | `{"status": "confirmed" \| "dismissed"}`: approve the public warning, the WhatsApp alert and the block request, or dismiss |
 | `POST` | `/api/authority/campaigns/{id}/preview` | `{"text": "..."}` (optional): the warning in all five languages, the authority's own text translated (authority only) |
 | `POST` | `/api/authority/evidence` | `{"url": "..."}` → takedown evidence for a fake website: findings, registrar and host with their abuse contacts (from RDAP), and draft requests (authority only) |
+| `GET` | `/api/authority/watch` | early warning: look-alike domains found in the certificate logs and the DNS sweep, most urgent first, with what the safe visit found (authority only) |
+| `POST` | `/api/authority/watch/run` | start a pass now, in the background (authority only) |
 | `GET` | `/api/authority/alerts` | WhatsApp alert subscribers by language, the delivery mode, and the last deliveries (authority only) |
 | `POST` | `/api/report` | build a police report (HTML + Markdown), nothing stored |
 | `GET` | `/api/health` | status, version and deployed commit, and whether the AI second opinion, the live website check and WhatsApp are on |
@@ -352,8 +373,9 @@ haris/
 │   └── demo/                   the fictional bank page used for the live site-check demo
 ├── data/samples/               labelled synthetic messages, hard cases, and genuine sites for false-alarm checks
 ├── scripts/
-│   ├── evaluate.py             accuracy on the sample messages
-│   ├── evaluate_sites.py       live site-check benchmark (genuine sites and live phishing lists)
+│   ├── evaluate.py             precision, recall and F1 on the sample messages, or on your own set (--file)
+│   ├── evaluate_sites.py       site-check benchmark: live visits, or --offline from the link alone; your own .csv too
+│   ├── metrics.py              confusion matrix, precision, recall, F1; reads a judge's .csv/.json/.jsonl
 │   ├── fetch_phishstats.py, fetch_phishtank.py, fetch_phishing_database.py   fresh phishing lists for the benchmark
 │   ├── radar_demo.py           sends reports of one campaign, for a live demo
 │   ├── alerts_demo.py          adds fictional WhatsApp alert subscribers (never messaged)

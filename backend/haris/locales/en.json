@@ -60,6 +60,7 @@
   "personal_info_request": "It asks for personal details such as your ID or passport.",
   "link_click": "It asks you to click a link.",
   "suspicious_link": "It contains a suspicious link.",
+  "unofficial_number": "It names {entity} but gives {number} to call, which is not one of its published numbers. The official number is {official}. Only call the number on its official website or on the back of your card.",
   "official_link": "The link is on a known official domain.",
   "risky_website": "Visiting the website itself showed signs of fraud.",
   "advance_booking": "It asks for a deposit or payment before you see the car or the place. That is how fake ads work: you pay, then the seller disappears.",

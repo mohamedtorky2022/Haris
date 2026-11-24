@@ -531,3 +531,9 @@ def test_the_benchmark_explains_a_missing_list():
     spec.loader.exec_module(mod)
     with pytest.raises(SystemExit, match="does not exist"):
         mod.read_cases(["no-such-list.txt"], ["phishing"], None)
+
+
+def test_a_page_aimed_at_the_uae_is_marked():
+    from haris.sitecheck import UAE_PAGE
+    assert UAE_PAGE.search("pay your fine in aed today") and UAE_PAGE.search("ادفع المخالفة")
+    assert UAE_PAGE.search("dubai electricity") and not UAE_PAGE.search("situs gacor slot online dewa")

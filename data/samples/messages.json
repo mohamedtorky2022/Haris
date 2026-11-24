@@ -353,5 +353,25 @@
   "id": "en-car-legit",
   "label": "legit",
   "text": "2019 Toyota Camry for sale, AED 48,000, viewing in Dubai, test drive welcome. Payment at the transfer of ownership."
+ },
+ {
+  "id": "ar-helpline-dewa",
+  "label": "scam",
+  "text": "ديوا: سيتم فصل الكهرباء عن منزلك اليوم بسبب خطأ في الفاتورة. لتجنب الفصل اتصل بخدمة العملاء على 0558123456"
+ },
+ {
+  "id": "en-helpline-enbd",
+  "label": "scam",
+  "text": "Emirates NBD: unusual activity on your card. To stop the transaction call our fraud team on WhatsApp +44 7700 912345"
+ },
+ {
+  "id": "en-helpline-dewa-legit",
+  "label": "legit",
+  "text": "DEWA: your bill for October is AED 412. Pay through the DEWA app or dewa.gov.ae. For enquiries call 04 601 9999."
+ },
+ {
+  "id": "ar-helpline-enbd-legit",
+  "label": "legit",
+  "text": "بنك الإمارات دبي الوطني: تم تفعيل بطاقتك الجديدة. لأي استفسار اتصل على 600540000."
  }
 ]

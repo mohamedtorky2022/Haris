@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from . import llm, sitecheck
+from . import llm, phones, sitecheck
 from .i18n import ADVICE, CATEGORY_LABELS, REASONS, RISK_LABELS, RISK_SUMMARY, SITE_FLAGS, URL_FLAGS, t
 from .redact import redact
 from .rules import COMBOS, SMALL_AMOUNT, SMALL_AMOUNT_WEIGHT, match_signals
@@ -59,6 +59,12 @@ def analyze(text: str, lang: str | None = None, use_llm: bool = True, inspect_si
         codes.append("official_link")
         score = max(0, score - 15)
 
+    # A bank or authority named with a number to call that is not one it publishes: a fake helpline.
+    helpline = phones.check(text)
+    if helpline:
+        codes.append("unofficial_number")
+        score += helpline["weight"]
+
     # Visit the sites themselves: a brand-new phishing domain can look clean in the link alone.
     sites: dict[str, dict] = {}
     if inspect_sites and sitecheck.enabled():
@@ -92,6 +98,10 @@ def analyze(text: str, lang: str | None = None, use_llm: bool = True, inspect_si
     redaction = redact(text)
     engine = "rules"
     reasons = [t(REASONS, c, lang) for c in codes]
+    if helpline:
+        i = codes.index("unofficial_number")
+        reasons.insert(0, reasons.pop(i).format(entity=phones.label(helpline["entity"], lang),
+                                                number=helpline["number"], official=helpline["official"]))
     for site in sites.values():
         reasons += [r for r in (site.get("ai") or {}).get("reasons", []) if r not in reasons]
     advice = list(ADVICE.get(category, {}).get(lang, [])) + list(t(ADVICE, "general", lang))
@@ -130,6 +140,7 @@ def analyze(text: str, lang: str | None = None, use_llm: bool = True, inspect_si
             for link in links
         ],
         "signals": codes,
+        "helpline": helpline,
         "redacted": redaction.counts,
         "engine": engine,
         "language": lang,

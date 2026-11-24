@@ -203,8 +203,54 @@
     list.replaceChildren(...(shownItems.length ? shownItems.map(card)
       : [el("p", { class: "empty", text: adsOnly.checked ? "لا توجد بلاغات عن إعلانات وهمية خلال آخر 24 ساعة." : "لا توجد بلاغات خلال آخر 24 ساعة." })]));
     showAlerts();
+    showWatch();
     document.getElementById("updated").textContent = `آخر تحديث: ${new Date().toLocaleTimeString("ar-AE")} · يتحدّث تلقائياً كل 5 ثوانٍ`;
   }
+
+  // Early warning: new look-alike domains from the certificate logs, before any report.
+  const FLAG = { brand_lookalike: "يشبه علامة", risky_tld: "نهاية مشبوهة", punycode: "حروف مموّهة", many_hyphens: "شرطات كثيرة",
+    many_subdomains: "نطاقات فرعية كثيرة", brand_with_form: "صفحة تطلب بيانات باسم الجهة", card_form: "يطلب البطاقة",
+    otp_form: "يطلب رمز التحقق", password_form: "يطلب كلمة المرور", young_domain: "نطاق حديث", new_domain: "مسجّل منذ أقل من شهر", new_certificate: "شهادة جديدة", threat_list: "على قائمة تهديدات Google", bad_certificate: "شهادة غير صالحة", free_host: "استضافة مجانية" };
+  async function showWatch() {
+    let w;
+    try { w = await call("/api/authority/watch"); } catch { return; }
+    const meta = document.getElementById("watch-meta");
+    meta.textContent = `${num(w.total)} نطاقاً يشبه جهة إماراتية · ${num(w.live)} صفحة حيّة · ${num(w.risky)} عاجل · ${num(w.review)} يستحق النظر`
+      + (w.unvisited ? ` · ${num(w.unvisited)} بانتظار الزيارة` : "")
+      + (w.running ? " · الفحص جارٍ الآن…" : w.last_run ? ` · آخر فحص ${ago(w.last_run)}` : " · لم يُفحص بعد")
+      + (w.last_error ? ` · تعذّر بعض المصادر: ${w.last_error}` : "");
+    document.getElementById("watch-run").disabled = Boolean(w.running);
+    const items = w.items.slice(0, 12).map((i) => {
+      const live = i.live;
+      const state = !live ? el("span", { class: "wl-state", text: "لم يُزر بعد" })
+        : !live.reachable ? el("span", { class: "wl-state off", text: "لا يستجيب" })
+          : i.tier === "urgent" ? el("span", { class: "wl-state hot", text: `عاجل: صفحة حيّة تطلب بيانات أو جديدة وتستهدف الإمارات · ${live.score}` })
+            : i.tier === "review" ? el("span", { class: "wl-state on", text: `يستحق النظر: صفحة حيّة ${(live.flags || []).includes("new_domain") ? "مسجّلة منذ أيام" : "تستهدف الإمارات باسم الجهة"} · ${live.score}` })
+            : live.uae ? el("span", { class: "wl-state", text: `صفحة حيّة تستهدف الإمارات · ${live.score}` })
+              : el("span", { class: "wl-state", text: "صفحة حيّة لا تستهدف الإمارات" });
+      const flags = [...new Set([...(i.flags || []), ...((live && live.flags) || [])])].filter((f) => FLAG[f]).map((f) => FLAG[f]);
+      return el("li", { class: `wl ${i.tier}` }, [
+        el("div", { class: "wl-main" }, [
+          el("bdi", { class: "wl-domain", dir: "ltr", text: i.domain }),
+          el("span", { class: "wl-brand", text: `يشبه ${i.brand}` }),
+          el("span", { class: "wl-src", text: i.source === "ct" ? "سجل الشهادات" : "مسح الأسماء" }),
+          el("span", { class: "wl-when", text: i.issued_at ? `شهادته ${ago(i.issued_at)}`
+            : i.registered_at ? `سُجّل ${ago(i.registered_at)}` : `رُصد ${ago(i.found_at)}` }),
+        ]),
+        el("div", { class: "wl-side" }, [
+          state,
+          el("span", { class: "wl-flags", text: [live && live.title ? `«${live.title.slice(0, 40)}»` : "", ...flags].filter(Boolean).join(" · ") }),
+          el("a", { class: "ev-link", href: `evidence.html?url=${encodeURIComponent(`https://${i.domain}`)}`, text: "ملف الأدلة ←" }),
+        ]),
+      ]);
+    });
+    document.getElementById("watch-list").replaceChildren(...(items.length ? items
+      : [el("li", { class: "empty", text: w.running ? "يجري الفحص… قد يستغرق بضع دقائق." : "لا نطاقات مرصودة حتى الآن. اضغط «افحص الآن»." })]));
+  }
+  document.getElementById("watch-run").addEventListener("click", async () => {
+    try { await call("/api/authority/watch/run", {}); } catch { return; }
+    showWatch();
+  });
 
   async function showAlerts() {
     let a;

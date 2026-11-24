@@ -46,6 +46,7 @@ OFFICIAL_BRANDS: dict[str, tuple[str, ...]] = {
     "salik": ("salik.ae",),
     "rta": ("rta.ae",),
     "dewa": ("dewa.gov.ae",),
+    "tamm": ("tamm.abudhabi",),  # Abu Dhabi's government services portal, where fines and fees are paid
     "emiratesnbd": ("emiratesnbd.com",),
     "adcb": ("adcb.com",),
     "bankfab": ("bankfab.com",),
@@ -71,6 +72,10 @@ FLAG_WEIGHTS = {
     "many_subdomains": 10,
     "no_https": 5,
 }
+
+# Words glued to a short brand name in scam domains: «rtafines», «payicp», «dhlupdate».
+_BAIT_WORDS = {"fine", "fines", "pay", "payment", "uae", "ae", "login", "secure", "update", "verify", "online",
+               "portal", "service", "services", "app", "gov", "track", "tracking", "delivery", "redelivery", "bill"}
 
 _LEET = str.maketrans({"0": "o", "1": "l", "3": "e", "5": "s", "4": "a", "7": "t"})
 
@@ -112,6 +117,28 @@ def _is_official(domain: str) -> bool:
     )
 
 
+def _looks_like_brand(domain: str) -> bool:
+    """A brand name hidden in a domain that is not the brand's own.
+
+    Long names (adcb, emiratespost, uaepass...) count anywhere in the squashed domain. Short ones
+    (rta, icp, moi, dhl, noon, tamm) count only at the start or end of a label or hyphen-separated
+    part, so «portal» or «tammy» is not read as RTA or TAMM.
+    """
+    leet = domain.translate(_LEET)
+    squashed = leet.replace("-", "").replace(".", "")
+    tokens = [t for t in re.split(r"[.\-]", leet) if t]
+    for brand in OFFICIAL_BRANDS:
+        if len(brand) >= 5:
+            if brand in squashed:
+                return True
+        elif any(t == brand
+                 or t.startswith(brand) and (not t[len(brand)].isalpha() or t[len(brand):] in _BAIT_WORDS)
+                 or t.endswith(brand) and (not t[-len(brand) - 1].isalpha() or t[:-len(brand)] in _BAIT_WORDS)
+                 for t in tokens):
+            return True
+    return False
+
+
 def analyze_url(url: str) -> LinkReport:
     raw = url if "://" in url else "http://" + url
     parts = urlsplit(raw)
@@ -145,8 +172,7 @@ def analyze_url(url: str) -> LinkReport:
     if domain.count("-") >= 2:
         report.flags.append("many_hyphens")
 
-    squashed = domain.replace("-", "").replace(".", "").translate(_LEET)
-    if any(brand in squashed for brand in OFFICIAL_BRANDS):
+    if _looks_like_brand(domain):
         report.flags.append("brand_lookalike")
 
     if parts.scheme == "http" and "://" in url:

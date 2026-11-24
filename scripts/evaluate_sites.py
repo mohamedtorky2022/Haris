@@ -11,8 +11,14 @@ Or locally, visiting from this machine (needs the backend's code, nothing to ins
     python3 scripts/evaluate_sites.py data/samples/sites.json
 
 Inputs: a .txt file with one address per line (lines starting with # are skipped), labelled with
---label; or a .json list of {"url", "label": "phishing"|"legitimate", "note"}. --limit N takes the
-first N addresses of each file. Only the Python standard library is used.
+--label; a .csv with two columns (address, then phishing or legitimate; a header line is fine); or a
+.json list of {"url", "label": "phishing"|"legitimate", "note"}. --limit N takes the first N
+addresses of each file. Only the Python standard library is used.
+
+--offline judges each address from the link alone, as Haris does inside a message, without visiting
+it: instant, and it works on phishing links that are already dead, which a hidden set usually holds.
+
+    python3 scripts/evaluate_sites.py my_urls.csv --offline
 
 Outcomes, for a site that answered:
     caught        a phishing site rated 25 points or more
@@ -37,6 +43,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+import metrics  # noqa: E402
+
 THRESHOLD = 25
 # 5.5 s between sites keeps each visit's AI reading under the free Gemini tier's limit; at 2.2 s the AI
 # paused and read only 25 of 42 pages (23 November 2026).
@@ -61,8 +70,9 @@ def read_cases(paths: list[str], labels: list[str], limit: int | None) -> list[d
         p = Path(path)
         if not p.exists():
             raise SystemExit(f"{path} does not exist. Was the list written? (the fetch script says so if not)")
-        if p.suffix == ".json":
-            items = json.loads(p.read_text(encoding="utf-8"))
+        if p.suffix in (".json", ".csv", ".jsonl"):
+            items = [{**c, "label": "phishing" if c["positive"] else "legitimate"}
+                     for c in metrics.read_labelled(path, "url")]
         else:
             label = labels[i] if i < len(labels) else (labels[-1] if labels else None)
             if label not in ("phishing", "legitimate"):
@@ -105,12 +115,25 @@ def main() -> int:
     ap.add_argument("--server", help="run the checks on this deployed Haris, e.g. https://haris-uae.onrender.com")
     ap.add_argument("--limit", type=int, help="take only the first N addresses of each file")
     ap.add_argument("--no-ai", action="store_true", help="locally: skip the AI reading of each page")
+    ap.add_argument("--offline", action="store_true",
+                    help="judge each address from the link alone, without visiting it (works on dead links)")
     args = ap.parse_args()
     labels = [x.strip() for x in args.label.split(",") if x.strip()]
     paths, server = args.files, args.server
     cases = read_cases(paths, labels, args.limit)
 
-    if server:
+    if args.offline:
+        sys.path.insert(0, str(ROOT / "backend"))
+        from haris.detector import analyze
+        from haris.urls import analyze_url
+
+        def run(url: str) -> dict:
+            link, verdict = analyze_url(url), analyze(url, "en", use_llm=False, inspect_sites=False)
+            flagged = verdict["risk"] in ("medium", "high")
+            return {"reachable": True, "score": THRESHOLD if flagged else 0, "final_domain": link.domain,
+                    "flags": link.flags + [verdict["risk"]]}
+        delay = 0.0
+    elif server:
         run = lambda url: check_on_server(server, url)  # noqa: E731
         delay = SERVER_DELAY
     else:
@@ -139,7 +162,8 @@ def main() -> int:
                      "ai": (r.get("ai") or {}).get("risk"), "error": r.get("error")})
         print(f"{n:>3}/{len(cases)} {verdict:<12} {r.get('score', 0):>3}  {(r.get('final_domain') or '')[:38]:<38} "
               f"{', '.join(r.get('flags', []))[:55]}")
-        time.sleep(delay)
+        if delay:
+            time.sleep(delay)
 
     live_phish = counts["caught"] + counts["missed"]
     live_legit = counts["clean"] + counts["false alarm"]
@@ -154,7 +178,9 @@ def main() -> int:
     summary = [
         "# Live website check — results",
         "",
-        f"Run {started:%Y-%m-%d %H:%M} UTC, {'on ' + server if server else 'locally'}, threshold {THRESHOLD} points.",
+        f"Run {started:%Y-%m-%d %H:%M} UTC, "
+        + ("offline: from the link alone, as inside a message (flagged = medium or high risk)." if args.offline
+           else f"{'on ' + server if server else 'locally'}, threshold {THRESHOLD} points."),
         "",
         "| | Count | Rate |",
         "|---|---:|---:|",
@@ -165,9 +191,13 @@ def main() -> int:
         f"| … false alarms | {counts['false alarm']} | **{pct(counts['false alarm'], live_legit)}** |",
         f"| Did not answer (excluded) | {counts['unreachable']} | |",
         "",
+    ] + metrics.table(metrics.scores(counts["caught"], counts["false alarm"], counts["missed"], counts["clean"]),
+                      positive="phishing") + [
+        "",
+    ] + ([] if args.offline else [
         f"The AI read {sum(1 for r in rows if r['ai'])} of the {sum(1 for r in rows if r['verdict'] != 'unreachable')} "
         "pages that answered (the free tier pauses when it gets too many requests a minute; the rules answer meanwhile).",
-        "",
+        ""]) + [
         "Signals behind the catches: " + (", ".join(f"`{k}` {v}" for k, v in top) or "none"),
         "",
         "Missed and false alarms:",

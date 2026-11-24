@@ -55,6 +55,8 @@ SIGNALS: tuple[Signal, ...] = (
     Signal("gov_impersonation", 15, category="gov_impersonation", groups=((
         "الشرطة", "شرطة دبي", "شرطة أبوظبي", "وزارة الداخلية", "الهوية والجنسية", "الجمارك", "النيابة",
         "المحكمة", "مخالفة", "غرامة", "police", "ministry of interior", "icp", "customs", "court", "fine",
+        "مخالفات مرورية", "مخالفة مرورية", "سداد المخالفات", "traffic fine", "traffic fines", "unpaid fine",
+        "تطبيق تم", "منصة تم", "tamm", "uae pass", "uaepass", "الهوية الرقمية", "salik",
         "violation", "پولیس", "جرمانہ", "عدالت"),)),
     Signal("payment_request", 15, groups=((
         "ادفع", "سدد", "سداد", "دفع", "تحويل", "حول المبلغ", "رسوم", "pay", "payment", "fee", "transfer", "settle",

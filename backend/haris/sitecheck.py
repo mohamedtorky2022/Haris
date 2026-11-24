@@ -69,6 +69,10 @@ FLAG_WEIGHTS = {
     "free_host": 10,          # on a free website builder's sub-address; weak alone, adds up with the rest
 }
 
+# A page aimed at people in the UAE: Arabic script, or the country, an emirate or the dirham named.
+UAE_PAGE = re.compile(r"[\u0600-\u06ff]|\buae\b|united arab emirates|\bdubai\b|abu dhabi|sharjah|ajman|"
+                      r"ras al khaimah|fujairah|\baed\b|dirham")
+
 # Names that appear on the page itself, in Arabic and English, for the brands in urls.py.
 BRAND_NAMES: dict[str, tuple[str, ...]] = {
     "emiratespost": ("emirates post", "بريد الإمارات", "بريد الامارات"),
@@ -84,6 +88,7 @@ BRAND_NAMES: dict[str, tuple[str, ...]] = {
     "salik": ("salik",),
     "rta": ("roads and transport authority", "هيئة الطرق والمواصلات"),
     "dewa": ("dewa", "هيئة كهرباء ومياه دبي"),
+    "tamm": ("tamm", "تطبيق تم", "منصة تم", "خدمات تم", "abu dhabi government services"),
     "emiratesnbd": ("emirates nbd", "الإمارات دبي الوطني"),
     "adcb": ("adcb", "بنك أبوظبي التجاري"),
     "bankfab": ("first abu dhabi bank", "بنك أبوظبي الأول"),
@@ -437,6 +442,7 @@ class SiteReport:
     error: str | None = None
     text: str = ""
     sha256: str = ""  # of the page as it was read, so evidence can show exactly what was seen
+    uae: bool = False  # the page speaks to people in the UAE: Arabic, or the UAE, an emirate or dirhams named
 
     @property
     def score(self) -> int:
@@ -447,7 +453,8 @@ class SiteReport:
                 "reachable": self.reachable, "status": self.status, "redirects": self.redirects,
                 "title": self.title[:120], "domain_age_days": self.domain_age_days,
                 "cert_age_days": self.cert_age_days, "flags": self.flags, "brands": self.brands,
-                "ai": self.ai, "score": self.score, "error": self.error, "sha256": self.sha256 or None}
+                "ai": self.ai, "score": self.score, "error": self.error, "sha256": self.sha256 or None,
+                "uae": self.uae}
 
 
 def _clean(url: str) -> str:
@@ -521,6 +528,7 @@ def inspect(url: str, lang: str = "en", use_llm: bool = True) -> dict:
         report.title = re.sub(r"\s+", " ", page.title).strip()
         report.text = " ".join(page.text)[:6000]
         haystack = f"{report.title} {report.text}".lower()
+        report.uae = bool(UAE_PAGE.search(haystack))
         if not official:
             # A brand only named in the body (a news story, a shop listing) is not impersonation.
             # A phishing page puts the brand in its title, or asks for details under the brand's name.
