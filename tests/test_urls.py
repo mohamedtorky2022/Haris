@@ -63,3 +63,24 @@ def test_a_tamm_traffic_fine_message_is_high_risk():
     from haris.detector import analyze
     r = analyze("تطبيق تم: لديك مخالفة مرورية غير مدفوعة بقيمة 400 درهم. سدد خلال 24 ساعة لتجنب الغرامة: https://tamm-fines-ae.com/pay", "ar")
     assert r["risk"] == "high"
+
+
+def test_global_brands_their_own_sites_and_infrastructure():
+    from haris.urls import analyze_url as a
+    for clean in ("https://amazon.de", "https://amazon.co.uk", "https://cloud.microsoft", "https://apple-dns.net",
+                  "https://hicloud.com", "https://pineapple.com", "https://outlookindia.com", "https://xn--12c1ezaww.com",
+                  "https://portal.office.com", "https://www.paypal.com/signin"):
+        r = a(clean)
+        assert r.official or r.score < 25, (clean, r.flags)
+    for scam in ("https://appleid-verify.com", "https://icloud-login.com", "https://paypal-secure.top",
+                 "https://download-outlook.com", "https://xn--pple-43d.com"):
+        assert a(scam).score >= 25, scam
+
+
+def test_free_hosts_and_machine_made_names():
+    from haris.urls import analyze_url as a
+    assert "free_host" in a("https://login-update-form.vercel.app").flags
+    assert a("https://login-update-form.vercel.app").score >= 25
+    assert "free_host" in a("https://storage.googleapis.com/bucket/page.html").flags
+    assert "free_host" not in a("https://notion.site").flags  # the platform itself
+    assert "random_label" in a("https://pub-9e06cf401c8a495490150ee84add9bc3.r2.dev").flags

@@ -77,13 +77,19 @@ Each link is judged from its structure alone, with no network request:
 | --- | ---: | --- |
 | `brand_lookalike` | 40 | A known brand name (Emirates Post, Aramex, Dubai Police, Salik, banks…) appears in a domain that is not the brand's official one. Hyphens are removed and look-alike digits are mapped (`ar4mex` → `aramex`) before matching. Brands of five letters or more match anywhere in the name; shorter ones (RTA, ICP, TAMM, ADCB, DEWA) match only as a whole part of the name, or joined to a bait word (`rtafines`, `payicp`, `tamm-abudhabi-fines`), so `moist.com`, `portal.office.com` and `tammy.com` stay clean. |
 | `ip_host` | 30 | A raw IP address instead of a domain name |
-| `at_symbol`, `punycode` | 25 | `user@host` tricks and look-alike Unicode domains |
+| `at_symbol`, `punycode` | 25 | `user@host` tricks and look-alike Unicode domains: Latin mixed with other letters, or Cyrillic or Greek letters passing for Latin. A name written wholly in its own script (Arabic, Thai, Chinese) is an ordinary local domain and is not flagged. |
 | `risky_tld` | 20 | Domain endings common in scams (`.top`, `.xyz`, `.click`…) |
+| `free_host` | 20 | A site on a free website builder, app host or public file storage (`vercel.app`, `pages.dev`, `r2.dev`, `storage.googleapis.com`, free PHP hosts…): a scam page costs nothing there. The platform's own home page is not flagged. |
 | `shortener` | 15 | `bit.ly`, `tinyurl.com` and similar, which hide the destination |
+| `random_label` | 10 | A machine-made part of the name: 16 characters or more with at least 6 digits (a storage bucket id, a throwaway name) |
 | `many_hyphens`, `many_subdomains` | 10 | Typical of disposable phishing domains |
 | `no_https` | 5 | Unencrypted link |
 
-Links on official domains (any `*.gov.ae`, `u.ae`, and the listed brands' real domains) score zero and are marked as official. Link points are capped at 50 per message.
+Besides the UAE entities, the global brands scammers impersonate everywhere are protected: PayPal, Microsoft (Outlook, Office 365, Hotmail), Apple and iCloud, Netflix, Facebook, Instagram, WhatsApp, Binance, Coinbase and MetaMask. Brand names that are also ordinary words or sit inside them (apple in pineapple, outlook in outlookindia, icloud in hicloud) match only as a whole part of the name or joined to a bait word (`appleid-verify`). A brand's own site in another country (`amazon.de`, `amazon.co.uk`, `microsoft.us`), its own top-level domain (`.apple`, `.microsoft`) and its infrastructure domains (`amazonaws.com`, `apple-dns.net`, `facebook.net`) count as official.
+
+Links on official domains (any `*.gov.ae`, `u.ae`, and the listed brands' real domains) score zero and are marked as official.
+
+**Measured from the link alone** (`scripts/evaluate_sites.py --offline`, 24 November 2026): on the Tranco list of the 3,000 most visited sites, **0 false alarms** (25 before these changes, mostly Amazon's and Apple's own country and infrastructure domains). On 60 phishing links reported to PhishStats in the previous three days and not used while making the changes, 8 caught from the link alone (6 before). The link alone catches impersonation and cheap infrastructure; most phishing today sits on hacked or neutral-looking domains, which is why Haris visits the page. Link points are capped at 50 per message.
 
 
 ### Live website inspection (`sitecheck.py`)
