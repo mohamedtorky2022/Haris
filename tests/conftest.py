@@ -17,3 +17,11 @@ def _private_alerts_db(tmp_path, monkeypatch):
 def _no_network(monkeypatch):
     """The live website visit is off unless a test asks for it: tests never touch the network."""
     monkeypatch.setenv("HARIS_SITE_CHECK", "0")
+
+
+@pytest.fixture(autouse=True)
+def _fresh_rate_limit():
+    """Every test starts with an empty rate-limit window, so adding API tests never trips a later one."""
+    main = sys.modules.get("app.main")
+    if main is not None:
+        main._hits.clear()
