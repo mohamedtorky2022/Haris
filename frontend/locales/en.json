@@ -207,5 +207,8 @@
  "childMoe": "Child Protection Unit - Ministry of Education",
  "noPrivateImages": "🔒 Don't attach any private photo of yourself. Screenshot only the person's account and the threats.",
  "parentSends": "My parent will send it now",
- "parentNote": "Your parent continues from here and confirms their own identity."
+ "parentNote": "Your parent continues from here and confirms their own identity.",
+ "voiceListening": "🎙️ Listening {time} · tap to finish",
+ "voiceHeard": "I heard you and put your words in the box. Check them, then tap send.",
+ "voiceFailed": "I couldn't hear the voice note right now. Try again in a moment, or type your message."
 }

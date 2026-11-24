@@ -689,6 +689,7 @@
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     stopDictation(false);
+    stopVoice(false);
     const text = input.value.trim();
     const images = pending.slice();
     if (!text && !images.length) return;
@@ -763,7 +764,109 @@
   let recognizer = null;
   let heard = false;
   let micNoteShown = false;
-  micBtn.hidden = !Speech;
+
+  // ---- Voice notes: recorded here as WAV, heard on the server (Gemini), never stored ----
+  // Works where the browser has no dictation (iPhone home-screen app, Firefox). The words come
+  // back into the box for the user to check before sending.
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const canRecord = Boolean(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && AudioCtx);
+  const VOICE_MAX = 60; // seconds
+  let voice = null;
+  micBtn.hidden = !(canRecord || Speech);
+
+  async function startVoice() {
+    const ctx = new AudioCtx(); // made inside the tap, so iPhone lets it run
+    voice = { ctx, chunks: [], started: Date.now(), placeholder: input.placeholder, stream: null, source: null, node: null, timer: null };
+    const v = voice;
+    micBtn.classList.add("recording");
+    micBtn.setAttribute("aria-pressed", "true");
+    try {
+      if (ctx.state === "suspended") await ctx.resume();
+      v.stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true } });
+    } catch {
+      await stopVoice(false);
+      bubble(tr("micError"));
+      return;
+    }
+    if (voice !== v) { v.stream.getTracks().forEach((t) => t.stop()); return; } // stopped while asking
+    v.source = ctx.createMediaStreamSource(v.stream);
+    v.node = ctx.createScriptProcessor(4096, 1, 1);
+    v.node.onaudioprocess = (e) => { if (voice === v) v.chunks.push(new Float32Array(e.inputBuffer.getChannelData(0))); };
+    v.source.connect(v.node);
+    v.node.connect(ctx.destination);
+    v.started = Date.now();
+    const tick = () => {
+      if (voice !== v) return;
+      const sec = Math.floor((Date.now() - v.started) / 1000);
+      input.placeholder = tr("voiceListening", { time: `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}` });
+      if (sec >= VOICE_MAX) stopVoice(true);
+    };
+    tick();
+    v.timer = setInterval(tick, 500);
+  }
+
+  async function stopVoice(send) {
+    const v = voice;
+    if (!v) return;
+    voice = null;
+    clearInterval(v.timer);
+    try { if (v.source) v.source.disconnect(); if (v.node) v.node.disconnect(); } catch { /* already disconnected */ }
+    if (v.stream) v.stream.getTracks().forEach((t) => t.stop());
+    try { await v.ctx.close(); } catch { /* already closed */ }
+    input.placeholder = v.placeholder;
+    micBtn.classList.remove("recording");
+    micBtn.setAttribute("aria-pressed", "false");
+    if (!send || !v.chunks.length || Date.now() - v.started < 800) return;
+
+    const audio = wavDataUrl(v.chunks, v.ctx.sampleRate);
+    const stop = typing();
+    let text = null;
+    let status = 0;
+    try {
+      const res = await fetch("/api/transcribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ audio, lang }),
+      });
+      status = res.status;
+      if (res.ok) text = (await res.json()).text;
+    } catch { /* offline */ }
+    stop();
+    if (!text) { bubble(status === 429 ? tr("tooMany") : tr("voiceFailed")); return; }
+    input.value = input.value.trim() ? `${input.value.trim()} ${text}` : text;
+    autosize();
+    input.focus();
+    bubble(tr("voiceHeard"));
+  }
+
+  // 16-bit mono WAV at 16 kHz: small, and every speech model reads it.
+  function wavDataUrl(chunks, rate) {
+    const target = Math.min(16000, rate);
+    const total = chunks.reduce((n, c) => n + c.length, 0);
+    const all = new Float32Array(total);
+    let at = 0;
+    for (const c of chunks) { all.set(c, at); at += c.length; }
+    const ratio = rate / target;
+    const n = Math.floor(total / ratio);
+    const view = new DataView(new ArrayBuffer(44 + n * 2));
+    const str = (off, t) => { for (let i = 0; i < t.length; i++) view.setUint8(off + i, t.charCodeAt(i)); };
+    str(0, "RIFF"); view.setUint32(4, 36 + n * 2, true); str(8, "WAVE"); str(12, "fmt ");
+    view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true);
+    view.setUint32(24, target, true); view.setUint32(28, target * 2, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true);
+    str(36, "data"); view.setUint32(40, n * 2, true);
+    for (let i = 0; i < n; i++) {
+      const from = Math.floor(i * ratio);
+      const to = Math.max(from + 1, Math.min(total, Math.floor((i + 1) * ratio)));
+      let sum = 0;
+      for (let j = from; j < to; j++) sum += all[j];
+      const x = Math.max(-1, Math.min(1, sum / (to - from)));
+      view.setInt16(44 + i * 2, x < 0 ? x * 0x8000 : x * 0x7fff, true);
+    }
+    const bytes = new Uint8Array(view.buffer);
+    let bin = "";
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return `data:audio/wav;base64,${btoa(bin)}`;
+  }
 
   function dialect() {
     const saved = chosenDialect[lang] || store.get(`haris.dialect.${lang}`);
@@ -771,7 +874,9 @@
   }
 
   micBtn.addEventListener("click", () => {
+    if (voice) return stopVoice(true);
     if (recognizer) return stopDictation(true);
+    if (canRecord) return startVoice();
     if (!dialect() && UI[lang].dialects.length > 1) return askDialect(startDictation);
     startDictation();
   });
@@ -896,6 +1001,7 @@
   document.querySelectorAll(".langs button").forEach((b) => b.addEventListener("click", () => {
     if (b.dataset.lang === lang) return;
     stopDictation(false);
+    stopVoice(false);
     applyLanguage(b.dataset.lang);
     chat.replaceChildren();
     showTools(false);

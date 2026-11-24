@@ -81,3 +81,43 @@ def test_radar_report_and_authority_flow(tmp_path, monkeypatch):
     monkeypatch.setenv("HARIS_AUTHORITY_TOKEN", "s3cret")
     assert client.get("/api/authority/campaigns").status_code == 401
     assert client.get("/api/authority/campaigns", headers={"x-authority-token": "s3cret"}).status_code == 200
+
+
+# --- Voice notes recorded in the app ------------------------------------------------
+
+def _wav_data_url(seconds=1):
+    import base64, io, wave
+    buf = io.BytesIO()
+    with wave.open(buf, "wb") as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(16000)
+        w.writeframes(b"\x00\x01" * 16000 * seconds)
+    return "data:audio/wav;base64," + base64.b64encode(buf.getvalue()).decode()
+
+
+def test_transcribe_returns_the_words(monkeypatch):
+    from haris import llm
+    seen = {}
+    def fake(audio, media_type):
+        seen["type"] = media_type
+        seen["size"] = len(audio)
+        return "وصلتني رسالة من البنك تطلب رمز التحقق"
+    monkeypatch.setattr(llm, "transcribe", fake)
+    r = client.post("/api/transcribe", json={"audio": _wav_data_url(), "lang": "ar"})
+    assert r.status_code == 200
+    assert r.json() == {"text": "وصلتني رسالة من البنك تطلب رمز التحقق"}
+    assert seen["type"] == "audio/wav" and seen["size"] > 30000
+
+
+def test_transcribe_says_so_when_the_ai_cannot_hear(monkeypatch):
+    from haris import llm
+    monkeypatch.setattr(llm, "transcribe", lambda audio, media_type: None)
+    r = client.post("/api/transcribe", json={"audio": _wav_data_url()})
+    assert r.status_code == 503
+
+
+def test_transcribe_refuses_what_is_not_audio(monkeypatch):
+    from haris import llm
+    monkeypatch.setattr(llm, "transcribe", lambda audio, media_type: "x")
+    assert client.post("/api/transcribe", json={"audio": "data:image/png;base64," + "A" * 2000}).status_code == 422
+    assert client.post("/api/transcribe", json={"audio": "data:audio/wav;base64,@@@" + "A" * 2000}).status_code == 422
+    assert client.post("/api/transcribe", json={"audio": "data:audio/wav;base64," + "AAAA" * 20}).status_code == 422

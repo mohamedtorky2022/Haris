@@ -329,6 +329,35 @@ def polish_text(body: PolishRequest):
     return polish(body.text, body.lang, body.dialect)
 
 
+class VoiceRequest(BaseModel):
+    audio: str = Field(..., min_length=40, max_length=3_000_000,
+                       description="A voice note recorded in the app, as a data: URL (WAV, up to about 60 seconds)")
+    lang: Optional[Lang] = None
+
+
+VOICE_TYPES = ("audio/wav", "audio/x-wav", "audio/mp3", "audio/mpeg", "audio/aac", "audio/ogg", "audio/flac")
+
+
+@app.post("/api/transcribe")
+def transcribe_voice(body: VoiceRequest):
+    """The words in a voice note recorded in the app. The audio is sent to the AI once and never stored."""
+    import base64
+    head, _, data = body.audio.partition(",")
+    media_type = head.removeprefix("data:").split(";")[0].strip().lower()
+    if not head.startswith("data:") or ";base64" not in head or media_type not in VOICE_TYPES:
+        raise HTTPException(status_code=422, detail="Send the voice note as a base64 data: URL (WAV)")
+    try:
+        audio = base64.b64decode(data, validate=True)
+    except ValueError:
+        raise HTTPException(status_code=422, detail="The voice note could not be read") from None
+    if len(audio) < 1000:
+        raise HTTPException(status_code=422, detail="The voice note is empty")
+    text = llm.transcribe(audio, media_type)
+    if not text:
+        raise HTTPException(status_code=503, detail="Voice notes cannot be heard right now")
+    return {"text": text}
+
+
 @app.post("/api/report")
 def report(body: ReportRequest):
     return build_report(body.model_dump(), body.lang)
