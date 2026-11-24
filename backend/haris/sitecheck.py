@@ -41,7 +41,7 @@ from urllib.parse import urljoin, urlsplit
 
 from . import llm
 from .redact import redact
-from .urls import OFFICIAL_BRANDS, _is_official
+from .urls import FREE_HOSTS, OFFICIAL_BRANDS, _is_official
 
 log = logging.getLogger("haris.sitecheck")
 
@@ -117,13 +117,6 @@ for _brand, (_names, _domains) in GLOBAL_BRANDS.items():
 
 # Free website builders and hosts. A sub-address on them costs nothing and inherits the platform's old,
 # trusted domain, so the domain-age check never fires; half of the sites missed on 23 November were here.
-FREE_HOSTS = (
-    "square.site", "netlify.app", "vercel.app", "pages.dev", "workers.dev", "github.io", "gitlab.io",
-    "web.app", "firebaseapp.com", "glitch.me", "replit.app", "repl.co", "onrender.com", "herokuapp.com",
-    "wixsite.com", "weebly.com", "weeblysite.com", "webflow.io", "framer.website", "framer.app", "typedream.app",
-    "godaddysites.com", "carrd.co", "blogspot.com", "sites.google.com", "notion.site", "gitbook.io",
-    "000webhostapp.com", "wordpress.com", "ukit.me", "tilda.ws", "mystrikingly.com", "jimdosite.com",
-)
 
 
 def _global_official(domain: str) -> bool:
@@ -131,7 +124,7 @@ def _global_official(domain: str) -> bool:
 
 
 def _free_host(domain: str) -> bool:
-    return any(domain.endswith("." + h) for h in FREE_HOSTS)
+    return any(domain == h or domain.endswith("." + h) for h in FREE_HOSTS)
 
 
 _CARD = re.compile(r"card|cvv|cvc|cc-?num|expir|exp-?date|بطاقة|البطاقة", re.I)

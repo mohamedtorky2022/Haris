@@ -124,14 +124,15 @@ def main() -> int:
 
     if args.offline:
         sys.path.insert(0, str(ROOT / "backend"))
-        from haris.detector import analyze
+        from haris.detector import MEDIUM_THRESHOLD
         from haris.urls import analyze_url
 
         def run(url: str) -> dict:
-            link, verdict = analyze_url(url), analyze(url, "en", use_llm=False, inspect_sites=False)
-            flagged = verdict["risk"] in ("medium", "high")
+            # The link's own points, as they enter a message's score: medium or more counts as flagged.
+            link = analyze_url(url)
+            flagged = not link.official and link.score >= MEDIUM_THRESHOLD
             return {"reachable": True, "score": THRESHOLD if flagged else 0, "final_domain": link.domain,
-                    "flags": link.flags + [verdict["risk"]]}
+                    "flags": link.flags}
         delay = 0.0
     elif server:
         run = lambda url: check_on_server(server, url)  # noqa: E731
@@ -143,7 +144,14 @@ def main() -> int:
         run = lambda url: sitecheck.inspect(url, "en", use_llm=not args.no_ai)  # noqa: E731
         delay = LOCAL_DELAY
 
+    sys.path.insert(0, str(ROOT / "backend"))
+    from haris.detector import MEDIUM_THRESHOLD as _MEDIUM
+    from haris.urls import analyze_url as _link
+
     counts = {"caught": 0, "missed": 0, "false alarm": 0, "clean": 0, "unreachable": 0}
+    # Every link, as Haris judges it inside a message: the visit when the page answers, and the link itself
+    # always, so a dead phishing link is still judged rather than left out. [tp, fp, fn, tn]
+    whole = [0, 0, 0, 0]
     rows = []
     started = datetime.now(timezone.utc)
     print(f"Checking {len(cases)} addresses {'on ' + server if server else 'from this machine'}…\n")
@@ -157,6 +165,9 @@ def main() -> int:
         else:
             verdict = "false alarm" if r["score"] >= THRESHOLD else "clean"
         counts[verdict] += 1
+        link = _link(case["url"])
+        hit = (bool(r.get("reachable")) and r["score"] >= THRESHOLD) or (not link.official and link.score >= _MEDIUM)
+        whole[(0 if hit else 2) if phishing else (1 if hit else 3)] += 1
         rows.append({"url": case["url"], "label": case["label"], "verdict": verdict, "score": r.get("score", 0),
                      "final_domain": r.get("final_domain", ""), "flags": r.get("flags", []),
                      "ai": (r.get("ai") or {}).get("risk"), "error": r.get("error")})
@@ -179,7 +190,7 @@ def main() -> int:
         "# Live website check — results",
         "",
         f"Run {started:%Y-%m-%d %H:%M} UTC, "
-        + ("offline: from the link alone, as inside a message (flagged = medium or high risk)." if args.offline
+        + ("offline: from the link alone, without visiting it (flagged = the link's own points reach medium risk)." if args.offline
            else f"{'on ' + server if server else 'locally'}, threshold {THRESHOLD} points."),
         "",
         "| | Count | Rate |",
@@ -192,7 +203,12 @@ def main() -> int:
         f"| Did not answer (excluded) | {counts['unreachable']} | |",
         "",
     ] + metrics.table(metrics.scores(counts["caught"], counts["false alarm"], counts["missed"], counts["clean"]),
-                      positive="phishing") + [
+                      positive="phishing") + ([] if args.offline else [
+        "",
+        "**Every link, dead ones included** (as inside a message: the visit when the page answers, and the link "
+        "itself always):",
+        "",
+    ] + metrics.table(metrics.scores(*whole), positive="phishing")) + [
         "",
     ] + ([] if args.offline else [
         f"The AI read {sum(1 for r in rows if r['ai'])} of the {sum(1 for r in rows if r['verdict'] != 'unreachable')} "
