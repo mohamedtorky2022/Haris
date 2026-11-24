@@ -26,14 +26,17 @@
 2. **يفتح الموقع نفسه بأمان:** يتتبع التحويلات، ويقرأ عمر النطاق من السجلات الرسمية (RDAP)، والشهادة، وقوائم التهديد، وما تطلبه الصفحة (بطاقة، كلمة مرور، رمز تحقق)، والجهة التي تنتحلها. ثم **يقرأ الذكاء الاصطناعي الصفحة** ويحكم عليها، ويشرح السبب بلغة المستخدم. لا يُشغَّل شيء من الصفحة، ويُحذف معرّف الضحية من الرابط قبل الزيارة.
 3. **من الكشف إلى الإزالة:** لكل موقع وهمي يجهّز «حارس» للجهة المختصة ملف أدلة: مَن سجّل النطاق ومَن يستضيفه، وبريد الإبلاغ عن الإساءة لدى كلٍّ منهما من السجلات الرسمية، وبصمة SHA-256 للصفحة، وثلاث مسودات: تعليق النطاق، وإزالة الصفحة، وحجبه داخل الدولة. الضابط يراجع ويرسل، و«حارس» لا يرسل شيئاً بنفسه.
 4. **الإبلاغ عن الإعلانات الوهمية:** استجابةً لتحذير شرطة أبوظبي في 22 نوفمبر 2026، يكشف «حارس» إعلانات البيع والتأجير الوهمية: سيارة بأقل بكثير من سعر السوق مع عربون قبل المعاينة، أو تأجير دراجات واستراحات وعزب ومخيمات بدفع مقدّم. ويقارن الذكاء الاصطناعي السعر بسعر السوق المعتاد للموديل. وبزر «أبلغ عن إعلان وهمي» يذهب الإعلان إلى رادار الحملات، أو يصبح بلاغاً كاملاً إن دفع المستخدم.
-5. **يكمل الطريق:** بلاغ بالصوت أو الكتابة أو لقطات الشاشة، ولوحة للجهة المختصة توجّه كل بلاغ إلى الفريق المناسب، ورادار يجمع البلاغات المتشابهة في حملة واحدة، وتنبيهات على واتساب.
+5. **إنذار مبكر قبل أول ضحية:** كل 6 ساعات يقرأ «حارس» سجلات الشهادات العامة، ويمسح الأسماء الشبيهة الأكثر استخداماً في الاحتيال (مثل tamm-fines) لـ13 جهة إماراتية، ويزور ما يجده بأمان، ثم يرتّبه في لوحة الرادار: «عاجل» أو «يستحق النظر»، ولكل نطاق ملف أدلة الإزالة. وجد أول فحص 33 نطاقاً شبيهاً لثلاث جهات، بينها نطاق يشبه «تم» سُجّل قبل يوم واحد.
+6. **رقم الاتصال المزيّف:** إن ذكرت الرسالة «ديوا» أو بنكاً وطلبت الاتصال برقم ليس من أرقامه المنشورة، يقول «حارس» ذلك ويعطي الرقم الرسمي، لـ14 جهة أُخذت أرقامها من مواقعها الرسمية. ورسائل المخالفات المرورية باسم «تم» وUAE PASS تُكشف أيضاً.
+7. **يكمل الطريق:** بلاغ بالصوت أو الكتابة أو لقطات الشاشة، ولوحة للجهة المختصة توجّه كل بلاغ إلى الفريق المناسب، ورادار يجمع البلاغات المتشابهة في حملة واحدة، وتنبيهات على واتساب.
 
 ### الأرقام (مُقاسة على الخادم الحيّ في 23 نوفمبر 2026)
 
 - **0 إنذارات خاطئة** على 23 موقعاً حقيقياً: بنوك، وشرطة، وصفحات دخول، ومواقع أخبار تذكر البنوك.
 - **52% من مواقع الاحتيال الحيّة كُشفت** (17 من 33) على قائمة مستقلة لم يُضبط النظام عليها، بعد 43% في الجولة الأولى. أغلب ما فات صفحات تُبنى بالجافاسكريبت على منصات مجانية، وقراءتها تحتاج متصفحاً حقيقياً، وهي أول خطوة في التجربة الميدانية.
 - **12 من 12** رسالة احتيال بصياغات جديدة كشفها الذكاء الاصطناعي، والقواعد وحدها 2 من 12.
-- **286 اختباراً آلياً.**
+- **دقة 100% واستدعاء 100%** على 75 رسالة عيّنة (47 احتيالاً و28 حقيقية)، وأمر واحد يقيس مجموعة اللجنة السرية من ملف CSV ويطبع الدقة والاستدعاء وF1 (`python scripts/evaluate.py --file set.csv`).
+- **333 اختباراً آلياً.**
 
 ### لمن
 
@@ -61,14 +64,17 @@ Scam links reach everyone, by SMS and WhatsApp, in at least five languages in th
 2. **Opens the website safely:** follows the redirects, reads the domain's age from the official registries (RDAP), the certificate, threat lists, what the page asks for (card, password, one-time code) and whom it imitates. Then **the AI reads the page** and gives a verdict with reasons in the user's language. Nothing on the page runs, and the victim's identifier is stripped from the link first.
 3. **From detection to takedown:** for every fake site, the authority gets an evidence file: who registered the domain and who hosts it, each one's abuse contact from the official registries, a SHA-256 of the page, and three drafts: suspend the domain, take the page down, block it inside the UAE. The officer reviews and sends; Haris sends nothing itself.
 4. **Reporting fake ads:** following Abu Dhabi Police's warning of 22 November 2026, Haris catches fake sale and rental ads: a car far below the market price with a deposit before viewing, or bikes, rest houses, farms and camps paid in advance. The AI compares the price with the usual market price for the model. "Report a fake ad" sends the ad to the campaign radar, or turns it into a full report if the person paid.
-5. **The whole journey:** a report by voice, text or screenshots; a dashboard that routes each report to the right team; a radar that groups similar reports into one campaign; WhatsApp alerts.
+5. **Early warning, before the first victim:** every 6 hours Haris reads the public certificate logs and sweeps the look-alike names scammers use most (such as tamm-fines) for 13 UAE entities, visits what it finds safely, and ranks it on the radar dashboard as "urgent" or "worth a look", each with its takedown evidence file. The first pass found 33 look-alike names for three entities, among them a TAMM look-alike registered the day before.
+6. **Fake helplines:** when a message names DEWA or a bank but gives a number that is not one it publishes, Haris says so and gives the official number, for 14 entities whose numbers were taken from their own websites. Traffic-fine messages in the name of TAMM and UAE PASS are caught too.
+7. **The whole journey:** a report by voice, text or screenshots; a dashboard that routes each report to the right team; a radar that groups similar reports into one campaign; WhatsApp alerts.
 
 ### The numbers (measured on the live server, 23 November 2026)
 
 - **0 false alarms** on 23 real websites: banks, police, sign-in pages, news sites that name banks.
 - **52% of live phishing sites caught** (17 of 33) on a held-out list the system was not tuned on, up from 43% in the first round. Most misses are pages built by JavaScript on free website builders; reading them needs a headless browser, the first step of a pilot.
 - **12 of 12** scams in new wording caught with the AI; rules alone 2 of 12.
-- **286 automated tests.**
+- **100% precision and 100% recall** on 75 sample messages (47 scams, 28 genuine), and one command measures the committee's hidden set from a CSV file, printing precision, recall and F1 (`python scripts/evaluate.py --file set.csv`).
+- **333 automated tests.**
 
 ### Who it serves
 
