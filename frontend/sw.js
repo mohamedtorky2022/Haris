@@ -1,8 +1,8 @@
 // Haris service worker: lets the chat be installed as an app and open without a connection.
 // Network first for everything, so a new deploy shows at once; the cached copy is only a fallback.
 // Nothing from /api or /webhook is ever cached: messages and reports are never stored on the phone.
-const CACHE = "haris-shell-v2";
-const SHELL = ["/", "/index.html", "/styles.css", "/app.js", "/pwa.js", "/splash.js", "/haris.svg", "/manifest.json", "/icons/icon-192.png"];
+const CACHE = "haris-shell-v3";
+const SHELL = ["/", "/index.html", "/styles.css", "/splash.css", "/app.js", "/pwa.js", "/splash.js", "/haris.svg", "/manifest.json", "/icons/icon-192.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).catch(() => {}));

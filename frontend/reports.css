@@ -120,7 +120,7 @@ button[data-approve]:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* A report that arrived while the dashboard was open */
 .arrived { display: block; width: 100%; margin: 8px 0 0; padding: 12px 16px; border: 0; border-radius: 12px;
-  background: #0A4740; color: #fff; font: inherit; font-weight: 700; text-align: start; cursor: pointer;
+  background: #0f766e; color: #fff; font: inherit; font-weight: 700; text-align: start; cursor: pointer;
   box-shadow: 0 0 0 3px #E7C77A inset; animation: arrive 1.2s ease-out 2; }
 .arrived[hidden] { display: none; }
 .fresh { box-shadow: 0 0 0 3px #E7C77A; }
