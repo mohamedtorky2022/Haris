@@ -370,7 +370,9 @@ haris/
     ├── video/                  journey video source (scenes, narration tools, fonts, phone illustrations)
     ├── Haris-presentation-ar.pptx  full presentation (Arabic): technical build, the eight stages, results, goals and roadmap
     ├── Haris-presentation-ar.pdf   the same presentation as PDF
-    └── Haris-presentation.pptx     presentation (English)
+    ├── Haris-presentation-en.pptx  the same full presentation in English
+    ├── Haris-presentation-AR-EN.pdf both presentations in one PDF, Arabic first
+    └── Haris-presentation.pptx     the earlier English pitch deck
 ```
 
 ## 8. Third-party software and ownership
